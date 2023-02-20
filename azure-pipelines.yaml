@@ -23,11 +23,11 @@ steps:
     SonarCloud: 'SonarCloud EST.MIT.Invoice'
     organization: 'defra'
     scannerMode: 'MSBuild'
-    projectKey: 'defra_est-lux-web'
+    projectKey: 'defra_est-mit-invoice'
     projectName: 'EST.MIT.Invoice'
     extraProperties: |
-      sonar.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Tests/**,**/Program.cs
-      sonar.test.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Tests/**
+      sonar.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Api.Tests/**,**/Program.cs
+      sonar.test.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Api.Tests/**
       sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
       $(additionalSonarParams)
 
