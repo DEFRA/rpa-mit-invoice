@@ -1,0 +1,85 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: ubuntu-22.04
+
+variables:
+  buildConfiguration: 'Release'
+  ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}: 
+    additionalSonarParams: 'sonar.branch.name=$(Build.SourceBranchName)'
+  ${{ else }}: 
+    additionalSonarParams: ''
+
+trigger:
+- main
+
+steps:
+- task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    SonarCloud: 'SonarCloud EST.MIT.Invoice'
+    organization: 'defra'
+    scannerMode: 'MSBuild'
+    projectKey: 'defra_est-mit-invoice'
+    projectName: 'EST.MIT.Invoice'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Api.Tests/**,**/Program.cs
+      sonar.test.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Api.Tests/**
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      $(additionalSonarParams)
+
+- task: DotNetCoreCLI@2
+  displayName: 'Lint code with dotnet format'
+  inputs: 
+    command: 'custom'
+    custom: format
+    arguments: 'whitespace --verbosity n --verify-no-changes'
+
+- task: DotNetCoreCLI@2
+  displayName: Build project
+  inputs: 
+   command: build
+   projects: '**/*.csproj'
+   arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Tests'
+  inputs:
+    command: test
+    projects: '**/*Test/*.csproj'
+    arguments: '--no-build --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
+    publishTestResults: false
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish coverage results'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
+
+- task: SonarCloudAnalyze@1
+  displayName: 'Run Sonar Analysis'
+
+- task: DotNetCoreCLI@2
+  condition: eq(variables['Build.SourceBranchName'], 'main')
+  displayName: 'Build Website Artifacts'
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  condition: eq(variables['Build.SourceBranchName'], 'main')
+  displayName: 'Publish Website Artifacts'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifactName: EST.MIT.Invoice
+
+- task: SonarCloudPublish@1
+  displayName: 'Publish Sonar Results'
+  continueOnError: true
+  inputs:
+    pollingTimeoutSec: '300'
