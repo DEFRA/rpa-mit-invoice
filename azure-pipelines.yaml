@@ -1,124 +1,85 @@
-pool: 
-  vmImage: ubuntu-latest
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
-trigger: none
+pool:
+  vmImage: ubuntu-22.04
 
-stages:
- - stage: quality
-   jobs:
-   - job: 'Linting'
-     steps:
-     - task: DotNetCoreCLI@2
-       displayName: Whitespace Format
-       inputs: 
-         command: 'custom'
-         custom: format
-         arguments: 'whitespace --verbosity n --verify-no-changes'
+variables:
+  buildConfiguration: 'Release'
+  ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}: 
+    additionalSonarParams: 'sonar.branch.name=$(Build.SourceBranchName)'
+  ${{ else }}: 
+    additionalSonarParams: ''
 
-   - job: 'Testing'
-     steps:
-       - task: DotNetCoreCLI@2
-         displayName: Run Tests
-         inputs: 
-           command: test
-           projects: '**/*Test/*.csproj'
-           arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger trx'  
+trigger:
+- main
 
- - stage: build
-   jobs:
-   - job: 'Build'
-     steps:
-     - task: UseDotNet@2
-       displayName: 'Use .NET 6 SDK'
-       inputs:
-         version: 6.0.x
-     - task: DotNetCoreCLI@2
-       displayName: Build project
-       inputs: 
-         command: build
-         projects: '**/*.csproj'
-         arguments: '--configuration $(buildConfiguration)'
+steps:
+- task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    SonarCloud: 'SonarCloud EST.MIT.Invoice'
+    organization: 'defra'
+    scannerMode: 'MSBuild'
+    projectKey: 'defra_est-lux-web'
+    projectName: 'EST.MIT.Invoice'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Tests/**,**/Program.cs
+      sonar.test.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/wwwroot/**,**/EST.MIT.Invoice.Tests/**
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      $(additionalSonarParams)
 
-     - task: CopyFiles@2
-       displayName: Copy to Artifactory
-       inputs:
-         Contents: '**'
-         TargetFolder: '$(Build.ArtifactStagingDirectory)'
-     - publish: $(Build.ArtifactStagingDirectory)
-       displayName: Save Atifact
-       artifact: ManualInvoiceTemplateInvoiceBuild
+- task: DotNetCoreCLI@2
+  displayName: 'Lint code with dotnet format'
+  inputs: 
+    command: 'custom'
+    custom: format
+    arguments: 'whitespace --verbosity n --verify-no-changes'
 
- - stage: smelling
-   jobs:
-   - job: 'Sniffing'
-     steps:
-     - task: SonarCloudPrepare@1
-       displayName: 'Prepare analysis on SonarCloud'
-       inputs:
-         SonarCloud: 'SonarCloud defradigital'
-         organization: 'defra'
-         scannerMode: 'MSBuild'
-         projectKey: 'EST.MIT.Invoice'
-         projectName: 'EST.MIT.Invoice'
-         extraProperties: |
-           sonar.exclusions=**/obj/**,**/*.dll,**/*.cshtml,**/*.css,**/*.js,**/*.json,**/Migrations/**,**/wwwroot/**,**/EST.MIT.Web.Test/**,**/Program.cs,**/ErrorViewModel.cs
-           sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
-           sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
-           $(additionalSonarParams)
+- task: DotNetCoreCLI@2
+  displayName: Build project
+  inputs: 
+   command: build
+   projects: '**/*.csproj'
+   arguments: '--configuration $(buildConfiguration)'
 
-     - task: DownloadBuildArtifacts@1
-       inputs:
-         buildType: 'current'
-         downloadType: 'single'
-         artifactName: 'ManualInvoiceTemplateInvoiceBuild'
-         downloadPath: '$(System.ArtifactsDirectory)'
+- task: DotNetCoreCLI@2
+  displayName: 'Run Tests'
+  inputs:
+    command: test
+    projects: '**/*Test/*.csproj'
+    arguments: '--no-build --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
+    publishTestResults: false
 
-     - task: SonarCloudAnalyze@1
-       displayName: 'Sniffing'
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish coverage results'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
 
-     - task: SonarCloudPublish@1
-       displayName: 'Publish Sonar Results'
-       continueOnError: true
-       inputs:
-         pollingTimeoutSec: '300'
+- task: SonarCloudAnalyze@1
+  displayName: 'Run Sonar Analysis'
 
- - stage: 
-   dependsOn: build
-   jobs:
-     - job: publish
-       steps:
-         - download: current
-           artifact: ManualInvoiceTemplateInvoiceBuild
+- task: DotNetCoreCLI@2
+  condition: eq(variables['Build.SourceBranchName'], 'main')
+  displayName: 'Build Website Artifacts'
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
 
-         - task: DotNetCoreCLI@2
-           displayName: Create Artifact
-           inputs:
-             command: 'publish'
-             publishWebProjects: true
-             arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-             zipAfterPublish: True
+- task: PublishBuildArtifacts@1
+  condition: eq(variables['Build.SourceBranchName'], 'main')
+  displayName: 'Publish Website Artifacts'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifactName: EST.MIT.Invoice
 
-         - task: PublishBuildArtifacts@1
-           displayName: Publish Artifact
-           inputs:
-             PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-             ArtifactName: 'ManualInvoiceTemplateInvoice'
-             publishLocation: 'Container'
-
- - stage: deploy
-   jobs: 
-     - job: SandboxDeploy
-       steps:
-       - task: DownloadBuildArtifacts@1
-         inputs:
-           buildType: 'current'
-           downloadType: 'single'
-           artifactName: 'ManualInvoiceTemplateInvoice'
-           downloadPath: '$(System.ArtifactsDirectory)'
-       - task: AzureRmWebAppDeployment@4
-         inputs:
-           ConnectionType: 'AzureRM'
-           azureSubscription: 'AZD-EST-SND1'
-           appType: 'webAppLinux'
-           WebAppName: 'SNDESTMITSAS'
-           packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+- task: SonarCloudPublish@1
+  displayName: 'Publish Sonar Results'
+  continueOnError: true
+  inputs:
+    pollingTimeoutSec: '300'
