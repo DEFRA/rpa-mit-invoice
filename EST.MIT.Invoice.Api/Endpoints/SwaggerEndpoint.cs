@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.OpenApi.Models;
 
 namespace Invoices.Api.Endpoints;
 
+[ExcludeFromCodeCoverage]
 public static class SwaggerEndpointDefinition
 {
     public static void SwaggerEndpoints(this WebApplication app)

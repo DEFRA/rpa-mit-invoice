@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Azure.Data.Tables;
 using FluentValidation;
@@ -79,6 +80,7 @@ public static class InvoiceEndpoints
         return Results.NoContent();
     }
 
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection)
     {
         services.AddScoped<IValidator<Invoice>, InvoiceValidator>();

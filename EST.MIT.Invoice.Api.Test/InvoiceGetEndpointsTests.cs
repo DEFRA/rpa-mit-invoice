@@ -42,4 +42,17 @@ public class InvoiceGetEndpointTests
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
     }
+
+    [Fact]
+    public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExists()
+    {
+        const string scheme = "bps";
+        const string invoiceId = "123456789";
+
+        _tableService.GetInvoice(scheme, invoiceId).ReturnsNull();
+
+        var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _tableService);
+
+        result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
 }
