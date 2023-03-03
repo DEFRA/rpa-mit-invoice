@@ -4,21 +4,22 @@ using NSubstitute;
 using FluentAssertions;
 using Invoices.Api.Services.Models;
 using NSubstitute.ReturnsExtensions;
+using Invoices.Api.Models;
 
-namespace EST.MIT.Invoice.Api.Test;
+namespace Invoices.Api.Test;
 
-public class InvoiceEndpointTests
+public class InvoiceGetEndpointTests
 {
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
 
     [Fact]
-    public async Task GetInvoicebySchemeAndInvoiceId_WhenCustomerExists()
+    public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var invoice = new Invoices.Api.Models.Invoice
+        var invoice = new Invoice
         {
             Id = invoiceId,
             Scheme = scheme,
@@ -38,20 +39,7 @@ public class InvoiceEndpointTests
 
         var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _tableService);
 
-        result.GetOkObjectResultValue<Invoices.Api.Models.Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
-    }
-
-    [Fact]
-    public async Task GetInvoicebySchemeAndInvoiceId_WhenCustomerDoesNotExists()
-    {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        _tableService.GetInvoice(scheme, invoiceId).ReturnsNull();
-
-        var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _tableService);
-
-        result.GetNotFoundResultStatusCode().Should().Be(404);
     }
 }

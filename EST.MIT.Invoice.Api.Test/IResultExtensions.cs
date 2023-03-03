@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace EST.MIT.Invoice.Api.Test;
+namespace Invoices.Api.Test;
 
 public static class IResultExtensions
 {
@@ -28,6 +24,38 @@ public static class IResultExtensions
     {
         return (int?)Type.GetType("Microsoft.AspNetCore.Http.Result.NotFoundObjectResult, Microsoft.AspNetCore.Http.Results")?
             .GetProperty("StatusCode",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
+            .GetValue(result);
+    }
+
+    public static int? GetBadRequestStatusCode(this IResult result)
+    {
+        return (int?)Type.GetType("Microsoft.AspNetCore.Http.Result.BadRequestObjectResult, Microsoft.AspNetCore.Http.Results")?
+            .GetProperty("StatusCode",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
+            .GetValue(result);
+    }
+
+    public static T? GetBadRequestResultValue<T>(this IResult result)
+    {
+        return (T?)Type.GetType("Microsoft.AspNetCore.Http.Result.BadRequestObjectResult, Microsoft.AspNetCore.Http.Results")?
+            .GetProperty("Value",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
+            .GetValue(result);
+    }
+
+    public static int? GetCreatedStatusCode(this IResult result)
+    {
+        return (int?)Type.GetType("Microsoft.AspNetCore.Http.Result.CreatedResult, Microsoft.AspNetCore.Http.Results")?
+            .GetProperty("StatusCode",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
+            .GetValue(result);
+    }
+
+    public static T? GetCreatedResultValue<T>(this IResult result)
+    {
+        return (T?)Type.GetType("Microsoft.AspNetCore.Http.Result.CreatedResult, Microsoft.AspNetCore.Http.Results")?
+            .GetProperty("Value",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
             .GetValue(result);
     }
