@@ -59,4 +59,12 @@ public static class IResultExtensions
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
             .GetValue(result);
     }
+
+    public static int? GetNoContentStatusCode(this IResult result)
+    {
+        return (int?)Type.GetType("Microsoft.AspNetCore.Http.Result.NoContentResult, Microsoft.AspNetCore.Http.Results")?
+            .GetProperty("StatusCode",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?
+            .GetValue(result);
+    }
 }

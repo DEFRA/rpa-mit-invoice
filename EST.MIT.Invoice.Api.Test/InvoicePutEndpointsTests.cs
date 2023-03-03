@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Invoices.Api.Test;
 
-public class InvoicePostEndpointTests
+public class InvoicePutEndpointTests
 {
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
@@ -16,7 +16,7 @@ public class InvoicePostEndpointTests
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
     [Fact]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
+    public async Task PutInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";
         const string invoiceId = "123456789";
@@ -28,11 +28,12 @@ public class InvoicePostEndpointTests
             Status = "Awaiting"
         };
 
-        _tableService.CreateInvoice(invoice).Returns(false);
+        _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
 
-        result.GetBadRequestStatusCode().Should().Be(400);
+        result.GetOkObjectResultStatusCode().Should().Be(200);
+        result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
     }
 
     [Fact]
@@ -48,12 +49,11 @@ public class InvoicePostEndpointTests
             Status = "awaiting"
         };
 
-        _tableService.CreateInvoice(invoice).Returns(true);
+        _tableService.UpdateInvoice(invoice).Returns(false);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
 
-        result.GetCreatedStatusCode().Should().Be(201);
-        result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetBadRequestStatusCode().Should().Be(400);
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public class InvoicePostEndpointTests
             Status = status
         };
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

@@ -9,6 +9,7 @@ namespace Invoices.Api.Endpoints;
 
 public static class InvoiceEndpoints
 {
+    [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoiceEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
@@ -77,7 +78,7 @@ public static class InvoiceEndpoints
             return Results.BadRequest();
         }
 
-        return Results.NoContent();
+        return Results.Ok(invoice);
     }
 
     [ExcludeFromCodeCoverage]
