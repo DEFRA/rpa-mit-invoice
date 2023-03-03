@@ -31,7 +31,9 @@ public class InvoiceEndpointTests
                 PartitionKey = scheme,
                 RowKey = invoiceId,
                 Status = invoice.Status,
-                Data = System.Text.Json.JsonSerializer.Serialize(invoice)
+                Data = System.Text.Json.JsonSerializer.Serialize(invoice),
+                ETag = Azure.ETag.All,
+                Timestamp = DateTimeOffset.UtcNow
             });
 
         var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _tableService);

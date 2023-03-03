@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Data.Tables;
+using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
 
@@ -11,11 +12,18 @@ public static class InvoiceEndpoints
     {
         app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
             .Produces<Invoice>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoice");
 
-        app.MapPost("/invoice", CreateInvoice).WithName("CreateInvoice");
+        app.MapPost("/invoice", CreateInvoice)
+            .Produces<Invoice>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithName("CreateInvoice");
 
-        app.MapPut("/invoice", UpdateInvoice).WithName("UpdateInvoice");
+        app.MapPut("/invoice", UpdateInvoice)
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithName("UpdateInvoice");
 
         return app;
     }
@@ -33,8 +41,15 @@ public static class InvoiceEndpoints
         return Results.Ok(invoice);
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService)
+    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService, IValidator<Invoice> validator)
     {
+        var validationResult = await validator.ValidateAsync(invoice);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         var invoiceCreated = await tableService.CreateInvoice(invoice);
 
         if (!invoiceCreated)
@@ -42,11 +57,18 @@ public static class InvoiceEndpoints
             return Results.BadRequest();
         }
 
-        return Results.Created($"/invoice/{invoice.Id}", null);
+        return Results.Created($"/invoice/{invoice.Scheme}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService)
+    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService, IValidator<Invoice> validator)
     {
+        var validationResult = await validator.ValidateAsync(invoice);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         var invoiceUpdated = await tableService.UpdateInvoice(invoice);
 
         if (!invoiceUpdated)
@@ -59,6 +81,7 @@ public static class InvoiceEndpoints
 
     public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection)
     {
+        services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
         services.AddSingleton(_ => new TableServiceClient(storageConnection));
         services.AddScoped<ITableService, TableService>();
         return services;

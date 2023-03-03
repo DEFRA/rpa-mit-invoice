@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 
-namespace EST.MIT.Invoice.Api.Endpoints;
+namespace Invoices.Api.Endpoints;
 
 public static class SwaggerEndpointDefinition
 {
