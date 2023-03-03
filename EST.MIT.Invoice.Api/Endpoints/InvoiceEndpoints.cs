@@ -7,7 +7,8 @@ namespace Invoices.Api.Endpoints;
 
 public static class InvoiceEndpoints
 {
-    public static IEndpointRouteBuilder MapInvoiceEndpoints(this IEndpointRouteBuilder app) {
+    public static IEndpointRouteBuilder MapInvoiceEndpoints(this IEndpointRouteBuilder app)
+    {
         app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
             .Produces<Invoice>(StatusCodes.Status200OK)
             .WithName("GetInvoice");
@@ -19,10 +20,12 @@ public static class InvoiceEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ITableService tableService) {
+    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ITableService tableService)
+    {
         var invoiceResponse = await tableService.GetInvoice(scheme, invoiceId);
 
-        if(invoiceResponse is null) {
+        if (invoiceResponse is null)
+        {
             return Results.NotFound();
         }
 
@@ -30,20 +33,24 @@ public static class InvoiceEndpoints
         return Results.Ok(invoice);
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService) {
+    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService)
+    {
         var invoiceCreated = await tableService.CreateInvoice(invoice);
 
-        if (!invoiceCreated) {
+        if (!invoiceCreated)
+        {
             return Results.BadRequest();
         }
 
         return Results.Created($"/invoice/{invoice.Id}", null);
     }
 
-    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService) {
-        var invoiceUpdated =  await tableService.UpdateInvoice(invoice);
+    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService)
+    {
+        var invoiceUpdated = await tableService.UpdateInvoice(invoice);
 
-        if (!invoiceUpdated) {
+        if (!invoiceUpdated)
+        {
             return Results.BadRequest();
         }
 

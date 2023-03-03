@@ -18,9 +18,12 @@ public class TableService : ITableService
 
     public async Task<InvoiceEntity?> GetInvoice(string scheme, string invoiceId)
     {
-        try {
+        try
+        {
             return await _tableClient.GetEntityAsync<InvoiceEntity>(scheme, invoiceId);
-        } catch (RequestFailedException ex) when (ex.Status == 404) {
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
             return null;
         }
     }
@@ -34,7 +37,8 @@ public class TableService : ITableService
             return false;
         }
 
-        invoiceEntity = new InvoiceEntity{
+        invoiceEntity = new InvoiceEntity
+        {
             PartitionKey = invoice.Scheme,
             RowKey = invoice.Id,
             Status = invoice.Status,
