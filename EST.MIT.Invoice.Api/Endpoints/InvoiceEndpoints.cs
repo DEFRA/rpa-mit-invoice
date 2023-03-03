@@ -5,7 +5,7 @@ using Invoices.Api.Services;
 
 namespace Invoices.Api.Endpoints;
 
-public static class InvoiceGetEndpoints
+public static class InvoiceEndpoints
 {
     public static IEndpointRouteBuilder MapInvoiceEndpoints(this IEndpointRouteBuilder app) {
         app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
@@ -19,18 +19,18 @@ public static class InvoiceGetEndpoints
         return app;
     }
 
-    internal static async Task<IResult> GetInvoice(string scheme, string invoiceId, ITableService tableService) {
+    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ITableService tableService) {
         var invoiceResponse = await tableService.GetInvoice(scheme, invoiceId);
 
         if(invoiceResponse is null) {
-            return Results.Ok();
+            return Results.NotFound();
         }
 
         var invoice = JsonSerializer.Deserialize<Invoice>(invoiceResponse.Data);
         return Results.Ok(invoice);
     }
 
-    internal static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService) {
+    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService) {
         var invoiceCreated = await tableService.CreateInvoice(invoice);
 
         if (!invoiceCreated) {
@@ -40,7 +40,7 @@ public static class InvoiceGetEndpoints
         return Results.Created($"/invoice/{invoice.Id}", null);
     }
 
-    internal static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService) {
+    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService) {
         var invoiceUpdated =  await tableService.UpdateInvoice(invoice);
 
         if (!invoiceUpdated) {

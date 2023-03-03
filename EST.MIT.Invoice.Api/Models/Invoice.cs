@@ -12,4 +12,9 @@ public class Invoice
 
     [JsonPropertyName("status")]
     public string Status { get; init; } = default!;
+
+    public static implicit operator string(Invoice v)
+    {
+        throw new NotImplementedException();
+    }
 }
