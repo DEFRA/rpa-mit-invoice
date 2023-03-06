@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Azure;
 using Azure.Data.Tables;
@@ -6,6 +7,7 @@ using Invoices.Api.Services.Models;
 
 namespace Invoices.Api.Services;
 
+[ExcludeFromCodeCoverage]
 public class TableService : ITableService
 {
     private readonly TableClient _tableClient;
