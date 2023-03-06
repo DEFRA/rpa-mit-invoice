@@ -11,6 +11,10 @@ public class InvoiceEntity : ITableEntity
 
     public string Status { get; set; } = default!;
 
+    public string CreatedBy { get; set; } = default!;
+
+    public string UpdatedBy { get; set; } = default!;
+
     public DateTimeOffset? Timestamp { get; set; }
     public ETag ETag { get; set; }
 }

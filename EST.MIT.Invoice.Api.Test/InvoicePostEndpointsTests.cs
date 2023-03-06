@@ -25,7 +25,9 @@ public class InvoicePostEndpointTests
         {
             Id = invoiceId,
             Scheme = scheme,
-            Status = "Awaiting"
+            Status = "Awaiting",
+            CreatedBy = "test",
+            Header = new InvoiceHeader { Id = "123456789" }
         };
 
         _tableService.CreateInvoice(invoice).Returns(false);
@@ -45,7 +47,9 @@ public class InvoicePostEndpointTests
         {
             Id = invoiceId,
             Scheme = scheme,
-            Status = "awaiting"
+            Status = "awaiting",
+            CreatedBy = "test",
+            Header = new InvoiceHeader { Id = "123456789" }
         };
 
         _tableService.CreateInvoice(invoice).Returns(true);
@@ -58,13 +62,15 @@ public class InvoicePostEndpointTests
 
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string createdBy, string errorKey)
     {
         var invoice = new Invoice
         {
             Id = id,
             Scheme = scheme,
-            Status = status
+            Status = status,
+            CreatedBy = createdBy,
+            Header = new InvoiceHeader { Id = "123456789" }
         };
 
         var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);

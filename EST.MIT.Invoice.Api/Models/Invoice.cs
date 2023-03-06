@@ -12,4 +12,13 @@ public class Invoice
 
     [JsonPropertyName("status")]
     public string Status { get; init; } = default!;
+
+    [JsonPropertyName("createdBy")]
+    public string CreatedBy { get; init; } = default!;
+
+    [JsonPropertyName("updatedBy")]
+    public string UpdatedBy { get; init; } = default!;
+
+    [JsonPropertyName("header")]
+    public InvoiceHeader Header { get; init; } = default!;
 }
