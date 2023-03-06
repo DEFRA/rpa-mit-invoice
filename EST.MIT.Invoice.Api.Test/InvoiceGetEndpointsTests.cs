@@ -44,6 +44,8 @@ public class InvoiceGetEndpointTests
                 PartitionKey = scheme,
                 RowKey = invoiceId,
                 Status = invoice.Status,
+                CreatedBy = invoice.CreatedBy,
+                UpdatedBy = invoice.UpdatedBy,
                 Data = System.Text.Json.JsonSerializer.Serialize(invoice),
                 ETag = Azure.ETag.All,
                 Timestamp = DateTimeOffset.UtcNow
