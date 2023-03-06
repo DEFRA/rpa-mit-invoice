@@ -49,7 +49,8 @@ public class InvoicePostEndpointTests
             Scheme = scheme,
             Status = "awaiting",
             CreatedBy = "test",
-            Header = new InvoiceHeader {
+            Header = new InvoiceHeader
+            {
                 Id = "123456789",
                 ClaimReference = "123456789",
                 ClaimReferenceNumber = "123456789",
@@ -57,7 +58,7 @@ public class InvoicePostEndpointTests
                 AgreementNumber = "123456789",
                 Currency = "GBP",
                 Description = "Test"
-                }
+            }
         };
 
         _tableService.CreateInvoice(invoice).Returns(true);
@@ -78,7 +79,8 @@ public class InvoicePostEndpointTests
             Scheme = scheme,
             Status = status,
             CreatedBy = createdBy,
-            Header = new InvoiceHeader {
+            Header = new InvoiceHeader
+            {
                 Id = "123456789",
                 ClaimReference = "123456789",
                 ClaimReferenceNumber = "123456789",
@@ -86,7 +88,7 @@ public class InvoicePostEndpointTests
                 AgreementNumber = "123456789",
                 Currency = "GBP",
                 Description = "Test"
-                }
+            }
         };
 
         var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);

@@ -26,7 +26,8 @@ public class InvoiceGetEndpointTests
             Status = "Awaiting",
             CreatedBy = "test",
             UpdatedBy = "test",
-            Header = new InvoiceHeader {
+            Header = new InvoiceHeader
+            {
                 Id = "123456789",
                 ClaimReference = "123456789",
                 ClaimReferenceNumber = "123456789",
@@ -34,7 +35,7 @@ public class InvoiceGetEndpointTests
                 AgreementNumber = "123456789",
                 Currency = "GBP",
                 Description = "Test"
-                }
+            }
         };
 
         _tableService.GetInvoice(scheme, invoiceId)
