@@ -28,7 +28,15 @@ public class InvoicePutEndpointTests
             Status = "Awaiting",
             CreatedBy = "test",
             UpdatedBy = "test",
-            Header = new InvoiceHeader { Id = "123456789" }
+            Header = new InvoiceHeader {
+                Id = "123456789",
+                ClaimReference = "123456789",
+                ClaimReferenceNumber = "123456789",
+                FRN = "123456789",
+                AgreementNumber = "123456789",
+                Currency = "GBP",
+                Description = "Test"
+                }
         };
 
         _tableService.UpdateInvoice(invoice).Returns(true);
@@ -52,7 +60,15 @@ public class InvoicePutEndpointTests
             Status = "awaiting",
             CreatedBy = "test",
             UpdatedBy = "test",
-            Header = new InvoiceHeader { Id = "123456789" }
+            Header = new InvoiceHeader {
+                Id = "123456789",
+                ClaimReference = "123456789",
+                ClaimReferenceNumber = "123456789",
+                FRN = "123456789",
+                AgreementNumber = "123456789",
+                Currency = "GBP",
+                Description = "Test"
+                }
         };
 
         _tableService.UpdateInvoice(invoice).Returns(false);
