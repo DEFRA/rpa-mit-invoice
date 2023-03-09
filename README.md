@@ -18,7 +18,7 @@ The function app uses Azure Storage for Table and Queue.
 The function app requires:
 
 - Table name: `invoices`
-- Queue name: `invoice-generation`
+- Queue name: `payment`
 
 ## local.settings
 
