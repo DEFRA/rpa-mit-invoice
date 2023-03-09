@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Azure.Data.Tables;
+using Azure.Storage.Queues;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
@@ -62,7 +63,7 @@ public static class InvoiceEndpoints
         return Results.Created($"/invoice/{invoice.Scheme}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService, IValidator<Invoice> validator)
+    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService, IQueueService queueService, IValidator<Invoice> validator)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -78,15 +79,22 @@ public static class InvoiceEndpoints
             return Results.BadRequest();
         }
 
+        if (invoice.Status == InvoiceStatuses.Approved)
+        {
+            await queueService.CreateMessage(JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.Scheme }));
+        }
+
         return Results.Ok(invoice);
     }
 
     [ExcludeFromCodeCoverage]
-    public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection)
+    public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection, string queueName)
     {
         services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
         services.AddSingleton(_ => new TableServiceClient(storageConnection));
         services.AddScoped<ITableService, TableService>();
+        services.AddSingleton(_ => new QueueClient(storageConnection, queueName));
+        services.AddScoped<IQueueService, QueueService>();
         return services;
     }
 }

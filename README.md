@@ -2,19 +2,132 @@
 This repository contains the code for the Manual Invoice Template Invoice Api
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+
+## Azurite
+
+Follow the following guide to setup Azurite:
+
+- [Azurite emulator for local Azure Storage development](https://dev.azure.com/defragovuk/DEFRA-EST/_wiki/wikis/DEFRA-EST/7722/Azurite-emulator-for-local-Azure-Storage-development)
+
+- [Docker](https://dev.azure.com/defragovuk/DEFRA-EST/_wiki/wikis/DEFRA-EST/9601/Azurite-with-Docker)
+
+## Storage
+
+The function app uses Azure Storage for Table and Queue.
+
+The function app requires:
+
+- Table name: `invoices`
+- Queue name: `invoice-generation`
+
+## local.settings
+
+```
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Storage": {
+    "ConnectionString": "UseDevelopmentStorage=true",
+    "ContainerName": "invoices",
+    "TableName": "invoices"
+  },
+  "AllowedHosts": "*"
+}
+```
+
+## Endpoints
+
+`GET /invoice/{scheme}/{invoiceId}`
+
+### Response 200
+
+```
+{
+  "id": "123456789",
+  "scheme": "bps",
+  "status": "approved",
+  "createdBy": "me",
+  "updatedBy": null,
+  "header": {
+    "id": "123456789",
+    "claimReference": "123456789",
+    "claimReferenceNumber": "MIT123456",
+    "frn": "123456789",
+    "agreementNumber": "MIT987654321",
+    "currency": "gdp",
+    "description": "Test payload"
+  }
+}
+```
+
+`POST /invoice`
+
+### Payload Example
+
+```
+{
+  "id": "123456789",
+  "scheme": "bps",
+  "status": "awaiting",
+  "createdBy": "me",
+  "header": {
+    "id": "123456789",
+    "claimReference": "123456789",
+    "claimReferenceNumber": "MIT123456",
+    "frn": "123456789",
+    "agreementNumber": "MIT987654321",
+    "currency": "gdp",
+    "description": "Test payload"
+  }
+}
+```
+
+`PUT /invoice`
+
+### Payload Example
+
+```
+{
+  "id": "123456789",
+  "scheme": "bps",
+  "status": "approved",
+  "createdBy": "me",
+  "header": {
+    "id": "123456789",
+    "claimReference": "123456789",
+    "claimReferenceNumber": "MIT123456",
+    "frn": "123456789",
+    "agreementNumber": "MIT987654321",
+    "currency": "gdp",
+    "description": "Test payload"
+  }
+}
+```
+
+## Queue
+
+### Message Example
+
+```
+{
+  "id": "123456789",
+  "scheme": "bps"
+}
+```
 
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+To run the function:
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+`cd TEST.Function`
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+`func start`
+
+## Useful links
+
+- [gov Notify](https://www.notifications.service.gov.uk/using-notify/api-documentation)
+
+- [Use dependency injection in .NET Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-dependency-injection)

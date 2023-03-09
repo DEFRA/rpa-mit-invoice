@@ -13,6 +13,9 @@ public class InvoicePutEndpointTests
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
 
+    private readonly IQueueService _queueService =
+        Substitute.For<IQueueService>();
+
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
     [Fact]
@@ -42,7 +45,7 @@ public class InvoicePutEndpointTests
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -75,7 +78,7 @@ public class InvoicePutEndpointTests
 
         _tableService.UpdateInvoice(invoice).Returns(false);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
 
         result.GetBadRequestStatusCode().Should().Be(400);
     }
@@ -92,7 +95,7 @@ public class InvoicePutEndpointTests
             CreatedBy = createdBy
         };
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);
