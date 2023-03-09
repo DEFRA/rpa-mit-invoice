@@ -2,7 +2,7 @@ using Azure.Storage.Queues;
 
 namespace Invoices.Api.Services;
 
-public class QueueService: IQueueService
+public class QueueService : IQueueService
 {
     private readonly QueueClient _queueClient;
 
