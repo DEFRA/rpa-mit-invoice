@@ -24,10 +24,16 @@ public class InvoicePostEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "Awaiting",
-            CreatedBy = "test",
-            Header = new InvoiceHeader { Id = "123456789" }
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
+            {
+                new()
+                {
+                    Value = 123456789
+                }
+            }
         };
 
         _tableService.CreateInvoice(invoice).Returns(false);
@@ -46,18 +52,15 @@ public class InvoicePostEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "awaiting",
-            CreatedBy = "test",
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 
@@ -71,23 +74,20 @@ public class InvoicePostEndpointTests
 
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string createdBy, string errorKey)
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
     {
         var invoice = new Invoice
         {
             Id = id,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = status,
-            CreatedBy = createdBy,
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 

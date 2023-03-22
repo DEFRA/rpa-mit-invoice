@@ -22,19 +22,14 @@ public class InvoiceGetEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "Awaiting",
-            CreatedBy = "test",
-            UpdatedBy = "test",
-            Header = new InvoiceHeader
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 
@@ -44,8 +39,6 @@ public class InvoiceGetEndpointTests
                 PartitionKey = scheme,
                 RowKey = invoiceId,
                 Status = invoice.Status,
-                CreatedBy = invoice.CreatedBy,
-                UpdatedBy = invoice.UpdatedBy,
                 Data = System.Text.Json.JsonSerializer.Serialize(invoice),
                 ETag = Azure.ETag.All,
                 Timestamp = DateTimeOffset.UtcNow

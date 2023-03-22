@@ -27,25 +27,21 @@ public class InvoicePutEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "awaiting",
-            CreatedBy = "test",
-            UpdatedBy = "test",
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -62,25 +58,21 @@ public class InvoicePutEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "awaiting",
-            CreatedBy = "test",
-            UpdatedBy = "test",
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 
         _tableService.UpdateInvoice(invoice).Returns(false);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
 
         result.GetBadRequestStatusCode().Should().Be(400);
 
@@ -96,25 +88,21 @@ public class InvoicePutEndpointTests
         var invoice = new Invoice
         {
             Id = invoiceId,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = "approved",
-            CreatedBy = "test",
-            UpdatedBy = "test",
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -125,17 +113,17 @@ public class InvoicePutEndpointTests
 
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string createdBy, string errorKey)
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
     {
         var invoice = new Invoice
         {
             Id = id,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = status,
-            CreatedBy = createdBy
+            InvoiceType = "ap",
         };
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(id, invoice, _tableService, _queueService, _validator);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);
