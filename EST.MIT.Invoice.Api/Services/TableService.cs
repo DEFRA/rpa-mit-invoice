@@ -32,7 +32,7 @@ public class TableService : ITableService
 
     public async Task<bool> CreateInvoice(Invoice invoice)
     {
-        var invoiceEntity = await GetInvoice(scheme: invoice.Scheme, invoiceId: invoice.Id);
+        var invoiceEntity = await GetInvoice(scheme: invoice.SchemeType, invoiceId: invoice.Id);
 
         if (invoiceEntity is not null)
         {
@@ -41,7 +41,7 @@ public class TableService : ITableService
 
         invoiceEntity = new InvoiceEntity
         {
-            PartitionKey = invoice.Scheme,
+            PartitionKey = invoice.SchemeType,
             RowKey = invoice.Id,
             Status = invoice.Status,
             Data = JsonSerializer.Serialize(invoice)
@@ -53,7 +53,7 @@ public class TableService : ITableService
 
     public async Task<bool> UpdateInvoice(Invoice invoice)
     {
-        var invoiceEntity = await GetInvoice(invoice.Scheme, invoice.Id);
+        var invoiceEntity = await GetInvoice(invoice.SchemeType, invoice.Id);
 
         if (invoiceEntity is null)
         {

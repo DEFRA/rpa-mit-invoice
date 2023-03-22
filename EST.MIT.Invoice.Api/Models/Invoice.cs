@@ -1,24 +1,12 @@
-using System.Text.Json.Serialization;
-
 namespace Invoices.Api.Models;
 
 public class Invoice
 {
-    [JsonPropertyName("id")]
     public string Id { get; init; } = default!;
-
-    [JsonPropertyName("scheme")]
-    public string Scheme { get; init; } = default!;
-
-    [JsonPropertyName("status")]
+    public string InvoiceType { get; init; } = default!;
+    public string AccountType { get; init; } = default!;
+    public string Organisation { get; init; } = default!;
+    public string SchemeType { get; init; } = default!;
+    public List<InvoiceHeader> Headers { get; init; } = default!;
     public string Status { get; init; } = default!;
-
-    [JsonPropertyName("createdBy")]
-    public string CreatedBy { get; init; } = default!;
-
-    [JsonPropertyName("updatedBy")]
-    public string UpdatedBy { get; init; } = default!;
-
-    [JsonPropertyName("header")]
-    public InvoiceHeader Header { get; init; } = default!;
 }

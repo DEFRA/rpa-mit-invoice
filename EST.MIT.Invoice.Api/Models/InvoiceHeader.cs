@@ -1,21 +1,18 @@
-using System.Text.Json.Serialization;
-
 namespace Invoices.Api.Models;
 
 public class InvoiceHeader
 {
-    [JsonPropertyName("id")]
-    public string Id { get; init; } = default!;
-    [JsonPropertyName("claimReference")]
-    public string ClaimReference { get; init; } = default!;
-    [JsonPropertyName("claimReferenceNumber")]
-    public string ClaimReferenceNumber { get; init; } = default!;
-    [JsonPropertyName("frn")]
-    public string FRN { get; init; } = default!;
-    [JsonPropertyName("agreementNumber")]
+    public string PaymentRequestId { get; init; } = default!;
+    public int FRN { get; init; }
+    public string SourceSystem { get; init; } = default!;
+    public int MarketingYear { get; init; }
+    public string Ledger { get; init; } = default!;
+    public string DeliveryBody { get; init; } = default!;
+    public int PaymentRequestNumber { get; init; }
     public string AgreementNumber { get; init; } = default!;
-    [JsonPropertyName("currency")]
-    public string Currency { get; init; } = default!;
-    [JsonPropertyName("description")]
-    public string Description { get; init; } = default!;
+    public string ContractNumber { get; init; } = default!;
+    public int Value { get; init; }
+    public string DueDate { get; init; } = default!;
+    public List<InvoiceLine> InvoiceLines { get; init; } = default!;
+    public AppendixReferences AppendixReferences { get; init; } = default!;
 }

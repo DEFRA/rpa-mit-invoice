@@ -23,7 +23,7 @@ public static class InvoiceEndpoints
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateInvoice");
 
-        app.MapPut("/invoice", UpdateInvoice)
+        app.MapPut("/invoice/{invoiceId}", UpdateInvoice)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateInvoice");
@@ -60,10 +60,10 @@ public static class InvoiceEndpoints
             return Results.BadRequest();
         }
 
-        return Results.Created($"/invoice/{invoice.Scheme}/{invoice.Id}", invoice);
+        return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> UpdateInvoice(Invoice invoice, ITableService tableService, IQueueService queueService, IValidator<Invoice> validator)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ITableService tableService, IQueueService queueService, IValidator<Invoice> validator)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -81,7 +81,7 @@ public static class InvoiceEndpoints
 
         if (invoice.Status == InvoiceStatuses.Approved)
         {
-            await queueService.CreateMessage(JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.Scheme }));
+            await queueService.CreateMessage(JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType }));
         }
 
         return Results.Ok(invoice);
