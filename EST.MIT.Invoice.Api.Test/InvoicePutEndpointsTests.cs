@@ -24,14 +24,11 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
         var invoice = invoiceTestData;
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -42,14 +39,11 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
         var invoice = invoiceTestData;
 
         _tableService.UpdateInvoice(invoice).Returns(false);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
 
         result.GetBadRequestStatusCode().Should().Be(400);
 
