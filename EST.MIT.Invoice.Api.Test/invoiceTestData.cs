@@ -4,8 +4,10 @@ namespace Invoices.Api.Test;
 
 public static class InvoiceTestData
 {
-    public static Invoice CreateInvoice(string status = "awaiting") {
-        return new Invoice {
+    public static Invoice CreateInvoice(string status = "awaiting")
+    {
+        return new Invoice
+        {
             Id = "123456789",
             InvoiceType = "AP",
             AccountType = "AP",
