@@ -13,28 +13,14 @@ public class InvoicePostEndpointTests
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
 
+    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "Awaiting",
-            InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.CreateInvoice(invoice).Returns(false);
 
@@ -46,23 +32,7 @@ public class InvoicePostEndpointTests
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "awaiting",
-            InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.CreateInvoice(invoice).Returns(true);
 

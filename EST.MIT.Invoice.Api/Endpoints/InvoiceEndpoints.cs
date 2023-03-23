@@ -81,7 +81,8 @@ public static class InvoiceEndpoints
 
         if (invoice.Status == InvoiceStatuses.Approved)
         {
-            await queueService.CreateMessage(JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType }));
+            var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
+            await queueService.CreateMessage(message);
         }
 
         return Results.Ok(invoice);

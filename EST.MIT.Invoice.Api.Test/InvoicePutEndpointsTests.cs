@@ -5,6 +5,7 @@ using FluentAssertions;
 using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace Invoices.Api.Test;
 
@@ -18,26 +19,15 @@ public class InvoicePutEndpointTests
 
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
+    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "awaiting",
-            InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
@@ -55,20 +45,7 @@ public class InvoicePutEndpointTests
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "awaiting",
-            InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.UpdateInvoice(invoice).Returns(false);
 
@@ -82,32 +59,16 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenApproved()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "approved",
-            InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = InvoiceTestData.CreateInvoice("approved");
 
         _tableService.UpdateInvoice(invoice).Returns(true);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoiceId, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
 
-        var expectedMessage = $"{{\"id\":\"{invoiceId}\",\"scheme\":\"{scheme}\"}}";
+        var expectedMessage = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
         await _queueService.Received().CreateMessage(expectedMessage);
     }
 

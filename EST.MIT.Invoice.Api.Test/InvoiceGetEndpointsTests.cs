@@ -13,25 +13,15 @@ public class InvoiceGetEndpointTests
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
 
+    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
     [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            SchemeType = scheme,
-            Status = "Awaiting",
-            Headers = new List<InvoiceHeader>
-            {
-                new()
-                {
-                    Value = 123456789
-                }
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.GetInvoice(scheme, invoiceId)
             .Returns(new InvoiceEntity
