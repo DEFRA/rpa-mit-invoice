@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Azure.Data.Tables;
-using Azure.Storage.Queues;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
@@ -31,20 +29,19 @@ public static class InvoiceEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ITableService tableService)
+    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ICosmosService cosmosService)
     {
-        var invoiceResponse = await tableService.GetInvoice(scheme, invoiceId);
+        var invoiceResponse = await cosmosService.Get($"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'");
 
         if (invoiceResponse is null)
         {
             return Results.NotFound();
         }
 
-        var invoice = JsonSerializer.Deserialize<Invoice>(invoiceResponse.Data);
-        return Results.Ok(invoice);
+        return Results.Ok(invoiceResponse.FirstOrDefault());
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, ITableService tableService, IValidator<Invoice> validator)
+    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, ICosmosService cosmosService)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -53,17 +50,17 @@ public static class InvoiceEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceCreated = await tableService.CreateInvoice(invoice);
+        var invoiceCreated = await cosmosService.Create(invoice);
 
-        if (!invoiceCreated)
+        if (invoiceCreated is null)
         {
-            return Results.BadRequest();
+            return Results.NotFound();
         }
 
         return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ITableService tableService, IQueueService queueService, IValidator<Invoice> validator)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -72,9 +69,9 @@ public static class InvoiceEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await tableService.UpdateInvoice(invoice);
+        var invoiceUpdated = await cosmosService.Update(invoice);
 
-        if (!invoiceUpdated)
+        if (invoiceUpdated is null)
         {
             return Results.BadRequest();
         }
@@ -86,16 +83,5 @@ public static class InvoiceEndpoints
         }
 
         return Results.Ok(invoice);
-    }
-
-    [ExcludeFromCodeCoverage]
-    public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection, string queueName)
-    {
-        services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
-        services.AddSingleton(_ => new TableServiceClient(storageConnection));
-        services.AddScoped<ITableService, TableService>();
-        services.AddSingleton(_ => new QueueClient(storageConnection, queueName));
-        services.AddScoped<IQueueService, QueueService>();
-        return services;
     }
 }

@@ -14,6 +14,7 @@ public static class InvoiceTestData
             Organisation = "Test Org",
             SchemeType = "bps",
             Status = status,
+            CreatedBy = "Test User",
             Headers = new List<InvoiceHeader> {
                 new InvoiceHeader {
                     PaymentRequestId = "123456789",

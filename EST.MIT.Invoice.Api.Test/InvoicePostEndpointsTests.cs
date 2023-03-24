@@ -10,33 +10,21 @@ namespace Invoices.Api.Test;
 
 public class InvoicePostEndpointTests
 {
-    private readonly ITableService _tableService =
-        Substitute.For<ITableService>();
+    private readonly ICosmosService _cosmosService =
+        Substitute.For<ICosmosService>();
 
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
 
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
     [Fact]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
-    {
-        var invoice = invoiceTestData;
-
-        _tableService.CreateInvoice(invoice).Returns(false);
-
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
-
-        result.GetBadRequestStatusCode().Should().Be(400);
-    }
-
-    [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
         var invoice = invoiceTestData;
 
-        _tableService.CreateInvoice(invoice).Returns(true);
+        _cosmosService.Create(invoice).Returns(invoice);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
 
         result.GetCreatedStatusCode().Should().Be(201);
         result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -61,7 +49,7 @@ public class InvoicePostEndpointTests
             }
         };
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _tableService, _validator);
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

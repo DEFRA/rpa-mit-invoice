@@ -47,34 +47,44 @@ The function app requires:
 
 ```
 {
-    "Id": "00000000-0000-0000-0000-000000000000",
-    "InvoiceType": "",
-    "AccountType": "",
-    "Organisation": "",
-    "SchemeType": "",
-    "Headers": [{
-        "PaymentRequestId": "",
-        "FRN": 0,
-        "SourceSystem": "",
-        "MarketingYear": 0,
-        "Ledger": "",
-        "DeliveryBody": "RP00",
-        "PaymentRequestNumber": 0,
-        "AgreementNumber": "",
-        "ContractNumber": "",
-        "Value": 0,
-        "DueDate": "",
-        "InvoiceLines": [{
-            "Value": 0,
-            "Currency": "GBP",
-            "SchemeCode": "",
-            "Description": "",
-            "FundCode": ""
-        }],
-        "AppendixReferences": {
-            "ClaimReferenceNumber": ""
+    {
+  "id": "string",
+  "invoiceType": "string",
+  "accountType": "string",
+  "organisation": "string",
+  "schemeType": "string",
+  "headers": [
+    {
+      "paymentRequestId": "string",
+      "frn": 0,
+      "sourceSystem": "string",
+      "marketingYear": 0,
+      "ledger": "string",
+      "deliveryBody": "string",
+      "paymentRequestNumber": 0,
+      "agreementNumber": "string",
+      "contractNumber": "string",
+      "value": 0,
+      "dueDate": "string",
+      "invoiceLines": [
+        {
+          "value": 0,
+          "currency": "string",
+          "schemeCode": "string",
+          "description": "string",
+          "fundCode": "string"
         }
-    }]
+      ],
+      "appendixReferences": {
+        "claimReferenceNumber": "string"
+      }
+    }
+  ],
+  "status": "string",
+  "created": "2023-03-24T12:23:35.949Z",
+  "updated": "2023-03-24T12:23:35.949Z",
+  "createdBy": "string",
+  "updatedBy": "string"
 }
 ```
 

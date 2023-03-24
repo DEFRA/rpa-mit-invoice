@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 namespace Invoices.Api.Endpoints;
 
 [ExcludeFromCodeCoverage]
-public static class SwaggerEndpointDefinition
+public static class SwaggerDefinition
 {
     public static void SwaggerEndpoints(this WebApplication app)
     {
@@ -12,7 +12,7 @@ public static class SwaggerEndpointDefinition
         app.UseSwaggerUI();
     }
 
-    public static void SwaggerServices(this IServiceCollection services)
+    public static void AddSwaggerServices(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "ManualInvoiceTemplatesApi", Version = "v1", Description = "Invoice api for manual invoice templates" }));
