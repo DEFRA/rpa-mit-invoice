@@ -13,22 +13,14 @@ public class InvoicePostEndpointTests
     private readonly ITableService _tableService =
         Substitute.For<ITableService>();
 
+    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
 
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            Scheme = scheme,
-            Status = "Awaiting",
-            CreatedBy = "test",
-            Header = new InvoiceHeader { Id = "123456789" }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.CreateInvoice(invoice).Returns(false);
 
@@ -40,26 +32,7 @@ public class InvoicePostEndpointTests
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
-        const string scheme = "bps";
-        const string invoiceId = "123456789";
-
-        var invoice = new Invoice
-        {
-            Id = invoiceId,
-            Scheme = scheme,
-            Status = "awaiting",
-            CreatedBy = "test",
-            Header = new InvoiceHeader
-            {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
-            }
-        };
+        var invoice = invoiceTestData;
 
         _tableService.CreateInvoice(invoice).Returns(true);
 
@@ -71,23 +44,20 @@ public class InvoicePostEndpointTests
 
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string createdBy, string errorKey)
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
     {
         var invoice = new Invoice
         {
             Id = id,
-            Scheme = scheme,
+            SchemeType = scheme,
             Status = status,
-            CreatedBy = createdBy,
-            Header = new InvoiceHeader
+            InvoiceType = "ap",
+            Headers = new List<InvoiceHeader>
             {
-                Id = "123456789",
-                ClaimReference = "123456789",
-                ClaimReferenceNumber = "123456789",
-                FRN = "123456789",
-                AgreementNumber = "123456789",
-                Currency = "GBP",
-                Description = "Test"
+                new()
+                {
+                    Value = 123456789
+                }
             }
         };
 

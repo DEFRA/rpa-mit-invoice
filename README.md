@@ -47,20 +47,34 @@ The function app requires:
 
 ```
 {
-  "id": "123456789",
-  "scheme": "bps",
-  "status": "approved",
-  "createdBy": "me",
-  "updatedBy": null,
-  "header": {
-    "id": "123456789",
-    "claimReference": "123456789",
-    "claimReferenceNumber": "MIT123456",
-    "frn": "123456789",
-    "agreementNumber": "MIT987654321",
-    "currency": "gdp",
-    "description": "Test payload"
-  }
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "InvoiceType": "",
+    "AccountType": "",
+    "Organisation": "",
+    "SchemeType": "",
+    "Headers": [{
+        "PaymentRequestId": "",
+        "FRN": 0,
+        "SourceSystem": "",
+        "MarketingYear": 0,
+        "Ledger": "",
+        "DeliveryBody": "RP00",
+        "PaymentRequestNumber": 0,
+        "AgreementNumber": "",
+        "ContractNumber": "",
+        "Value": 0,
+        "DueDate": "",
+        "InvoiceLines": [{
+            "Value": 0,
+            "Currency": "GBP",
+            "SchemeCode": "",
+            "Description": "",
+            "FundCode": ""
+        }],
+        "AppendixReferences": {
+            "ClaimReferenceNumber": ""
+        }
+    }]
 }
 ```
 
@@ -70,41 +84,71 @@ The function app requires:
 
 ```
 {
-  "id": "123456789",
-  "scheme": "bps",
-  "status": "awaiting",
-  "createdBy": "me",
-  "header": {
-    "id": "123456789",
-    "claimReference": "123456789",
-    "claimReferenceNumber": "MIT123456",
-    "frn": "123456789",
-    "agreementNumber": "MIT987654321",
-    "currency": "gdp",
-    "description": "Test payload"
-  }
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "InvoiceType": "",
+    "AccountType": "",
+    "Organisation": "",
+    "SchemeType": "",
+    "Headers": [{
+        "PaymentRequestId": "",
+        "FRN": 0,
+        "SourceSystem": "",
+        "MarketingYear": 0,
+        "Ledger": "",
+        "DeliveryBody": "RP00",
+        "PaymentRequestNumber": 0,
+        "AgreementNumber": "",
+        "ContractNumber": "",
+        "Value": 0,
+        "DueDate": "",
+        "InvoiceLines": [{
+            "Value": 0,
+            "Currency": "GBP",
+            "SchemeCode": "",
+            "Description": "",
+            "FundCode": ""
+        }],
+        "AppendixReferences": {
+            "ClaimReferenceNumber": ""
+        }
+    }]
 }
 ```
 
-`PUT /invoice`
+`PUT /invoice/{invoiceId}`
 
 ### Payload Example
 
 ```
 {
-  "id": "123456789",
-  "scheme": "bps",
-  "status": "approved",
-  "createdBy": "me",
-  "header": {
-    "id": "123456789",
-    "claimReference": "123456789",
-    "claimReferenceNumber": "MIT123456",
-    "frn": "123456789",
-    "agreementNumber": "MIT987654321",
-    "currency": "gdp",
-    "description": "Test payload"
-  }
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "InvoiceType": "",
+    "AccountType": "",
+    "Organisation": "",
+    "SchemeType": "",
+    "Headers": [{
+        "PaymentRequestId": "",
+        "FRN": 0,
+        "SourceSystem": "",
+        "MarketingYear": 0,
+        "Ledger": "",
+        "DeliveryBody": "RP00",
+        "PaymentRequestNumber": 0,
+        "AgreementNumber": "",
+        "ContractNumber": "",
+        "Value": 0,
+        "DueDate": "",
+        "InvoiceLines": [{
+            "Value": 0,
+            "Currency": "GBP",
+            "SchemeCode": "",
+            "Description": "",
+            "FundCode": ""
+        }],
+        "AppendixReferences": {
+            "ClaimReferenceNumber": ""
+        }
+    }]
 }
 ```
 
