@@ -3,6 +3,10 @@ This repository contains the code for the Manual Invoice Template Invoice Api
 
 # Getting Started
 
+## CosmosDb
+
+- [Install and use the Azure Cosmos DB Emulator for local development and testing](https://learn.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
+
 ## Azurite
 
 Follow the following guide to setup Azurite:
@@ -32,12 +36,24 @@ The function app requires:
   },
   "Storage": {
     "ConnectionString": "UseDevelopmentStorage=true",
-    "ContainerName": "invoices",
-    "TableName": "invoices"
+    "QueueName": "payment"
+  },
+  ,
+  "AzureCosmosDbSettings": {
+    "URL": "https://localhost:8081/",
+    "PrimaryKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+    "DatabaseName": "Manual-Invoice-Template",
+    "ContainerName": "Invoice"
   },
   "AllowedHosts": "*"
 }
 ```
+
+## CosmosDb
+
+Database Name: `Manual-Invoice-Template`
+Container Id: `Invoice`
+PartitionKey: `/schemeType`
 
 ## Endpoints
 

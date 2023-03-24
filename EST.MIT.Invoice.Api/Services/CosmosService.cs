@@ -1,4 +1,6 @@
 using Invoices.Api.Models;
+using Invoices.Api.Services.Models;
+using Invoices.Api.Util;
 using Microsoft.Azure.Cosmos;
 
 namespace Invoices.Api.Services;
@@ -13,25 +15,29 @@ public class CosmosService : ICosmosService
 
     public async Task<List<Invoice>> Get(string sqlCosmosQuery)
     {
-        var query = _container.GetItemQueryIterator<Invoice>(new QueryDefinition(sqlCosmosQuery));
+        var query = _container.GetItemQueryIterator<InvoiceEntity>(new QueryDefinition(sqlCosmosQuery));
 
-        var result = new List<Invoice>();
+        var result = new List<InvoiceEntity>();
         while (query.HasMoreResults)
         {
             var response = await query.ReadNextAsync();
             result.AddRange(response);
         }
 
-        return result;
+        return InvoiceMapper.MapToInvoice(result);
     }
 
     public async Task<Invoice> Create(Invoice invoice)
     {
-        return await _container.CreateItemAsync<Invoice>(invoice, new PartitionKey(invoice.SchemeType));
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        await _container.CreateItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoiceEntity.SchemeType));
+        return invoice;
     }
 
     public async Task<Invoice> Update(Invoice invoice)
     {
-        return await _container.UpsertItemAsync<Invoice>(invoice, new PartitionKey(invoice.SchemeType));
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        await _container.UpsertItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoice.SchemeType));
+        return invoice;
     }
 }
