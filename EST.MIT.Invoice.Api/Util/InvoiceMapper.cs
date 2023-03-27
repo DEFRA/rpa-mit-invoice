@@ -28,7 +28,8 @@ public static class InvoiceMapper
 
         foreach (var invoiceEntity in invoiceEntites)
         {
-            if(invoiceEntity.Data != null) {
+            if (invoiceEntity.Data != null)
+            {
                 var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceEntity.Data);
                 invoices.Add(invoice!);
             }

@@ -32,7 +32,7 @@ public class CosmosServiceTests
         _cosmosService = new CosmosService(_mockCosmosClient.Object, "TestDatabase", "TestContainer");
     }
 
-     [Fact]
+    [Fact]
     public async Task Get_ReturnsInvoices()
     {
         const string sqlCosmosQuery = "SELECT * FROM c";
@@ -44,7 +44,7 @@ public class CosmosServiceTests
         };
 
         var feedResponseMock = new Mock<FeedResponse<InvoiceEntity>>();
-            feedResponseMock.Setup(x => x.GetEnumerator()).Returns(invoiceEntities.GetEnumerator());
+        feedResponseMock.Setup(x => x.GetEnumerator()).Returns(invoiceEntities.GetEnumerator());
 
         var mockFeedIterator = new Mock<FeedIterator<InvoiceEntity>>();
         mockFeedIterator.Setup(f => f.HasMoreResults).Returns(true);
