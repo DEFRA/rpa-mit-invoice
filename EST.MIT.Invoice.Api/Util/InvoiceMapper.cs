@@ -18,7 +18,7 @@ public static class InvoiceMapper
             CreatedBy = invoice.CreatedBy,
             UpdatedBy = invoice.UpdatedBy,
             Created = invoice.Created.ToLongDateString(),
-            Updated = invoice.Updated?.ToLongDateString()
+            Updated = invoice.Updated?.ToLongDateString() ?? string.Empty
         };
     }
 
@@ -28,8 +28,10 @@ public static class InvoiceMapper
 
         foreach (var invoiceEntity in invoiceEntites)
         {
-            var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceEntity.Data);
-            invoices.Add(invoice!);
+            if(invoiceEntity.Data != null) {
+                var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceEntity.Data);
+                invoices.Add(invoice!);
+            }
         }
 
         return invoices;
