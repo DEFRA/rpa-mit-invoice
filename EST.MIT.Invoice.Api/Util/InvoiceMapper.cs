@@ -26,7 +26,7 @@ public static class InvoiceMapper
     {
         var invoices = new List<Invoice>();
 
-        foreach (var invoiceData in invoiceEntites.Select(x => x.Data)))
+        foreach (var invoiceData in invoiceEntites.Select(x => x.Data))
         {
             var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceData);
             invoices.Add(invoice!);
