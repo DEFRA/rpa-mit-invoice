@@ -6,7 +6,8 @@ namespace Invoices.Api.Util;
 
 public static class InvoiceMapper
 {
-    public static InvoiceEntity MapToInvoiceEntity(Invoice invoice){
+    public static InvoiceEntity MapToInvoiceEntity(Invoice invoice)
+    {
         return new InvoiceEntity()
         {
             SchemeType = invoice.SchemeType,
@@ -21,7 +22,8 @@ public static class InvoiceMapper
         };
     }
 
-    public static List<Invoice> MapToInvoice(List<InvoiceEntity> invoiceEntites){
+    public static List<Invoice> MapToInvoice(List<InvoiceEntity> invoiceEntites)
+    {
         var invoices = new List<Invoice>();
 
         foreach (var invoiceEntity in invoiceEntites)
