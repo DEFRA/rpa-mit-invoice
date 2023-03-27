@@ -26,13 +26,10 @@ public static class InvoiceMapper
     {
         var invoices = new List<Invoice>();
 
-        foreach (var invoiceEntity in invoiceEntites)
+        foreach (var invoiceData in invoiceEntites.Select(x => x.Data)))
         {
-            if (invoiceEntity.Data != null)
-            {
-                var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceEntity.Data);
-                invoices.Add(invoice!);
-            }
+            var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceData);
+            invoices.Add(invoice!);
         }
 
         return invoices;
