@@ -37,6 +37,18 @@ public class InvoicePutEndpointTests
     }
 
     [Fact]
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenCreateReturnsNull()
+    {
+        var invoice = invoiceTestData;
+
+        _cosmosService.Update(invoice).Returns((Invoice)null);
+
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator);
+
+        result.GetCreatedStatusCode().Should().Be(400);
+    }
+
+    [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenApproved()
     {
         var invoice = InvoiceTestData.CreateInvoice("approved");

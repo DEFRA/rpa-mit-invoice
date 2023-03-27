@@ -30,6 +30,18 @@ public class InvoicePostEndpointTests
         result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
     }
 
+    [Fact]
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenCreateReturnsNull()
+    {
+        var invoice = invoiceTestData;
+
+        _cosmosService.Create(invoice).Returns((Invoice)null);
+
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
+
+        result.GetCreatedStatusCode().Should().Be(404);
+    }
+
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
