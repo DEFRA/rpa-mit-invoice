@@ -19,7 +19,7 @@ public class Invoice
     [JsonProperty("status")]
     public string Status { get; init; } = default!;
     [JsonProperty("reference")]
-     public string Reference { get; init; } = default!;
+    public string Reference { get; init; } = default!;
     [JsonProperty("created")]
     public DateTime Created { get; init; } = DateTime.UtcNow;
     [JsonProperty("updated")]
