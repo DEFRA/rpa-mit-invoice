@@ -18,6 +18,8 @@ public class Invoice
     public List<InvoiceHeader> Headers { get; init; } = default!;
     [JsonProperty("status")]
     public string Status { get; init; } = default!;
+    [JsonProperty("reference")]
+     public string Reference { get; init; } = default!;
     [JsonProperty("created")]
     public DateTime Created { get; init; } = DateTime.UtcNow;
     [JsonProperty("updated")]

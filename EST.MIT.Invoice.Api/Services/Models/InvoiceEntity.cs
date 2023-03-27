@@ -11,6 +11,8 @@ public class InvoiceEntity
     public string Id { get; set; } = default!;
     [JsonProperty("data")]
     public string Data { get; set; } = default!;
+    [JsonProperty("reference")]
+    public string Reference { get; set; } = default!;
     [JsonProperty("value")]
     public decimal Value { get; set; } = default!;
     [JsonProperty("status")]
