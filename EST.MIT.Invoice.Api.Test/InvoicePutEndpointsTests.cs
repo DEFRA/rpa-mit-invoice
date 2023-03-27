@@ -6,6 +6,7 @@ using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using NSubstitute.ReturnsExtensions;
 
 namespace Invoices.Api.Test;
 
@@ -41,7 +42,7 @@ public class InvoicePutEndpointTests
     {
         var invoice = invoiceTestData;
 
-        _cosmosService.Update(invoice).Returns((Invoice)null);
+        _cosmosService.Update(invoice).ReturnsNull();
 
         var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator);
 

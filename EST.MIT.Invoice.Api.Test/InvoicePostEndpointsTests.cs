@@ -5,6 +5,7 @@ using FluentAssertions;
 using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using NSubstitute.ReturnsExtensions;
 
 namespace Invoices.Api.Test;
 
@@ -35,7 +36,7 @@ public class InvoicePostEndpointTests
     {
         var invoice = invoiceTestData;
 
-        _cosmosService.Create(invoice).Returns((Invoice)null);
+        _cosmosService.Create(invoice).ReturnsNull();
 
         var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
 
