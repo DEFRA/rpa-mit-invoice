@@ -6,13 +6,14 @@ using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using NSubstitute.ReturnsExtensions;
 
 namespace Invoices.Api.Test;
 
 public class InvoicePutEndpointTests
 {
-    private readonly ITableService _tableService =
-        Substitute.For<ITableService>();
+    private readonly ICosmosService _cosmosService =
+        Substitute.For<ICosmosService>();
 
     private readonly IQueueService _queueService =
         Substitute.For<IQueueService>();
@@ -26,9 +27,9 @@ public class InvoicePutEndpointTests
     {
         var invoice = invoiceTestData;
 
-        _tableService.UpdateInvoice(invoice).Returns(true);
+        _cosmosService.Update(invoice).Returns(invoice);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -37,17 +38,15 @@ public class InvoicePutEndpointTests
     }
 
     [Fact]
-    public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
+    public async Task PostInvoicebySchemeAndInvoiceId_WhenCreateReturnsNull()
     {
         var invoice = invoiceTestData;
 
-        _tableService.UpdateInvoice(invoice).Returns(false);
+        _cosmosService.Update(invoice).ReturnsNull();
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator);
 
-        result.GetBadRequestStatusCode().Should().Be(400);
-
-        await _queueService.DidNotReceive().CreateMessage("");
+        result.GetCreatedStatusCode().Should().Be(400);
     }
 
     [Fact]
@@ -55,9 +54,9 @@ public class InvoicePutEndpointTests
     {
         var invoice = InvoiceTestData.CreateInvoice("approved");
 
-        _tableService.UpdateInvoice(invoice).Returns(true);
+        _cosmosService.Update(invoice).Returns(invoice);
 
-        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -78,7 +77,7 @@ public class InvoicePutEndpointTests
             InvoiceType = "ap",
         };
 
-        var result = await InvoiceEndpoints.UpdateInvoice(id, invoice, _tableService, _queueService, _validator);
+        var result = await InvoiceEndpoints.UpdateInvoice(id, invoice, _cosmosService, _queueService, _validator);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);
