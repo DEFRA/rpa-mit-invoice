@@ -18,13 +18,16 @@ public class EventQueueService : IEventQueueService
 
     public async Task CreateMessage(string id, string status, string action, string message, Invoice? invoice = null)
     {
-        var eventRequest = new Event() {
+        var eventRequest = new Event()
+        {
             Name = "Invoice",
-            Properties = new EventProperties() {
+            Properties = new EventProperties()
+            {
                 Id = id,
                 Status = status,
                 Checkpoint = "Invoice Api",
-                Action = new EventAction() {
+                Action = new EventAction()
+                {
                     Type = action,
                     Message = message,
                     Timestamp = DateTime.UtcNow,
