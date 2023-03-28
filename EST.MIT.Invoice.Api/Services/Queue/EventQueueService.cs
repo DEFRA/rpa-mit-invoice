@@ -35,8 +35,6 @@ public class EventQueueService : IEventQueueService
             }
         };
 
-        var testMessage = JsonSerializer.Serialize(eventRequest);
-
         await _queueClient.SendMessageAsync(JsonSerializer.Serialize(eventRequest));
     }
 }
