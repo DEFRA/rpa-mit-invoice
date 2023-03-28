@@ -26,6 +26,10 @@ public static class InvoiceEndpoints
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateInvoice");
 
+        app.MapDelete("/invoice/{scheme}/{invoiceId}", DeleteInvoice)
+            .Produces(StatusCodes.Status200OK)
+            .WithName("DeleteInvoice");
+
         return app;
     }
 
@@ -83,5 +87,11 @@ public static class InvoiceEndpoints
         }
 
         return Results.Ok(invoice);
+    }
+
+    public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService)
+    {
+        await cosmosService.Delete(id, scheme);
+        return Results.Ok();
     }
 }
