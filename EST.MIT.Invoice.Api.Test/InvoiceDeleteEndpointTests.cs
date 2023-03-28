@@ -26,7 +26,7 @@ public class InvoiceDeleteEndpointTests
         _cosmosService.Delete(id, scheme).Returns(id);
         _eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice deleted").Returns(Task.CompletedTask);
         var result = await InvoiceEndpoints.DeleteInvoice(id, scheme, _cosmosService, _eventQueueService);
-        
+
         result.GetCreatedStatusCode().Should().Be(200);
     }
 }
