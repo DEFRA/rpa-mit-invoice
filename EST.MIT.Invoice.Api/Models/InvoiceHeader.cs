@@ -12,8 +12,6 @@ public class InvoiceHeader
     public string SourceSystem { get; init; } = default!;
     [JsonProperty("marketingYear")]
     public int MarketingYear { get; init; }
-    [JsonProperty("ledger")]
-    public string Ledger { get; init; } = default!;
     [JsonProperty("deliveryBody")]
     public string DeliveryBody { get; init; } = default!;
     [JsonProperty("paymentRequestNumber")]
@@ -23,7 +21,7 @@ public class InvoiceHeader
     [JsonProperty("contractNumber")]
     public string ContractNumber { get; init; } = default!;
     [JsonProperty("value")]
-    public int Value { get; init; }
+    public decimal Value { get; init; }
     [JsonProperty("dueDate")]
     public string DueDate { get; init; } = default!;
     [JsonProperty("invoiceLines")]

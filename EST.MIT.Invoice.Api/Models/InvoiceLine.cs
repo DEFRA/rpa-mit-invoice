@@ -5,7 +5,7 @@ namespace Invoices.Api.Models;
 public class InvoiceLine
 {
     [JsonProperty("value")]
-    public int Value { get; set; }
+    public decimal Value { get; set; }
     [JsonProperty("currency")]
     public string Currency { get; set; } = null!;
     [JsonProperty("schemeCode")]

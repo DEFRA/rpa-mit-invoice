@@ -13,7 +13,7 @@ public static class InvoiceMapper
             SchemeType = invoice.SchemeType,
             Id = invoice.Id,
             Data = JsonConvert.SerializeObject(invoice),
-            Value = invoice.Headers.Sum(x => x.Value),
+            Value = invoice.PaymentRequests.Sum(x => x.Value),
             Status = invoice.Status,
             CreatedBy = invoice.CreatedBy,
             UpdatedBy = invoice.UpdatedBy,
