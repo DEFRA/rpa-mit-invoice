@@ -41,8 +41,9 @@ public class CosmosService : ICosmosService
         return invoice;
     }
 
-    public async Task Delete(string id, string scheme)
+    public async Task<string> Delete(string id, string scheme)
     {
         await _container.DeleteItemAsync<InvoiceEntity>(id, new PartitionKey(scheme));
+        return id;
     }
 }

@@ -6,7 +6,6 @@ using Invoices.Api.Services.Models;
 
 namespace Invoices.Api.Services;
 
-[ExcludeFromCodeCoverage]
 public class EventQueueService : IEventQueueService
 {
     private readonly QueueClient _queueClient;
@@ -35,6 +34,8 @@ public class EventQueueService : IEventQueueService
                 }
             }
         };
+
+        var testMessage = JsonSerializer.Serialize(eventRequest);
 
         await _queueClient.SendMessageAsync(JsonSerializer.Serialize(eventRequest));
     }

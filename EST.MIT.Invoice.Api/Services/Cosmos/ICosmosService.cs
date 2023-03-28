@@ -7,5 +7,5 @@ public interface ICosmosService
     Task<List<Invoice>> Get(string sqlCosmosQuery);
     Task<Invoice> Create(Invoice invoice);
     Task<Invoice> Update(Invoice invoice);
-    Task Delete(string id, string scheme);
+    Task<string> Delete(string id, string scheme);
 }

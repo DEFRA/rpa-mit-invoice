@@ -12,6 +12,7 @@ public static class InvoiceTestData
             InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
+            Reference = "123456789",
             SchemeType = "bps",
             Status = status,
             CreatedBy = "Test User",
