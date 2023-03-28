@@ -13,11 +13,9 @@ namespace Invoices.Api.Endpoints;
 [ExcludeFromCodeCoverage]
 public static class InvoiceDefinition
 {
-    public static IServiceCollection AddInvoiceServices(this IServiceCollection services, string storageConnection, string queueName)
+    public static IServiceCollection AddInvoiceServices(this IServiceCollection services)
     {
         services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
-        services.AddSingleton(_ => new QueueClient(storageConnection, queueName));
-        services.AddScoped<IQueueService, QueueService>();
         return services;
     }
 }

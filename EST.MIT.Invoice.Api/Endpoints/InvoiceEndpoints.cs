@@ -45,12 +45,13 @@ public static class InvoiceEndpoints
         return Results.Ok(invoiceResponse.FirstOrDefault());
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, ICosmosService cosmosService)
+    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
         if (!validationResult.IsValid)
         {
+            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-falied", "Invoice validation failed", invoice);
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
@@ -58,13 +59,16 @@ public static class InvoiceEndpoints
 
         if (invoiceCreated is null)
         {
+            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-falied", "Invoice creation failed", invoice);
             return Results.NotFound();
         }
+
+        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created", invoice);
 
         return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -77,21 +81,26 @@ public static class InvoiceEndpoints
 
         if (invoiceUpdated is null)
         {
+            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update-falied", "Invoice update failed", invoice);
             return Results.BadRequest();
         }
+
+        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update", "Invoice updated", invoice);
 
         if (invoice.Status == InvoiceStatuses.Approved)
         {
             var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
             await queueService.CreateMessage(message);
+            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-payment-request-sent", "Invoice payment request sent");
         }
 
         return Results.Ok(invoice);
     }
 
-    public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService)
+    public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService, IEventQueueService eventQueueService)
     {
         await cosmosService.Delete(id, scheme);
+        await eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice updated");
         return Results.Ok();
     }
 }
