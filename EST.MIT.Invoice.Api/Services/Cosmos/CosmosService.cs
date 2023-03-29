@@ -40,4 +40,10 @@ public class CosmosService : ICosmosService
         await _container.UpsertItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoice.SchemeType));
         return invoice;
     }
+
+    public async Task<string> Delete(string id, string scheme)
+    {
+        await _container.DeleteItemAsync<InvoiceEntity>(id, new PartitionKey(scheme));
+        return id;
+    }
 }

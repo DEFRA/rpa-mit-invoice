@@ -14,6 +14,9 @@ public class InvoicePostEndpointTests
     private readonly ICosmosService _cosmosService =
         Substitute.For<ICosmosService>();
 
+    private readonly IEventQueueService _eventQueueService =
+        Substitute.For<IEventQueueService>();
+
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
 
     private readonly IValidator<Invoice> _validator = new InvoiceValidator();
@@ -24,8 +27,9 @@ public class InvoicePostEndpointTests
         var invoice = invoiceTestData;
 
         _cosmosService.Create(invoice).Returns(invoice);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(201);
         result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -37,8 +41,9 @@ public class InvoicePostEndpointTests
         var invoice = invoiceTestData;
 
         _cosmosService.Create(invoice).ReturnsNull();
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(404);
     }
@@ -53,7 +58,7 @@ public class InvoicePostEndpointTests
             SchemeType = scheme,
             Status = status,
             InvoiceType = "ap",
-            Headers = new List<InvoiceHeader>
+            PaymentRequests = new List<InvoiceHeader>
             {
                 new()
                 {
@@ -62,7 +67,8 @@ public class InvoicePostEndpointTests
             }
         };
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
+        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

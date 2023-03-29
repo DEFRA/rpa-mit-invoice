@@ -4,11 +4,11 @@ using Azure.Storage.Queues;
 namespace Invoices.Api.Services;
 
 [ExcludeFromCodeCoverage]
-public class QueueService : IQueueService
+public class PaymentQueueService : IQueueService
 {
     private readonly QueueClient _queueClient;
 
-    public QueueService(QueueClient queueClient)
+    public PaymentQueueService(QueueClient queueClient)
     {
         _queueClient = queueClient;
     }

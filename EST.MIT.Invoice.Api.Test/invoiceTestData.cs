@@ -12,16 +12,16 @@ public static class InvoiceTestData
             InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
+            Reference = "123456789",
             SchemeType = "bps",
             Status = status,
             CreatedBy = "Test User",
-            Headers = new List<InvoiceHeader> {
+            PaymentRequests = new List<InvoiceHeader> {
                 new InvoiceHeader {
                     PaymentRequestId = "123456789",
                     FRN = 123456789,
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    Ledger = "AP",
                     DeliveryBody = "Test Org",
                     PaymentRequestNumber = 123456789,
                     AgreementNumber = "123456789",

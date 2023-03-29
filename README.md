@@ -63,44 +63,43 @@ PartitionKey: `/schemeType`
 
 ```
 {
+  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
+  "invoiceType": "AP",
+  "accountType": "",
+  "organisation": "",
+  "schemeType": "bps",
+  "paymentRequests": [
     {
-  "id": "string",
-  "invoiceType": "string",
-  "accountType": "string",
-  "organisation": "string",
-  "schemeType": "string",
-  "headers": [
-    {
-      "paymentRequestId": "string",
-      "frn": 0,
-      "sourceSystem": "string",
+      "paymentRequestId": "9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
+      "frn": 1234567890,
+      "sourceSystem": "Manual",
       "marketingYear": 0,
-      "ledger": "string",
-      "deliveryBody": "string",
+      "deliveryBody": "RP00",
       "paymentRequestNumber": 0,
-      "agreementNumber": "string",
-      "contractNumber": "string",
+      "agreementNumber": "",
+      "contractNumber": "",
       "value": 0,
-      "dueDate": "string",
+      "dueDate": "",
       "invoiceLines": [
         {
           "value": 0,
-          "currency": "string",
-          "schemeCode": "string",
-          "description": "string",
-          "fundCode": "string"
+          "currency": "GBP",
+          "schemeCode": "",
+          "description": "",
+          "fundCode": ""
         }
       ],
       "appendixReferences": {
-        "claimReferenceNumber": "string"
+        "claimReferenceNumber": null
       }
     }
   ],
-  "status": "string",
-  "created": "2023-03-24T12:23:35.949Z",
-  "updated": "2023-03-24T12:23:35.949Z",
-  "createdBy": "string",
-  "updatedBy": "string"
+  "status": "awaiting",
+  "reference": null,
+  "created": "2023-03-28T01:00:00+01:00",
+  "updated": "2023-03-28T01:00:00+01:00",
+  "createdBy": "",
+  "updatedBy": ""
 }
 ```
 
@@ -110,34 +109,42 @@ PartitionKey: `/schemeType`
 
 ```
 {
-    "Id": "00000000-0000-0000-0000-000000000000",
-    "InvoiceType": "",
-    "AccountType": "",
-    "Organisation": "",
-    "SchemeType": "",
-    "Headers": [{
-        "PaymentRequestId": "",
-        "FRN": 0,
-        "SourceSystem": "",
-        "MarketingYear": 0,
-        "Ledger": "",
-        "DeliveryBody": "RP00",
-        "PaymentRequestNumber": 0,
-        "AgreementNumber": "",
-        "ContractNumber": "",
-        "Value": 0,
-        "DueDate": "",
-        "InvoiceLines": [{
-            "Value": 0,
-            "Currency": "GBP",
-            "SchemeCode": "",
-            "Description": "",
-            "FundCode": ""
-        }],
-        "AppendixReferences": {
-            "ClaimReferenceNumber": ""
-        }
-    }]
+   "Id":"e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
+   "InvoiceType":"AP",
+   "AccountType":"",
+   "Organisation":"",
+   "SchemeType":"bps",
+   "PaymentRequests":[
+      {
+         "PaymentRequestId":"9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
+         "FRN":1234567890,
+         "SourceSystem":"Manual",
+         "MarketingYear":0,
+         "DeliveryBody":"RP00",
+         "PaymentRequestNumber":0,
+         "AgreementNumber":"",
+         "ContractNumber":"",
+         "Value":0.0,
+         "DueDate":"",
+         "InvoiceLines":[
+            {
+               "Value":0,
+               "Currency":"GBP",
+               "SchemeCode":"",
+               "Description":"",
+               "FundCode":""
+            }
+         ],
+         "AppendixReferences":{
+            "ClaimReference":""
+         }
+      }
+   ],
+   "status":"awaiting",
+   "created":"2023-03-28T00:00:00+00:00",
+   "updated":"2023-03-28T00:00:00+00:00",
+   "createdBy":"",
+   "updatedBy":""
 }
 ```
 
@@ -147,34 +154,43 @@ PartitionKey: `/schemeType`
 
 ```
 {
-    "Id": "00000000-0000-0000-0000-000000000000",
-    "InvoiceType": "",
-    "AccountType": "",
-    "Organisation": "",
-    "SchemeType": "",
-    "Headers": [{
-        "PaymentRequestId": "",
-        "FRN": 0,
-        "SourceSystem": "",
-        "MarketingYear": 0,
-        "Ledger": "",
-        "DeliveryBody": "RP00",
-        "PaymentRequestNumber": 0,
-        "AgreementNumber": "",
-        "ContractNumber": "",
-        "Value": 0,
-        "DueDate": "",
-        "InvoiceLines": [{
-            "Value": 0,
-            "Currency": "GBP",
-            "SchemeCode": "",
-            "Description": "",
-            "FundCode": ""
-        }],
-        "AppendixReferences": {
-            "ClaimReferenceNumber": ""
+  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
+  "invoiceType": "AP",
+  "accountType": "",
+  "organisation": "",
+  "schemeType": "bps",
+  "paymentRequests": [
+    {
+      "paymentRequestId": "9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
+      "frn": 1234567890,
+      "sourceSystem": "Manual",
+      "marketingYear": 0,
+      "deliveryBody": "RP00",
+      "paymentRequestNumber": 0,
+      "agreementNumber": "",
+      "contractNumber": "",
+      "value": 0,
+      "dueDate": "",
+      "invoiceLines": [
+        {
+          "value": 0,
+          "currency": "GBP",
+          "schemeCode": "",
+          "description": "",
+          "fundCode": ""
         }
-    }]
+      ],
+      "appendixReferences": {
+        "claimReferenceNumber": null
+      }
+    }
+  ],
+  "status": "awaiting",
+  "reference": null,
+  "created": "2023-03-28T01:00:00+01:00",
+  "updated": "2023-03-28T01:00:00+01:00",
+  "createdBy": "",
+  "updatedBy": ""
 }
 ```
 

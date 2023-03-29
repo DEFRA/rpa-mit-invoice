@@ -14,8 +14,8 @@ public class Invoice
     public string Organisation { get; init; } = default!;
     [JsonProperty("schemeType")]
     public string SchemeType { get; init; } = default!;
-    [JsonProperty("headers")]
-    public List<InvoiceHeader> Headers { get; init; } = default!;
+    [JsonProperty("paymentRequests")]
+    public List<InvoiceHeader> PaymentRequests { get; init; } = default!;
     [JsonProperty("status")]
     public string Status { get; init; } = default!;
     [JsonProperty("reference")]
