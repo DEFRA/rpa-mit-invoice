@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using Azure.Storage.Queues;
 using Invoices.Api.Models;
@@ -35,6 +36,7 @@ public class EventQueueService : IEventQueueService
             }
         };
 
-        await _queueClient.SendMessageAsync(JsonSerializer.Serialize(eventRequest));
+        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(eventRequest));
+        await _queueClient.SendMessageAsync(Convert.ToBase64String(bytes));
     }
 }
