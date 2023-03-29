@@ -95,4 +95,18 @@ public class CosmosServiceTests
 
         result.Should().BeEquivalentTo(invoice);
     }
+
+    [Fact]
+    public async Task Delete_DeletesInvoice()
+    {
+        var invoice = invoiceTestData;
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+
+        _mockContainer.Setup(c => c.CreateItemAsync<InvoiceEntity>(It.IsAny<InvoiceEntity>(), It.IsAny<PartitionKey>(), null, It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(CreateMockResponse(invoiceEntity)));
+
+        var result = await _cosmosService.Delete(invoice.Id, invoice.SchemeType);
+
+        result.Should().BeEquivalentTo(invoice.Id);
+    }
 }
