@@ -57,7 +57,7 @@ PartitionKey: `/schemeType`
 
 ## Endpoints
 
-`GET /invoice/{scheme}/{invoiceId}`
+`GET /invoice/{scheme}/{invoiceId}` - Get an individual invoice
 
 ### Response 200
 
@@ -103,7 +103,7 @@ PartitionKey: `/schemeType`
 }
 ```
 
-`POST /invoice`
+`POST /invoice` - Create an individual invoice
 
 ### Payload Example
 
@@ -148,7 +148,59 @@ PartitionKey: `/schemeType`
 }
 ```
 
-`PUT /invoice/{invoiceId}`
+`POST /invoices` - Create multiple invoices
+
+### Payload Example
+
+```
+{
+  "invoices": [
+    {
+      "id": "string",
+      "invoiceType": "string",
+      "accountType": "string",
+      "organisation": "string",
+      "schemeType": "string",
+      "paymentRequests": [
+        {
+          "paymentRequestId": "string",
+          "frn": 0,
+          "sourceSystem": "string",
+          "marketingYear": 0,
+          "deliveryBody": "string",
+          "paymentRequestNumber": 0,
+          "agreementNumber": "string",
+          "contractNumber": "string",
+          "value": 0,
+          "dueDate": "string",
+          "invoiceLines": [
+            {
+              "value": 0,
+              "currency": "string",
+              "schemeCode": "string",
+              "description": "string",
+              "fundCode": "string"
+            }
+          ],
+          "appendixReferences": {
+            "claimReferenceNumber": "string"
+          }
+        }
+      ],
+      "status": "string",
+      "reference": "string",
+      "created": "2023-04-03T07:18:19.457Z",
+      "updated": "2023-04-03T07:18:19.457Z",
+      "createdBy": "string",
+      "updatedBy": "string"
+    }
+  ],
+  "reference": "string",
+  "schemeType": "string"
+}
+```
+
+`PUT /invoice/{invoiceId}` - Update invoice
 
 ### Payload Example
 

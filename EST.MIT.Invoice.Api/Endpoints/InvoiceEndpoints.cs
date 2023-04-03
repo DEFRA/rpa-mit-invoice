@@ -21,6 +21,11 @@ public static class InvoiceEndpoints
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateInvoice");
 
+        app.MapPost("/invoices", CreateBulkInvoices)
+            .Produces<BulkInvoices>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithName("CreateBulkInvoices");
+
         app.MapPut("/invoice/{invoiceId}", UpdateInvoice)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -60,12 +65,34 @@ public static class InvoiceEndpoints
         if (invoiceCreated is null)
         {
             await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-falied", "Invoice creation failed", invoice);
-            return Results.NotFound();
+            return Results.BadRequest();
         }
 
         await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created", invoice);
 
         return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
+    }
+
+    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    {
+        var validationResult = await validator.ValidateAsync(invoices);
+        var reference = invoices.Reference;
+
+        if (!validationResult.IsValid)
+        {
+            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-falied", "Bulk invoice validation failed");
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
+        var bulkInvoiceCreated = await cosmosService.CreateBulk(invoices);
+
+        if (bulkInvoiceCreated is null)
+        {
+            await eventQueueService.CreateMessage(reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed");
+            return Results.BadRequest();
+        }
+
+        return Results.Ok($"{invoices.Invoices.Count()} Bulk invoices created successfully");
     }
 
     public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)

@@ -45,7 +45,7 @@ public class InvoicePostEndpointTests
 
         var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
-        result.GetCreatedStatusCode().Should().Be(404);
+        result.GetCreatedStatusCode().Should().Be(400);
     }
 
     [Theory]
