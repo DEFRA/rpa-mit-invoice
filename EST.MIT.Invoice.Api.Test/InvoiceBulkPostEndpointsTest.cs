@@ -41,7 +41,7 @@ public class InvoiceBulkPostEndpointsTest
         _cosmosService.CreateBulk(bulkInvoices).Returns(bulkInvoices);
 
         // Act
-        var result = await InvoiceEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
@@ -61,7 +61,7 @@ public class InvoiceBulkPostEndpointsTest
 
         _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
 
-        var result = await InvoiceEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey("Reference");
@@ -83,7 +83,7 @@ public class InvoiceBulkPostEndpointsTest
         _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
         _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
-        var result = await InvoiceEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }

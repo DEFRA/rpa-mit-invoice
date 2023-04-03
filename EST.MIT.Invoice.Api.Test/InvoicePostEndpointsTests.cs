@@ -29,7 +29,7 @@ public class InvoicePostEndpointTests
         _cosmosService.Create(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(201);
         result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
@@ -43,7 +43,7 @@ public class InvoicePostEndpointTests
         _cosmosService.Create(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -68,7 +68,7 @@ public class InvoicePostEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
-        var result = await InvoiceEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);
