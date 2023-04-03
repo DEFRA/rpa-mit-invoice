@@ -9,6 +9,7 @@ using Invoices.Api.Services.Models;
 using Invoices.Api.Util;
 using Microsoft.Azure.Cosmos;
 using Moq;
+using Moq.Protected;
 using Newtonsoft.Json;
 using Xunit;
 

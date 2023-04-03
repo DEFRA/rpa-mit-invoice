@@ -27,7 +27,7 @@ public class InvoiceGetEndpointTests
         _cosmosService.Get(sqlCosmosQuery)
             .Returns(new List<Invoice> { invoice });
 
-        var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
 
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -42,7 +42,7 @@ public class InvoiceGetEndpointTests
         var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
         _cosmosService.Get(sqlCosmosQuery).ReturnsNull();
 
-        var result = await InvoiceEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }

@@ -17,6 +17,9 @@ builder.Services.AddSwaggerServices();
 var app = builder.Build();
 
 app.SwaggerEndpoints();
-app.MapInvoiceEndpoints();
+app.MapInvoiceGetEndpoints();
+app.MapInvoicePostEndpoints();
+app.MapInvoicePutEndpoints();
+app.MapInvoiceDeleteEndpoints();
 
 app.Run();

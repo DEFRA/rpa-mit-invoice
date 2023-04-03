@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Invoices.Api.Models;
 using Invoices.Api.Services.Models;
 using Invoices.Api.Util;
@@ -32,6 +33,29 @@ public class CosmosService : ICosmosService
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
         await _container.CreateItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoiceEntity.SchemeType));
         return invoice;
+    }
+
+    [ExcludeFromCodeCoverageAttribute]
+    public async Task<BulkInvoices?> CreateBulk(BulkInvoices invoices)
+    {
+        var schemeType = invoices.SchemeType;
+        var reference = invoices.Reference;
+        var batch = _container.CreateTransactionalBatch(new PartitionKey(schemeType));
+
+        foreach (var invoice in invoices.Invoices)
+        {
+            invoice.Reference = reference;
+            var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+            batch.CreateItem<InvoiceEntity>(invoiceEntity);
+        }
+
+        TransactionalBatchResponse? batchResponse = await batch.ExecuteAsync();
+        if (batchResponse.IsSuccessStatusCode)
+        {
+            return invoices;
+        }
+
+        return null;
     }
 
     public async Task<Invoice> Update(Invoice invoice)
