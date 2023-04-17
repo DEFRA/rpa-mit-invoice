@@ -12,7 +12,7 @@ public static class InvoicePutEndpoints
     public static IEndpointRouteBuilder MapInvoicePutEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPut("/invoice/{invoiceId}", UpdateInvoice)
-            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateInvoice");
 
