@@ -17,6 +17,8 @@ public static class InvoiceDefinition
     {
         services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
         services.AddScoped<IValidator<BulkInvoices>, BulkInvoiceValidator>();
+        services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>();
+        services.AddScoped<IValidator<InvoiceLine>, InvoiceLineValidator>();
         return services;
     }
 }
