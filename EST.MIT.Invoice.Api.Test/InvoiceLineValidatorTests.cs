@@ -38,8 +38,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
             {
-                Currency = "£",
-                Description = "Description",
+                Currency = "£", 
                 FundCode ="34ERTY6",
                 SchemeCode ="DR5678",
                 Value = 234.8M
@@ -61,8 +60,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 Currency = "£",
                 Description = "Description",
-                FundCode ="34ERTY6",
-                SchemeCode = "DR5678",
+                FundCode ="34ERTY6", 
                 Value = 234.8M
             };
 
