@@ -29,7 +29,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.Value);
-            response.Errors.Count.Equals(1); 
+            response.Errors.Count.Equals(1);
         }
 
         [Fact]
