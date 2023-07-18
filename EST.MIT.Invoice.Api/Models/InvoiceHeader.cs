@@ -8,7 +8,7 @@ public class InvoiceHeader
     [JsonProperty("paymentRequestId")]
     public string PaymentRequestId { get; init; } = default!;
     [JsonProperty("frn")]
-    [Range(1000000000, 9999999999, ErrorMessage = "FRN must be between 1000000000 and 9999999999 ")]
+    [Range(1000000000, 9999999999, ErrorMessage = "FRN must be between 1000000000 and 9999999999")]
     public int FRN { get; init; }
     [JsonProperty("sourceSystem")]
     public string SourceSystem { get; init; } = default!;

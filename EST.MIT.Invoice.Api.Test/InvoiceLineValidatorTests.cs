@@ -5,7 +5,7 @@ namespace EST.MIT.Invoice.Api.Test
 {
     public class InvoiceLineValidatorTests
     {
-        private InvoiceLineValidator _invoiceLineValidator;
+        private readonly InvoiceLineValidator _invoiceLineValidator;
 
         public InvoiceLineValidatorTests()
         {
@@ -29,8 +29,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.Value);
-            response.Errors.Count.Equals(1);
-            //response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.Errors.Count.Equals(1); 
         }
 
         [Fact]
