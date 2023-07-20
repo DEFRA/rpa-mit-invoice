@@ -26,8 +26,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 Currency = "£",
                 Description = "Description",
-                FundCode ="34ERTY6",
-                SchemeCode ="DR5678",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
                 Value = -4567.89M
             };
 
@@ -45,8 +45,8 @@ namespace EST.MIT.Invoice.Api.Test
             InvoiceLine invoiceLine = new InvoiceLine()
             {
                 Currency = "£",
-                FundCode ="34ERTY6",
-                SchemeCode ="DR5678",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
                 Value = 4567.89M
             };
 
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Test
             InvoiceLine invoiceLine = new InvoiceLine()
             {
                 Currency = "£",
-                FundCode ="34ERTY6",
+                FundCode = "34ERTY6",
                 Value = 4567.89M
             };
 
@@ -82,7 +82,7 @@ namespace EST.MIT.Invoice.Api.Test
             InvoiceLine invoiceLine = new InvoiceLine()
             {
                 Currency = "£",
-                FundCode ="34ERTY6",
+                FundCode = "34ERTY6",
                 Value = 4567.89M,
                 SchemeCode = "4RT567",
                 Description = "Description"
