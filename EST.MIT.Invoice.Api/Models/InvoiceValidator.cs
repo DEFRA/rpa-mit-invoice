@@ -10,6 +10,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         RuleFor(x => x.SchemeType).NotEmpty();
         RuleFor(x => x.Status).NotEmpty();
         RuleFor(x => x.InvoiceType).NotNull();
-        RuleForEach(x => x.PaymentRequests).SetValidator(new InvoiceHeaderValidator()); 
+        RuleFor(x => x.PaymentRequests).NotEmpty();
+        RuleForEach(x => x.PaymentRequests).SetValidator(new InvoiceHeaderValidator()).When(x => x.PaymentRequests != null);
     }
 }
