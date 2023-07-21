@@ -1,4 +1,5 @@
 using Invoices.Api.Endpoints;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 var storageConnection = builder.Configuration["Storage:ConnectionString"];
@@ -13,6 +14,18 @@ builder.Services.AddCosmosServices(cosmosUrl, cosmosPrimaryKey, cosmosDatabaseNa
 builder.Services.AddQueueServices(storageConnection, eventQueueName, paymentQueueName);
 builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
+builder.Services.AddApiServices();
+builder.Services.AddRepositoryServices();
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["storageconnectionstring:blob"], preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["storageconnectionstring:queue"], preferMsi: true);
+});
+
+builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
+{
+    clientBuilder.BaseAddress = new Uri(builder.Configuration["ApiEndpoints:ReferenceDataApiBaseUri"]);
+});
 
 var app = builder.Build();
 
