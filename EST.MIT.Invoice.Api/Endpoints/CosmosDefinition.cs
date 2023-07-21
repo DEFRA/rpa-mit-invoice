@@ -8,7 +8,7 @@ namespace Invoices.Api.Endpoints;
 public static class CosmosDefinition
 {
     public static void AddCosmosServices(this IServiceCollection services, string url, string primaryKey, string databaseName, string containerName)
-    {
+        {
         services.AddSingleton<ICosmosService>(_ =>
         {
             var cosmosClient = new CosmosClient(url, primaryKey);
