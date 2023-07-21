@@ -16,11 +16,6 @@ builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApiServices();
 builder.Services.AddRepositoryServices();
-builder.Services.AddAzureClients(clientBuilder =>
-{
-    clientBuilder.AddBlobServiceClient(builder.Configuration["storageconnectionstring:blob"], preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["storageconnectionstring:queue"], preferMsi: true);
-});
 
 builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
 {
