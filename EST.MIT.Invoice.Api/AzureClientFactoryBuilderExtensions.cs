@@ -3,6 +3,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using Microsoft.Extensions.Azure;
 
+namespace EST.MIT.Invoice.Api;
+
 internal static class AzureClientFactoryBuilderExtensions
 {
     public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)

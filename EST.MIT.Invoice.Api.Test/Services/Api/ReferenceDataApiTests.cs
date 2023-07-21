@@ -26,13 +26,13 @@ public class ReferenceDataAPITests
                 {
                     new PaymentScheme()
                     {
-                        code = "RPA",
-                        description = "A nice place to work"
+                        Code = "RPA",
+                        Description =  "A nice place to work"
                     },
                     new PaymentScheme()
                     {
-                        code = "AP",
-                        description = "Another nice place to work"
+                        Code = "AP",
+                        Description =  "Another nice place to work"
                     }
                 }))
             });
@@ -49,13 +49,13 @@ public class ReferenceDataAPITests
         {
             new PaymentScheme()
             {
-                code = "RPA",
-                description = "A nice place to work"
+                Code = "RPA",
+                Description =  "A nice place to work"
             },
             new PaymentScheme()
             {
-                code = "AP",
-                description = "Another nice place to work"
+                Code = "AP",
+                Description =  "Another nice place to work"
             }
         });
 

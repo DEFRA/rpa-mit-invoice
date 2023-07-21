@@ -34,18 +34,27 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
+                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<PaymentScheme>>();
+                await responseDataTask;
+
+                if (responseDataTask.IsFaulted)
                 {
-                    Data = await response.Content.ReadFromJsonAsync<IEnumerable<PaymentScheme>>().ContinueWith(x =>
+                    _logger.LogError(responseDataTask.Exception?.Message);
+                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
+                }
+
+                var responseData = responseDataTask.Result;
+                if (responseData != null)
+                {
+                    return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
                     {
-                        if (x.IsFaulted)
-                        {
-                            _logger.LogError(x.Exception?.Message);
-                            throw new Exception(x.Exception?.Message);
-                        }
-                        return x.Result;
-                    })
-                };
+                        Data = responseData
+                    };
+                }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.NotFound);
+
             }
             catch (Exception ex)
             {
