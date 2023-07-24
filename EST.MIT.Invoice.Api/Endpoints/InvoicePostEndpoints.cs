@@ -30,8 +30,8 @@ public static class InvoicePostEndpoints
 
         if (!validationResult.IsValid)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-falied", "Invoice validation failed", invoice);
-            return Results.BadRequest(validationResult.ToDictionary()); //.ValidationProblem(validationResult.ToDictionary());
+            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed", invoice);
+            return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
         var invoiceCreated = await cosmosService.Create(invoice);
@@ -67,5 +67,5 @@ public static class InvoicePostEndpoints
         }
 
         return Results.Ok($"{invoices.Invoices.Count()} Bulk invoices created successfully");
-    }   
+    }
 }
