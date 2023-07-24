@@ -48,6 +48,106 @@ public class InvoicePostEndpointTests
         result.GetCreatedStatusCode().Should().Be(400);
     }
 
+    [Fact]
+    public async Task PostInvoice_When_SchemeType_Is_Missing_Should_Return_Status_Code_400()
+    {
+        //Arrange
+        Invoice invoice = new Invoice()
+        {
+            Id = "123456789",
+            InvoiceType = "AP",
+            AccountType = "AP",
+            Organisation = "Test Org",
+            Reference = "123456789",
+            CreatedBy = "Test User",
+            Status = "status",
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+            }
+        };
+
+        _cosmosService.Create(invoice).Returns(invoice);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+
+        //Act
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+
+        //Assert
+        result.GetCreatedStatusCode().Should().Be(400);
+    }
+
+    [Fact]
+    public async Task PostInvoice_When_InvoiceType_Is_Missing_InvoiceHeader_FRN_IsMissing_InvoiceLine_SchemeCode_Is_Missing_Should_Return_Status_Code_400()
+    {
+        //Arrange
+        Invoice invoice = new Invoice()
+        {
+            Id = "123456789",
+            SchemeType = "XP",
+            AccountType = "AP",
+            Organisation = "Test Org",
+            Reference = "123456789",
+            CreatedBy = "Test User",
+            Status = "status",
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+            }
+        };
+
+        _cosmosService.Create(invoice).Returns(invoice);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+
+        //Act
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+
+        //Assert
+        result.GetCreatedStatusCode().Should().Be(400);
+    }
+
     [Theory]
     [ClassData(typeof(InvoiceValidationTestData))]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
