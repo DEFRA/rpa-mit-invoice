@@ -1,5 +1,4 @@
 using Invoices.Api.Endpoints;
-using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 var storageConnection = builder.Configuration["Storage:ConnectionString"];

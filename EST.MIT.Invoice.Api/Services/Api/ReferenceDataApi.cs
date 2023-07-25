@@ -46,10 +46,14 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseData = responseDataTask.Result;
                 if (responseData != null)
                 {
-                    return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
+                    var paymentSchemes = responseData.ToList();
+                    if (paymentSchemes.Any())
                     {
-                        Data = responseData
-                    };
+                        return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
+                        {
+                            Data = paymentSchemes
+                        };
+                    }
                 }
 
                 _logger.LogInformation("No content returned from API");

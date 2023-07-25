@@ -6,6 +6,8 @@ using Moq;
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;
+using Moq.Protected;
+using System.Text;
 
 namespace EST.MIT.Invoice.Api.Test.Services.Api;
 public class ReferenceDataAPITests
@@ -141,4 +143,53 @@ public class ReferenceDataAPITests
         response.Data.Should().BeNull();
         response.Errors.Should().ContainKey($"{HttpStatusCode.InternalServerError}");
     }
+
+    [Fact]
+    public async Task GetSchemesAsync_ResponseDataTaskIsFaulted_ThrowsException()
+    {
+        // Arrange
+        var mockRepository = new Mock<IReferenceDataRepository>();
+        var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
+
+        var responseData = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("", Encoding.UTF8, "application/json")
+        };
+
+        mockRepository.Setup(x => x.GetSchemesListAsync())
+            .ReturnsAsync(() => throw new InvalidOperationException());
+
+        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+
+        // Act and Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.GetSchemesAsync());
+    }
+
+    [Fact]
+    public async Task GetSchemesAsync_ResponseDataIsNull_ReturnsNotFound()
+    {
+        // Arrange
+        var mockRepository = new Mock<IReferenceDataRepository>();
+        var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
+
+        var responseData = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("[]", Encoding.UTF8, "application/json") // Empty array simulates no data
+        };
+
+        mockRepository.Setup(x => x.GetSchemesListAsync())
+            .ReturnsAsync(responseData);
+
+        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+
+        // Act
+        var result = await service.GetSchemesAsync();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+    }
+
+
 }
