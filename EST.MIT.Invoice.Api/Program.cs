@@ -13,6 +13,13 @@ builder.Services.AddCosmosServices(cosmosUrl, cosmosPrimaryKey, cosmosDatabaseNa
 builder.Services.AddQueueServices(storageConnection, eventQueueName, paymentQueueName);
 builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
+builder.Services.AddApiServices();
+builder.Services.AddRepositoryServices();
+
+builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
+{
+    clientBuilder.BaseAddress = new Uri(builder.Configuration["ApiEndpoints:ReferenceDataApiBaseUri"]);
+});
 
 var app = builder.Build();
 
