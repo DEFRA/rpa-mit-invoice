@@ -81,6 +81,7 @@ public class InvoicePutEndpointTests
             SchemeType = scheme,
             Status = status,
             InvoiceType = "ap",
+            AccountType = "ap",
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);

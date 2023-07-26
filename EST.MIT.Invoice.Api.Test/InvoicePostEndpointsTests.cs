@@ -158,6 +158,7 @@ public class InvoicePostEndpointTests
             SchemeType = scheme,
             Status = status,
             InvoiceType = "ap",
+            AccountType = "ap",
             PaymentRequests = new List<InvoiceHeader>
             {
                 new()
