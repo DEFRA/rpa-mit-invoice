@@ -33,11 +33,6 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
     private async Task<bool> BeAValidSchemeType(Invoice invoice)
     {
-        if (string.IsNullOrWhiteSpace(invoice.InvoiceType) || string.IsNullOrWhiteSpace(invoice.Organisation) || string.IsNullOrWhiteSpace(invoice.SchemeType))
-        {
-            return false;
-        }
-
         var schemeTypes = await _referenceDataApi.GetSchemesAsync(invoice.InvoiceType, invoice.Organisation);
 
         if (!schemeTypes.IsSuccess || !schemeTypes.Data.Any())

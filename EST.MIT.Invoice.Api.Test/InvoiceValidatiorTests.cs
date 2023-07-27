@@ -192,7 +192,6 @@ public class InvoiceValidatiorTests
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account Type is invalid. Should be AP or AR")) == 1);
     }
 
-
     [Fact]
     public async Task Given_Invoice_When_Organisation_And_InvoiceType_Is_Not_Empty_And_SchemeType_Is_Invalid_Then_Invoice_Fails()
     {
@@ -258,7 +257,6 @@ public class InvoiceValidatiorTests
         //Assert
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
     }
-
 
     [Fact]
     public async Task Given_Invoice_When_Parent_And_Child_Data_Are_Valid_Then_Invoice_Pass()

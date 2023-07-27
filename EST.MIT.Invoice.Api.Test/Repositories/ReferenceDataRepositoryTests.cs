@@ -38,6 +38,31 @@ public class ReferenceDataRepositoryTests
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("RPA", "")]
+    [InlineData("", "EST")]
+    [InlineData("RPA", "EST")]
+    public void GetSchemesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Different_Combos(string invoiceType, string organisation)
+    {
+        _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
+
+        var factory = _mockHttpMessageHandler.CreateClientFactory();
+
+        Mock.Get(factory).Setup(x => x.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var client = _mockHttpMessageHandler.CreateClient();
+            client.BaseAddress = new Uri("https://localhost");
+            return client;
+        });
+
+        var repo = new ReferenceDataRepository(factory);
+
+        var response = repo.GetSchemesListAsync(invoiceType, organisation);
+
+        response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
     [Fact]
     public void HandleHttpResponseError_Handed_FailCode()
     {
