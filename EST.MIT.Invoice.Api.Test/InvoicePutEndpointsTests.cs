@@ -6,7 +6,10 @@ using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using NSubstitute.ReturnsExtensions;
+using EST.MIT.Invoice.Api.Services.API.Models;
+using System.Net;
 
 namespace Invoices.Api.Test;
 
@@ -15,15 +18,38 @@ public class InvoicePutEndpointTests
     private readonly ICosmosService _cosmosService =
         Substitute.For<ICosmosService>();
 
+    private readonly IReferenceDataApi _referenceDataApiMock =
+        Substitute.For<IReferenceDataApi>();
+
     private readonly IQueueService _queueService =
         Substitute.For<IQueueService>();
 
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
-    private readonly IValidator<Invoice> _validator = new InvoiceValidator();
+    private readonly IValidator<Invoice> _validator;
 
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
+    public InvoicePutEndpointTests()
+    {
+        var errors = new Dictionary<string, List<string>>();
+        var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var paymentSchemes = new List<PaymentScheme>()
+        {
+            new PaymentScheme()
+            {
+                Code = "bps"
+            }
+        };
+        response.Data = paymentSchemes;
+
+        _referenceDataApiMock
+            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(response));
+
+        _validator = new InvoiceValidator(_referenceDataApiMock);
+    }
 
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenInvoiceExists()

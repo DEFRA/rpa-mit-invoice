@@ -9,6 +9,8 @@ namespace EST.MIT.Invoice.Api.Test.Repositories;
 public class ReferenceDataRepositoryTests
 {
     private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
+    private string _invoiceType = "RPA";
+    private string _organisation = "EST";
 
     public ReferenceDataRepositoryTests()
     {
@@ -31,7 +33,7 @@ public class ReferenceDataRepositoryTests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemesListAsync();
+        var response = repo.GetSchemesListAsync(_invoiceType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -52,7 +54,7 @@ public class ReferenceDataRepositoryTests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemesListAsync();
+        var response = repo.GetSchemesListAsync(_invoiceType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");

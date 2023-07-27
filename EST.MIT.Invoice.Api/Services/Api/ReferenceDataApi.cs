@@ -17,10 +17,10 @@ public class ReferenceDataApi : IReferenceDataApi
     }
 
 
-    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync()
+    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync(string? invoiceType, string? organisation)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetSchemesListAsync();
+        var response = await _referenceDataRepository.GetSchemesListAsync(invoiceType, organisation);
 
         _logger.LogInformation($"Calling Reference Data API for Schemes");
 

@@ -1,3 +1,7 @@
+using System.Net;
+using System.Net.WebSockets;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.API.Models;
 using Invoices.Api.Services;
 using Invoices.Api.Endpoints;
 using NSubstitute;
@@ -14,12 +18,35 @@ public class InvoicePostEndpointTests
     private readonly ICosmosService _cosmosService =
         Substitute.For<ICosmosService>();
 
+    private readonly IReferenceDataApi _referenceDataApiMock =
+        Substitute.For<IReferenceDataApi>();
+
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
 
-    private readonly IValidator<Invoice> _validator = new InvoiceValidator();
+    private readonly IValidator<Invoice> _validator;
+
+    public InvoicePostEndpointTests()
+    {
+        var errors = new Dictionary<string, List<string>>();
+        var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var paymentSchemes = new List<PaymentScheme>()
+        {
+            new PaymentScheme()
+            {
+                Code = "bps"
+            }
+        };
+        response.Data = paymentSchemes;
+
+        _referenceDataApiMock
+            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(response));   
+
+        _validator = new InvoiceValidator(_referenceDataApiMock);
+    }
 
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
