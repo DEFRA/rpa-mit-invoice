@@ -43,8 +43,7 @@ public class InvoicePostEndpointTests
 
         _referenceDataApiMock
             .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(response));   
-
+            .Returns(Task.FromResult(response));
         _validator = new InvoiceValidator(_referenceDataApiMock);
     }
 
