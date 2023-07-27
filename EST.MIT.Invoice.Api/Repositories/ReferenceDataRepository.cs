@@ -24,4 +24,18 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
         return response;
     }
+
+    public async Task<HttpResponseMessage> GetOrganisationsListAsync()
+    {
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
+
+        var response = await client.GetAsync($"/organisations");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
+        }
+
+        return response;
+    }
 }

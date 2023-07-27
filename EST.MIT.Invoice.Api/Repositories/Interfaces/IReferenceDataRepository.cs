@@ -3,4 +3,5 @@
 public interface IReferenceDataRepository
 {
     Task<HttpResponseMessage> GetSchemesListAsync();
+    Task<HttpResponseMessage> GetOrganisationsListAsync();
 }
