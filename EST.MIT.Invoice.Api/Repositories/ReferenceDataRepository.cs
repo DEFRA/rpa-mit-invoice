@@ -11,11 +11,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         _clientFactory = clientFactory;
     }
 
-    public async Task<HttpResponseMessage> GetSchemesListAsync()
+    public async Task<HttpResponseMessage> GetSchemesListAsync(string? invoiceType, string? organisation)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");
 
-        var response = await client.GetAsync($"/schemeTypes");
+        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation))
+            ? await client.GetAsync($"/schemeTypes")
+            : await client.GetAsync($"/schemeTypes?invoiceType={invoiceType}&organisation={organisation}");
 
         if (!response.IsSuccessStatusCode)
         {
