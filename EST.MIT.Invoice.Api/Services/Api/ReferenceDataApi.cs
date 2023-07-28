@@ -86,7 +86,7 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>> GetOrganisationsAsync()
+    public async Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync()
     {
         var error = new Dictionary<string, List<string>>();
         var response = await _referenceDataRepository.GetOrganisationsListAsync();
@@ -98,11 +98,11 @@ public class ReferenceDataApi : IReferenceDataApi
             if (response.Content.Headers.ContentLength == 0)
             {
                 _logger.LogWarning("No content returned from API");
-                return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.NoContent);
+                return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NoContent);
             }
             try
             {
-                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<Invoices.Api.Models.Invoice>>();
+                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<Organisation>>();
                 await responseDataTask;
 
                 if (responseDataTask.IsFaulted)
@@ -114,22 +114,22 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseData = responseDataTask.Result;
                 if (responseData != null)
                 {
-                    return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.OK)
+                    return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
                     {
                         Data = responseData
                     };
                 }
 
                 _logger.LogInformation("No content returned from API");
-                return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.NotFound);
+                return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound);
 
             }
             catch (Exception ex)
             {
                 error.Add("deserializing", new List<string>() { ex.Message });
-                return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.InternalServerError, error)
+                return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.InternalServerError, error)
                 {
-                    Data = new List<Invoices.Api.Models.Invoice>()
+                    Data = new List<Organisation>()
                 };
             }
         }
@@ -137,7 +137,7 @@ public class ReferenceDataApi : IReferenceDataApi
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             _logger.LogInformation("No content returned from API");
-            return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.NotFound);
+            return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound);
         }
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
@@ -145,11 +145,11 @@ public class ReferenceDataApi : IReferenceDataApi
             _logger.LogError("Invalid request was sent to API");
             error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
 
-            return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.BadRequest, error);
+            return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.BadRequest, error);
         }
 
         _logger.LogError("Unknown response from API");
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
-        return new ApiResponse<IEnumerable<Invoices.Api.Models.Invoice>>(HttpStatusCode.InternalServerError, error);
+        return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.InternalServerError, error);
     }
 }
