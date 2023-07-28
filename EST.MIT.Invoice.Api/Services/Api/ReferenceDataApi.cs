@@ -18,10 +18,10 @@ public class ReferenceDataApi : IReferenceDataApi
     }
 
 
-    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync()
+    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync(string? invoiceType, string? organisation)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetSchemesListAsync();
+        var response = await _referenceDataRepository.GetSchemesListAsync(invoiceType, organisation);
 
         _logger.LogInformation($"Calling Reference Data API for Schemes");
 
@@ -47,10 +47,14 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseData = responseDataTask.Result;
                 if (responseData != null)
                 {
-                    return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
+                    var paymentSchemes = responseData.ToList();
+                    if (paymentSchemes.Any())
                     {
-                        Data = responseData
-                    };
+                        return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
+                        {
+                            Data = paymentSchemes
+                        };
+                    }
                 }
 
                 _logger.LogInformation("No content returned from API");

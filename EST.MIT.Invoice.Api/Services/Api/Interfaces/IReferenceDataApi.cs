@@ -6,6 +6,7 @@ namespace EST.MIT.Invoice.Api.Services.API.Interfaces;
 
 public interface IReferenceDataApi
 {
+    Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync(string? invoiceType, string? organisation);
     Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemesAsync();
     Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync();
 }
