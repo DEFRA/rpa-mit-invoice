@@ -272,6 +272,7 @@ public class InvoiceValidatiorTests
 
         //Assert
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
     }
 
     [Fact]
