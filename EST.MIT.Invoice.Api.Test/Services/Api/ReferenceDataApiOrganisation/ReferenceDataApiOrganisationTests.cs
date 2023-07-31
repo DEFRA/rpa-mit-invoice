@@ -119,7 +119,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         public void GetOrganisationAsync_API_Returns_BadRequest()
         {
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest)); 
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
@@ -134,7 +134,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         {
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
- 
+
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);

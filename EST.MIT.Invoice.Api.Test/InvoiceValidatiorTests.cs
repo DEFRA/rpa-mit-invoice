@@ -288,7 +288,7 @@ public class InvoiceValidatiorTests
         var response = await _invoiceValidator.TestValidateAsync(invoice);
 
         //Assert
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1); 
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
     }
 
 
@@ -370,7 +370,7 @@ public class InvoiceValidatiorTests
         var response = await _invoiceValidator.TestValidateAsync(invoice);
 
         //Assert 
-         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
     }
 
 
