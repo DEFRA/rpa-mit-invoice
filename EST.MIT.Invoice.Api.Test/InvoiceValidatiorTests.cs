@@ -230,8 +230,7 @@ public class InvoiceValidatiorTests
         {
             new Organisation()
             {
-                Code= "abc",
-                Description= "Description"
+                Code= "Test Org"
             }
         };
 
@@ -289,9 +288,91 @@ public class InvoiceValidatiorTests
         var response = await _invoiceValidator.TestValidateAsync(invoice);
 
         //Assert
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1); 
     }
+
+
+    [Fact]
+    public async Task Given_Invoice_When_And_InvoiceType_Is_Not_Empty_And_Organisation_Is_Invalid_Then_Invoice_Fails()
+    {
+        var errors = new Dictionary<string, List<string>>();
+        var apiResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var paymentSchemes = new List<PaymentScheme>()
+        {
+            new PaymentScheme()
+            {
+                Code = "bps"
+            }
+        };
+        apiResponse.Data = paymentSchemes;
+
+        var organisationErrors = new Dictionary<string, List<string>>();
+        var organisationApiResponse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, organisationErrors);
+        var organisation = new List<Organisation>()
+        {
+            new Organisation()
+            {
+                Code= "org"
+            }
+        };
+
+        organisationApiResponse.Data = organisation;
+
+        _referenceDataApiMock.GetOrganisationsAsync(Arg.Any<string>())
+            .Returns(Task.FromResult(organisationApiResponse));
+
+        _referenceDataApiMock
+            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(apiResponse));
+
+        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
+
+        //Arrange
+        Invoice invoice = new Invoice()
+        {
+            Id = "123456789",
+            InvoiceType = "AP",
+            AccountType = "AP",
+            Organisation = "Test Org",
+            Reference = "123456789",
+            SchemeType = "bps",
+            CreatedBy = "Test User",
+            Status = "status",
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+            }
+        };
+
+        //Act
+        var response = await _invoiceValidator.TestValidateAsync(invoice);
+
+        //Assert 
+         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
+    }
+
 
     [Fact]
     public async Task Given_Invoice_When_Parent_And_Child_Data_Are_Valid_Then_Invoice_Pass()
