@@ -56,7 +56,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();
             response.Data.Should().BeOfType<List<Organisation>>();
-            response.Data.Should().HaveCount(1);
+            response.Data.Should().HaveCount(2);
             response.Data.Should().BeEquivalentTo(new List<Organisation>()
             {
                     new Organisation()
