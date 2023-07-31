@@ -27,11 +27,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetOrganisationsListAsync()
+    public async Task<HttpResponseMessage> GetOrganisationsListAsync(string? invoiceType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");
 
-        var response = await client.GetAsync($"/organisations");
+        var response = (string.IsNullOrEmpty(invoiceType)) ?
+            await client.GetAsync($"/organisations")
+            : await client.GetAsync($"/organisations?invoiceType={invoiceType}");
 
         if (!response.IsSuccessStatusCode)
         {

@@ -206,6 +206,22 @@ public class InvoiceValidatiorTests
         };
         apiResponse.Data = paymentSchemes;
 
+        var organisationErrors = new Dictionary<string, List<string>>();
+        var organisationApiResponse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, organisationErrors);
+        var organisation = new List<Organisation>()
+        {
+            new Organisation()
+            {
+                Code= "abc",
+                Description= "Description"
+            }
+        };
+
+        organisationApiResponse.Data = organisation;
+
+        _referenceDataApiMock.GetOrganisationsAsync(Arg.Any<string>())
+            .Returns(Task.FromResult(organisationApiResponse));
+
         _referenceDataApiMock
             .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(apiResponse));

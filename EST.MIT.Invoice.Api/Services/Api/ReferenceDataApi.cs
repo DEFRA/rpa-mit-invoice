@@ -2,7 +2,7 @@
 using EST.MIT.Invoice.Api.Services.API.Models;
 using System.Net;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
-using EST.MIT.Invoice.Api.Services.Api.Models;
+
 
 namespace EST.MIT.Invoice.Api.Services.Api;
 
@@ -90,10 +90,10 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync()
+    public async Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync(string? invoiceType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetOrganisationsListAsync();
+        var response = await _referenceDataRepository.GetOrganisationsListAsync(invoiceType);
 
         _logger.LogInformation($"Calling Reference Data API for Organisations");
 
