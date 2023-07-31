@@ -73,26 +73,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
 
         [Fact]
-        public void GetOrganisationAsync_Returns_Invalid_Organisation()
-        {
-            _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
-                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
-                 //{
-                 //    Content = new StringContent(JsonSerializer.Serialize(new List<Organisation>()
-                 //    {
-                 //    }))
-                 //});
-
-            //Act
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
-
-            //Assert
-
-        }
-
-
-
-        [Fact]
         public void GetOrganisationsAsync_API_Returns_NoContent()
         {
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
@@ -114,8 +94,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
                 Content = new StringContent("123")
             });
 
-            //var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
-
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
             response.IsSuccess.Should().BeFalse();
@@ -130,8 +108,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
-            // var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
-
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -143,9 +119,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         public void GetOrganisationAsync_API_Returns_BadRequest()
         {
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
-            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            // var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest)); 
 
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
@@ -160,9 +134,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         {
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
-
-            // var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
-
+ 
             var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
