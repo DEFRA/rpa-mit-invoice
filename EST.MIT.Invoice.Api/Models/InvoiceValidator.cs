@@ -33,7 +33,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         RuleFor(model => model)
             .MustAsync((x, CancellationToken) => BeAValidOrganisationType(x))
             .WithMessage("Organisation is Invalid")
-            .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType);
+            .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
     }
 
     private async Task<bool> BeAValidSchemeType(Invoice invoice)
