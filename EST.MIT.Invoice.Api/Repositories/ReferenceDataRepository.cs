@@ -31,8 +31,8 @@ public class ReferenceDataRepository : IReferenceDataRepository
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");
 
-        var response = (string.IsNullOrEmpty(invoiceType)) ?
-            await client.GetAsync($"/organisations")
+        var response = (string.IsNullOrEmpty(invoiceType)) 
+           ? await client.GetAsync($"/organisations")
             : await client.GetAsync($"/organisations?invoiceType={invoiceType}");
 
         if (!response.IsSuccessStatusCode)
