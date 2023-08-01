@@ -1,10 +1,5 @@
 ﻿using FluentValidation.TestHelper;
 using Invoices.Api.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using NSubstitute;
 using EST.MIT.Invoice.Api.Services.API.Models;
@@ -213,6 +208,7 @@ public class InvoiceValidatiorTests
     [Fact]
     public async Task Given_Invoice_When_Organisation_And_InvoiceType_Is_Not_Empty_And_SchemeType_Is_Invalid_Then_Invoice_Fails()
     {
+        //Arrange
         var errors = new Dictionary<string, List<string>>();
         var apiResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var paymentSchemes = new List<PaymentScheme>()
@@ -245,7 +241,6 @@ public class InvoiceValidatiorTests
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
 
-        //Arrange
         Invoice invoice = new Invoice()
         {
             Id = "123456789",
@@ -295,6 +290,7 @@ public class InvoiceValidatiorTests
     [Fact]
     public async Task Given_Invoice_When_And_InvoiceType_Is_Not_Empty_And_Organisation_Is_Invalid_Then_Invoice_Fails()
     {
+        //Arrange
         var errors = new Dictionary<string, List<string>>();
         var apiResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var paymentSchemes = new List<PaymentScheme>()
@@ -327,7 +323,7 @@ public class InvoiceValidatiorTests
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
 
-        //Arrange
+
         Invoice invoice = new Invoice()
         {
             Id = "123456789",
@@ -421,6 +417,56 @@ public class InvoiceValidatiorTests
 
         //Assert
         response.Errors.Count.Equals(0);
+    }
+
+    [Fact]
+    public async Task BeAValidateOrganisationTypeReturns_False()
+    {
+        //Arrange
+        var OrganisationErrors = new Dictionary<string, List<string>>();
+        var OrganisationApiResponse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound, OrganisationErrors);
+
+        var organisation = new List<Organisation>();
+
+        OrganisationApiResponse.Data = organisation;
+
+        _referenceDataApiMock
+            .GetOrganisationsAsync(Arg.Any<string>())
+            .Returns(Task.FromResult(OrganisationApiResponse));
+
+
+        Invoice invoice = new Invoice();
+
+        //Act
+        var response = await _invoiceValidator.BeAValidOrganisationType(invoice);
+
+        //Assert
+        Assert.False(response);
+    }
+
+    [Fact]
+    public async Task BeAValidSchemeTypeReturns_False()
+    {
+        //Arrange
+        var errors = new Dictionary<string, List<string>>();
+        var apiResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.NotFound, errors);
+
+        var organisation = new List<PaymentScheme>();
+
+        apiResponse.Data = organisation;
+
+        _referenceDataApiMock
+            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(apiResponse));
+
+
+        Invoice invoice = new Invoice();
+
+        //Act
+        var response = await _invoiceValidator.BeAValidSchemeType(invoice);
+
+        //Assert
+        Assert.False(response);
     }
 }
 

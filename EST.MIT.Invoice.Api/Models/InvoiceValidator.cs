@@ -36,7 +36,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
     }
 
-    private async Task<bool> BeAValidSchemeType(Invoice invoice)
+    public async Task<bool> BeAValidSchemeType(Invoice invoice)
     {
         var schemeTypes = await _referenceDataApi.GetSchemesAsync(invoice.InvoiceType, invoice.Organisation);
 
@@ -48,7 +48,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         return schemeTypes.Data.Any(x => x.Code.ToLower() == invoice.SchemeType.ToLower());
     }
 
-    private async Task<bool> BeAValidOrganisationType(Invoice invoice)
+    public async Task<bool> BeAValidOrganisationType(Invoice invoice)
     {
         var organisationTypes = await _referenceDataApi.GetOrganisationsAsync(invoice.InvoiceType);
 
