@@ -144,7 +144,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
 
         [Fact]
-        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_ThrowsException()
+        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_ThrowsInvalidException()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
@@ -163,6 +163,28 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
 
             // Act and Assert
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.GetOrganisationsAsync(_invoiceType));
+        }
+
+        [Fact]
+        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_ThrowsException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IReferenceDataRepository>();
+            var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
+
+            var responseData = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("", Encoding.UTF8, "application/json")
+            };
+
+            mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
+                .ReturnsAsync(() => throw new Exception());
+
+            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+
+            // Act and Assert
+            await Assert.ThrowsAsync<Exception>(async () => await service.GetOrganisationsAsync(_invoiceType));
         }
 
         [Fact]
