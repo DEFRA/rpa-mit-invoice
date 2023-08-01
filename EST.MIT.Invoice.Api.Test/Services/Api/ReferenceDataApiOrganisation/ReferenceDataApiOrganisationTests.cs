@@ -142,5 +142,52 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             response.Data.Should().BeNull();
             response.Errors.Should().ContainKey($"{HttpStatusCode.InternalServerError}");
         }
+
+        [Fact]
+        public async Task GetSchemesAsync_ResponseDataTaskIsFaulted_ThrowsException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IReferenceDataRepository>();
+            var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
+
+            var responseData = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("", Encoding.UTF8, "application/json")
+            };
+
+            mockRepository.Setup(x => x.GetSchemesListAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(() => throw new InvalidOperationException());
+
+            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+
+            // Act and Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.GetOrganisationsAsync(_invoiceType));
+        }
+
+        [Fact]
+        public async Task GetSchemesAsync_ResponseDataIsNull_ReturnsNotFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IReferenceDataRepository>();
+            var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
+
+            var responseData = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("[]", Encoding.UTF8, "application/json") // Empty array simulates no data
+            };
+
+            mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
+                .ReturnsAsync(responseData);
+
+            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+
+            // Act
+            var result = await service.GetOrganisationsAsync(_invoiceType);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+        }
     }
 }
