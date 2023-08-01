@@ -108,7 +108,7 @@ public class ReferenceDataRepositoryTests
 
     [Theory]
     [InlineData("")]
-    [InlineData("RPA")]   
+    [InlineData("RPA")]
     public void GetOrganisationListAsync_Returns_200_When_InvoiceType(string invoiceType)
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
