@@ -118,10 +118,15 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseData = responseDataTask.Result;
                 if (responseData != null)
                 {
-                    return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
+                    var organisation = responseData.ToList();
+
+                    if (organisation.Any())
                     {
-                        Data = responseData
-                    };
+                        return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
+                        {
+                            Data = responseData
+                        };
+                    }
                 }
 
                 _logger.LogInformation("No content returned from API");

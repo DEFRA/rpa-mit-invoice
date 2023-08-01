@@ -144,7 +144,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
 
         [Fact]
-        public async Task GetSchemesAsync_ResponseDataTaskIsFaulted_ThrowsException()
+        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_ThrowsException()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
@@ -156,7 +156,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
                 Content = new StringContent("", Encoding.UTF8, "application/json")
             };
 
-            mockRepository.Setup(x => x.GetSchemesListAsync(It.IsAny<string>(), It.IsAny<string>()))
+            mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
                 .ReturnsAsync(() => throw new InvalidOperationException());
 
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
@@ -166,7 +166,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
 
         [Fact]
-        public async Task GetSchemesAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetOrganisationAsync_ResponseDataIsNull_ReturnsNotFound()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
