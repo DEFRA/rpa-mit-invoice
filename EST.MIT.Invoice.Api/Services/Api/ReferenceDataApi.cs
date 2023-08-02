@@ -40,9 +40,9 @@ public class ReferenceDataApi : IReferenceDataApi
 
                 if (responseDataTask.IsFaulted)
                 {
-#pragma warning disable CA2254 // Template should be a static expression
+
                     _logger.LogError(responseDataTask.Exception?.Message);
-#pragma warning restore CA2254 // Template should be a static expression
+
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
@@ -61,7 +61,6 @@ public class ReferenceDataApi : IReferenceDataApi
 
                 _logger.LogInformation("No content returned from API");
                 return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.NotFound);
-
             }
             catch (Exception ex)
             {
@@ -113,9 +112,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
                 if (responseDataTask.IsFaulted)
                 {
-#pragma warning disable CA2254 // Template should be a static expression
                     _logger.LogError(responseDataTask.Exception?.Message);
-#pragma warning restore CA2254 // Template should be a static expression
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
@@ -130,7 +127,6 @@ public class ReferenceDataApi : IReferenceDataApi
                         {
                             Data = responseData
                         };
-
                     }
 
                     _logger.LogInformation("No content returned from API");
