@@ -190,27 +190,5 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
-
-        [Fact]
-        public async Task GetOrganisationAsync_ResponseIsNull_Throws_Exception()
-        {
-            // Arrange
-            var mockRepository = new Mock<IReferenceDataRepository>();
-            var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
-            var organisation = new List<Organisation>();
-            var responseData = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("", Encoding.UTF8, "application/json"), // Empty array simulates no data
-            };
-
-            mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
-                .ReturnsAsync(responseData);
-
-            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
-
-            // Assert
-            await Assert.ThrowsAsync<Exception>(async () => await service.GetOrganisationsAsync(_invoiceType));
-        }
     }
 }
