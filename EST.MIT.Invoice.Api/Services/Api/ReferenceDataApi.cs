@@ -38,10 +38,12 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<PaymentScheme>>();
                 await responseDataTask;
 
+                var message = responseDataTask.Exception?.Message;
+
                 if (responseDataTask.IsFaulted)
                 {
 
-                    _logger.LogError(responseDataTask.Exception?.Message);
+                    _logger.LogError("Error message is ", message);
 
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
@@ -110,9 +112,11 @@ public class ReferenceDataApi : IReferenceDataApi
                 var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<Organisation>>();
                 await responseDataTask;
 
+                var message = responseDataTask.Exception?.Message;
+
                 if (responseDataTask.IsFaulted)
                 {
-                    _logger.LogError(responseDataTask.Exception?.Message);
+                    _logger.LogError("Error message is ", message);
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
