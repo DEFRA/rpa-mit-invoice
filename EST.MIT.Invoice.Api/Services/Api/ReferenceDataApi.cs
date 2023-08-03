@@ -2,6 +2,7 @@
 using EST.MIT.Invoice.Api.Services.API.Models;
 using System.Net;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Util;
 
 namespace EST.MIT.Invoice.Api.Services.Api;
 
@@ -9,11 +10,13 @@ public class ReferenceDataApi : IReferenceDataApi
 {
     private readonly IReferenceDataRepository _referenceDataRepository;
     private readonly ILogger<ReferenceDataApi> _logger;
+    private readonly IHttpContentDeserializer _httpContentDeserializer;
 
-    public ReferenceDataApi(IReferenceDataRepository referenceDataRepository, ILogger<ReferenceDataApi> logger)
+    public ReferenceDataApi(IReferenceDataRepository referenceDataRepository, ILogger<ReferenceDataApi> logger, IHttpContentDeserializer httpContentDeserializer)
     {
         _referenceDataRepository = referenceDataRepository;
         _logger = logger;
+        _httpContentDeserializer = httpContentDeserializer;
     }
 
     public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemeTypesAsync(string? invoiceType, string? organisation)
@@ -33,7 +36,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<PaymentScheme>>();
+                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentScheme>(response.Content);
                 await responseDataTask;
 
                 if (responseDataTask.IsFaulted)
@@ -43,16 +46,14 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 var responseData = responseDataTask.Result;
-                if (responseData != null)
+
+                IEnumerable<PaymentScheme> paymentSchemes = responseData.ToList();
+                if (paymentSchemes.Any())
                 {
-                    var paymentSchemes = responseData.ToList();
-                    if (paymentSchemes.Any())
+                    return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
                     {
-                        return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
-                        {
-                            Data = paymentSchemes
-                        };
-                    }
+                        Data = paymentSchemes
+                    };
                 }
 
                 _logger.LogInformation("No content returned from API");
@@ -105,7 +106,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<PaymentType>>();
+                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentType>(response.Content);
                 await responseDataTask;
 
                 if (responseDataTask.IsFaulted)
@@ -115,16 +116,14 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 var responseData = responseDataTask.Result;
-                if (responseData != null)
+
+                IEnumerable<PaymentType> paymentSchemes = responseData.ToList();
+                if (paymentSchemes.Any())
                 {
-                    var paymentTypes = responseData.ToList();
-                    if (paymentTypes.Any())
+                    return new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK)
                     {
-                        return new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK)
-                        {
-                            Data = paymentTypes
-                        };
-                    }
+                        Data = paymentSchemes
+                    };
                 }
 
                 _logger.LogInformation("No content returned from API");

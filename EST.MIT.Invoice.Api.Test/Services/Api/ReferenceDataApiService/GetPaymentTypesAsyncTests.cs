@@ -4,6 +4,7 @@ using System.Text.Json;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -11,20 +12,37 @@ using Moq;
 namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService;
 public class GetPaymentTypesAsyncTests
 {
-    private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepository;
+    private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepositoryMock;
+    private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
     private string _invoiceType = "RPA";
     private string _organisation = "EST";
     private string _schemeType = "BPS";
 
     public GetPaymentTypesAsyncTests()
     {
-        _mockReferenceDataRepository = new Mock<IReferenceDataRepository>();
+        _mockReferenceDataRepositoryMock = new Mock<IReferenceDataRepository>();
+        _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
+
+        _httpContentDeserializerMock.Setup(x => x.DeserializeList<PaymentType>(It.IsAny<HttpContent>()))
+            .ReturnsAsync(new List<PaymentType>()
+            {
+                new PaymentType()
+                {
+                    Code = "DOM",
+                    Description =  "Domestic"
+                },
+                new PaymentType()
+                {
+                    Code = "EU",
+                    Description =  "European Union"
+                }
+            });
     }
 
     [Fact]
     public void GetPaymentTypesAsync_Returns_List()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(JsonSerializer.Serialize(new List<PaymentType>()
@@ -42,7 +60,7 @@ public class GetPaymentTypesAsyncTests
                 }))
             });
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -69,10 +87,10 @@ public class GetPaymentTypesAsyncTests
     [Fact]
     public void GetPaymentTypesAsync_API_Returns_NoContent()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -84,13 +102,13 @@ public class GetPaymentTypesAsyncTests
     [Fact]
     public void GetPaymentTypesAsync_Deserialise_Fail()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent("123")
         });
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -103,10 +121,10 @@ public class GetPaymentTypesAsyncTests
     [Fact]
     public void GetPaymentTypesAsync_API_Returns_NotFound()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -118,10 +136,10 @@ public class GetPaymentTypesAsyncTests
     [Fact]
     public void GetPaymentTypesAsync_API_Returns_BadRequest()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -134,10 +152,10 @@ public class GetPaymentTypesAsyncTests
     [Fact]
     public void GetPaymentTypesAsync_API_Returns_Unexpected()
     {
-        _mockReferenceDataRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockReferenceDataRepositoryMock.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
 
-        var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+        var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
         var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
 
@@ -148,25 +166,46 @@ public class GetPaymentTypesAsyncTests
     }
 
     [Fact]
-    public async Task GetPaymentTypesAsync_ResponseDataTaskIsFaulted_ThrowsException()
+    public async Task GetPaymentTypesAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
     {
         // Arrange
         var mockRepository = new Mock<IReferenceDataRepository>();
         var mockLogger = new Mock<ILogger<ReferenceDataApi>>();
 
-        var responseData = new HttpResponseMessage
+        var response = new HttpResponseMessage
         {
             StatusCode = HttpStatusCode.OK,
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent("BAD DATA", Encoding.UTF8, "application/json")
         };
 
-        mockRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(() => throw new InvalidOperationException());
+        mockRepository
+            .Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(response);
 
-        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
-        // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType));
+        // Act
+        var result = await service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType);
+
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        result.IsSuccess.Should().BeFalse();
+        result.Data.Should().BeEmpty();
+        result.Errors.Should().ContainKey($"deserializing");
+
+        var errors = result.Errors["deserializing"].ToList();
+
+        Assert.Equal(errors[0], "An error occurred while processing the response.");
+
+        // Verify error logging
+        mockLogger.Verify(
+            x => x.Log(
+                It.IsAny<LogLevel>(),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception?>(),
+                It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)),
+            Times.Once);
     }
 
     [Fact]
@@ -185,7 +224,7 @@ public class GetPaymentTypesAsyncTests
         mockRepository.Setup(x => x.GetPaymentTypesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(responseData);
 
-        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+        var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
         // Act
         var result = await service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType);

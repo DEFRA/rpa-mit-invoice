@@ -12,9 +12,9 @@ public class Invoice
     public string AccountType { get; init; } = default!;
     [JsonProperty("organisation")]
     public string Organisation { get; init; } = default!;
-    [JsonProperty("schemeType")]
-    public string PaymentType { get; init; } = default!;
     [JsonProperty("paymentType")]
+    public string PaymentType { get; init; } = default!;
+    [JsonProperty("schemeType")]
     public string SchemeType { get; init; } = default!;
     [JsonProperty("paymentRequests")]
     public List<InvoiceHeader> PaymentRequests { get; init; } = default!;
