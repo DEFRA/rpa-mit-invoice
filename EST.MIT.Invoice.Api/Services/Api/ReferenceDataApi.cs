@@ -37,7 +37,6 @@ public class ReferenceDataApi : IReferenceDataApi
             try
             {
                 var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentScheme>(response.Content);
-                await responseDataTask;
 
                 if (responseDataTask.IsFaulted)
                 {
@@ -45,6 +44,7 @@ public class ReferenceDataApi : IReferenceDataApi
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
+                await responseDataTask;
                 var responseData = responseDataTask.Result;
 
                 IEnumerable<PaymentScheme> paymentSchemes = responseData.ToList();
@@ -107,14 +107,14 @@ public class ReferenceDataApi : IReferenceDataApi
             try
             {
                 var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentType>(response.Content);
-                await responseDataTask;
-
+                
                 if (responseDataTask.IsFaulted)
                 {
                     _logger.LogError(responseDataTask.Exception?.Message);
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
+                await responseDataTask;
                 var responseData = responseDataTask.Result;
 
                 IEnumerable<PaymentType> paymentSchemes = responseData.ToList();
