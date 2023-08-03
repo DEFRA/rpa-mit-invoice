@@ -14,6 +14,7 @@ public static class InvoiceTestData
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             Status = status,
             CreatedBy = "Test User",
             PaymentRequests = new List<InvoiceHeader> {

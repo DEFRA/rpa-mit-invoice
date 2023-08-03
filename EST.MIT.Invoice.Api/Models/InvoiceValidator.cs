@@ -1,5 +1,6 @@
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using FluentValidation;
+using System.Reflection;
 
 namespace Invoices.Api.Models;
 
@@ -22,12 +23,20 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .NotEmpty()
             .Must(x => this._validAccountTypes.Contains(x.ToUpper()))
             .WithMessage("Account Type is invalid. Should be AP or AR");
-        RuleFor(x => x.PaymentRequests).NotEmpty();
+        RuleFor(x => x.PaymentType)
+            .NotEmpty();
+        RuleFor(x => x.PaymentRequests)
+            .NotEmpty();
         RuleForEach(x => x.PaymentRequests).SetValidator(new InvoiceHeaderValidator()).When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))
             .WithMessage("Scheme Type is invalid")
+            .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation));
+
+        RuleFor(model => model)
+            .MustAsync((x, cancellation) => BeAValidPaymentType(x))
+            .WithMessage("Payment Type is invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.SchemeType));
 
         RuleFor(model => model)
@@ -38,7 +47,12 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
     public async Task<bool> BeAValidSchemeType(Invoice invoice)
     {
-        var schemeTypes = await _referenceDataApi.GetSchemesAsync(invoice.InvoiceType, invoice.Organisation);
+        if (string.IsNullOrWhiteSpace(invoice.SchemeType))
+        {
+            return false;
+        }
+
+        var schemeTypes = await _referenceDataApi.GetSchemeTypesAsync(invoice.InvoiceType, invoice.Organisation);
 
         if (!schemeTypes.IsSuccess || !schemeTypes.Data.Any())
         {
@@ -46,6 +60,23 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         }
 
         return schemeTypes.Data.Any(x => x.Code.ToLower() == invoice.SchemeType.ToLower());
+    }
+
+    private async Task<bool> BeAValidPaymentType(Invoice invoice)
+    {
+        if (string.IsNullOrWhiteSpace(invoice.PaymentType))
+        {
+            return false;
+        }
+
+        var paymentTypes = await _referenceDataApi.GetPaymentTypesAsync(invoice.InvoiceType, invoice.Organisation, invoice.SchemeType);
+
+        if (!paymentTypes.IsSuccess || !paymentTypes.Data.Any())
+        {
+            return false;
+        }
+
+        return paymentTypes.Data.Any(x => x.Code.ToLower() == invoice.PaymentType.ToLower());
     }
 
     public async Task<bool> BeAValidOrganisationType(Invoice invoice)

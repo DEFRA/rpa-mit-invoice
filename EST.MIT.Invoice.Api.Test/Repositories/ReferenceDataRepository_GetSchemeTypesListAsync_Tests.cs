@@ -6,19 +6,19 @@ using System.Net;
 
 namespace EST.MIT.Invoice.Api.Test.Repositories;
 
-public class ReferenceDataRepositoryTests
+public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 {
     private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
     private string _invoiceType = "RPA";
     private string _organisation = "EST";
 
-    public ReferenceDataRepositoryTests()
+    public ReferenceDataRepository_GetSchemeTypesListAsync_Tests()
     {
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
     }
 
     [Fact]
-    public void GetSchemesListAsync_Returns_200()
+    public void GetSchemeTypesListAsync_Returns_200()
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -33,7 +33,7 @@ public class ReferenceDataRepositoryTests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemesListAsync(_invoiceType, _organisation);
+        var response = repo.GetSchemeTypesListAsync(_invoiceType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -43,7 +43,7 @@ public class ReferenceDataRepositoryTests
     [InlineData("RPA", "")]
     [InlineData("", "EST")]
     [InlineData("RPA", "EST")]
-    public void GetSchemesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Different_Combos(string invoiceType, string organisation)
+    public void GetSchemeTypesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Different_Combos(string invoiceType, string organisation)
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -58,7 +58,7 @@ public class ReferenceDataRepositoryTests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemesListAsync(invoiceType, organisation);
+        var response = repo.GetSchemeTypesListAsync(invoiceType, organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -79,7 +79,7 @@ public class ReferenceDataRepositoryTests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemesListAsync(_invoiceType, _organisation);
+        var response = repo.GetSchemeTypesListAsync(_invoiceType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");

@@ -36,9 +36,10 @@ public class InvoicePutEndpointTests
         var errors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
 
-        var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
 
+        var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()
@@ -46,7 +47,7 @@ public class InvoicePutEndpointTests
                 Code = "bps"
             }
         };
-        response.Data = paymentSchemes;
+        paymentSchemesResponse.Data = paymentSchemes;
 
         var organisation = new List<Organisation>()
         {
@@ -59,9 +60,22 @@ public class InvoicePutEndpointTests
         organisationRespnse.Data = organisation;
 
         _referenceDataApiMock
-            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(response));
+            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentSchemesResponse));
 
+        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var paymentTypes = new List<PaymentType>()
+        {
+            new PaymentType()
+            {
+                Code = "DOM"
+            }
+        };
+        paymentTypesResponse.Data = paymentTypes;
+
+        _referenceDataApiMock
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentTypesResponse));
         _referenceDataApiMock
              .GetOrganisationsAsync(Arg.Any<string>())
              .Returns(Task.FromResult(organisationRespnse));
