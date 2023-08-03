@@ -7,7 +7,7 @@ namespace EST.MIT.Invoice.Api.Util
         Task<IEnumerable<T>> DeserializeList<T>(HttpContent content);
     }
 
-    public class HttpContentDeserializer: IHttpContentDeserializer
+    public class HttpContentDeserializer : IHttpContentDeserializer
     {
         public async Task<IEnumerable<T>> DeserializeList<T>(HttpContent content)
         {

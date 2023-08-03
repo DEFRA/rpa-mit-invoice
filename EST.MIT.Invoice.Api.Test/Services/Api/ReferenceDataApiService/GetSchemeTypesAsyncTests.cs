@@ -185,7 +185,7 @@ public class GetSchemeTypesAsyncTests
             .ReturnsAsync(response);
 
         var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
-        
+
         // Act
         var result = await service.GetSchemeTypesAsync(_invoiceType, _organisation);
 

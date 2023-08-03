@@ -5,7 +5,7 @@ using EST.MIT.Invoice.Api.Util;
 namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 {
     [ExcludeFromCodeCoverage]
-    public class FaultedHttpContentDeserializer: IHttpContentDeserializer
+    public class FaultedHttpContentDeserializer : IHttpContentDeserializer
     {
         public Task<IEnumerable<T>> DeserializeList<T>(HttpContent content)
         {
