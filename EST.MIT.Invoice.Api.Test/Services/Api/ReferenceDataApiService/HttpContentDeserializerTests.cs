@@ -34,7 +34,7 @@ public class HttpContentDeserializerTests
         var content = new StringContent("invalid json", Encoding.UTF8, "application/json");
 
         // Act and Assert
-        await Assert.ThrowsAsync<Exception>(async () => await _deserializer.DeserializeList<string>(content));
+        await Assert.ThrowsAsync<JsonException>(async () => await _deserializer.DeserializeList<string>(content));
     }
 
     [Fact]
