@@ -10,8 +10,7 @@ namespace EST.MIT.Invoice.Api.Util
     {
         public async Task<IEnumerable<T>> DeserializeList<T>(HttpContent content)
         {
-            var result = await content.ReadFromJsonAsync<IEnumerable<T>>();
-            return result?.ToList() ?? new List<T>();
+            return await content.ReadFromJsonAsync<IEnumerable<T>>() ?? new List<T>();
         }
     }
 }
