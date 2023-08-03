@@ -1,4 +1,4 @@
-﻿using EST.MIT.Invoice.Api.Services.API.Models;
+﻿using System.Text.Json;
 
 namespace EST.MIT.Invoice.Api.Util
 {
@@ -11,7 +11,15 @@ namespace EST.MIT.Invoice.Api.Util
     {
         public async Task<IEnumerable<T>> DeserializeList<T>(HttpContent content)
         {
-            return await content.ReadFromJsonAsync<IEnumerable<T>>() ?? new List<T>();
+            try
+            {
+                var result = await content.ReadFromJsonAsync<IEnumerable<T>>();
+                return result?.ToList() ?? new List<T>();
+            }
+            catch (JsonException)
+            {
+                throw new Exception("An error occurred while processing the response.");
+            }
         }
     }
 }

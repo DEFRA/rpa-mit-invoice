@@ -195,7 +195,7 @@ public class GetPaymentTypesAsyncTests
 
         var errors = result.Errors["deserializing"].ToList();
 
-        Assert.Equal(errors[0], "An error occurred while processing the response.");
+        Assert.Equal("An error occurred while processing the response.", errors[0]);
 
         // Verify error logging
         mockLogger.Verify(

@@ -1,14 +1,5 @@
-﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
-using EST.MIT.Invoice.Api.Services.Api;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System.Net;
-using System.Text.Json;
-using FluentAssertions;
-using Moq.Protected;
+﻿using System.Text.Json;
 using System.Text;
-using System.Data;
 using EST.MIT.Invoice.Api.Util;
 
 namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService;
@@ -37,7 +28,17 @@ public class HttpContentDeserializerTests
     }
 
     [Fact]
-    public async Task DeserializeList_ShouldReturnEmptyListWhenContentIsEmpty()
+    public async Task DeserializeList_ShouldThrowExceptionWhenContentIsInvalidJson()
+    {
+        // Arrange
+        var content = new StringContent("invalid json", Encoding.UTF8, "application/json");
+
+        // Act and Assert
+        await Assert.ThrowsAsync<Exception>(async () => await _deserializer.DeserializeList<string>(content));
+    }
+
+    [Fact]
+    public async Task DeserializeList_ShouldReturnEmptyListWhenContentIsEmptyArray()
     {
         // Arrange
         var content = new StringContent("[]", Encoding.UTF8, "application/json");
@@ -49,3 +50,4 @@ public class HttpContentDeserializerTests
         Assert.Empty(result);
     }
 }
+
