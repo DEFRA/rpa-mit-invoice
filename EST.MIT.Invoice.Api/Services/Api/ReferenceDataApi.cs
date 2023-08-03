@@ -107,7 +107,7 @@ public class ReferenceDataApi : IReferenceDataApi
             try
             {
                 var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentType>(response.Content);
-                
+
                 if (responseDataTask.IsFaulted)
                 {
                     _logger.LogError(responseDataTask.Exception?.Message);
