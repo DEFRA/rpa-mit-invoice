@@ -9,6 +9,7 @@ using FluentAssertions;
 using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Moq;
 using NSubstitute.ReturnsExtensions;
 
 namespace Invoices.Api.Test;
@@ -31,7 +32,7 @@ public class InvoicePostEndpointTests
     public InvoicePostEndpointTests()
     {
         var errors = new Dictionary<string, List<string>>();
-        var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()
@@ -39,11 +40,25 @@ public class InvoicePostEndpointTests
                 Code = "bps"
             }
         };
-        response.Data = paymentSchemes;
+        paymentSchemesResponse.Data = paymentSchemes;
 
         _referenceDataApiMock
-            .GetSchemesAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(response));
+            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentSchemesResponse));
+
+        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var paymentTypes = new List<PaymentType>()
+        {
+            new PaymentType()
+            {
+                Code = "DOM"
+            }
+        };
+        paymentTypesResponse.Data = paymentTypes;
+
+        _referenceDataApiMock
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentTypesResponse));
         _validator = new InvoiceValidator(_referenceDataApiMock);
     }
 
@@ -83,6 +98,59 @@ public class InvoicePostEndpointTests
             Id = "123456789",
             InvoiceType = "AP",
             AccountType = "AP",
+            PaymentType = "DOM",
+            Organisation = "Test Org",
+            Reference = "123456789",
+            CreatedBy = "Test User",
+            Status = "status",
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+            }
+        };
+
+        _cosmosService.Create(invoice).Returns(invoice);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+
+        //Act
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+
+        //Assert
+        result.GetCreatedStatusCode().Should().Be(400);
+    }
+
+    [Fact]
+    public async Task PostInvoice_When_PaymentType_Is_Missing_Should_Return_Status_Code_400()
+    {
+        //Arrange
+        Invoice invoice = new Invoice()
+        {
+            Id = "123456789",
+            InvoiceType = "AP",
+            AccountType = "AP",
+            SchemeType = "XP",
             Organisation = "Test Org",
             Reference = "123456789",
             CreatedBy = "Test User",

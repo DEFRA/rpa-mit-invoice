@@ -3,6 +3,6 @@
 namespace EST.MIT.Invoice.Api.Services.API.Models;
 
 [ExcludeFromCodeCoverageAttribute]
-public class PaymentScheme : ReferenceDataBaseApiModel
+public class PaymentType : ReferenceDataBaseApiModel
 {
 }

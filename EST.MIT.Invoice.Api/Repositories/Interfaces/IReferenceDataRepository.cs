@@ -2,5 +2,6 @@
 
 public interface IReferenceDataRepository
 {
-    Task<HttpResponseMessage> GetSchemesListAsync(string? invoiceType, string? organisation);
+    Task<HttpResponseMessage> GetSchemeTypesListAsync(string? invoiceType, string? organisation);
+    Task<HttpResponseMessage> GetPaymentTypesListAsync(string? invoiceType, string? organisation, string? schemeType);
 }
