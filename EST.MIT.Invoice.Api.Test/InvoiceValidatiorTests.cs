@@ -130,7 +130,7 @@ public class InvoiceValidatiorTests
             SchemeType = "bps",
             PaymentType = "DOM",
             CreatedBy = "Test User",
-            Status = "status",            
+            Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
                 new InvoiceHeader {
                     PaymentRequestId = "123456789",
