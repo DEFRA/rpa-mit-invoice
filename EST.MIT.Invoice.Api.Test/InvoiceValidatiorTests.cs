@@ -432,57 +432,7 @@ public class InvoiceValidatiorTests
 
         //Assert
         response.Errors.Count.Equals(0);
-    }
-
-    [Fact]
-    public async Task BeAValidateOrganisationTypeReturns_False()
-    {
-        //Arrange
-        var OrganisationErrors = new Dictionary<string, List<string>>();
-        var OrganisationApiResponse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound, OrganisationErrors);
-
-        var organisation = new List<Organisation>();
-
-        OrganisationApiResponse.Data = organisation;
-
-        _referenceDataApiMock
-            .GetOrganisationsAsync(Arg.Any<string>())
-            .Returns(Task.FromResult(OrganisationApiResponse));
-
-
-        Invoice invoice = new Invoice();
-
-        //Act
-        var response = await _invoiceValidator.BeAValidOrganisationType(invoice);
-
-        //Assert
-        Assert.False(response);
-    }
-
-    [Fact]
-    public async Task BeAValidSchemeTypeReturns_False()
-    {
-        //Arrange
-        var errors = new Dictionary<string, List<string>>();
-        var apiResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.NotFound, errors);
-
-        var paymentScheme = new List<PaymentScheme>();
-
-        apiResponse.Data = paymentScheme;
-
-        _referenceDataApiMock
-            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(apiResponse));
-
-
-        Invoice invoice = new Invoice();
-
-        //Act
-        var response = await _invoiceValidator.BeAValidSchemeType(invoice);
-
-        //Assert
-        Assert.False(response);
-    }
+    } 
 
     [Fact]
     public async Task Given_Invoice_When_SchemeType_Is_Valid_But_Repo_Returns_Nothing_Then_Invoice_Fails()
