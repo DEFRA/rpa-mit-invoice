@@ -40,7 +40,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.SchemeType));
 
         RuleFor(model => model)
-            .MustAsync((x, CancellationToken) => BeAValidOrganisationType(x))
+            .MustAsync((x, CancellationToken) => BeAValidOrganisationCode(x))
             .WithMessage("Organisation is Invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
     }
@@ -79,15 +79,15 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         return paymentTypes.Data.Any(x => x.Code.ToLower() == invoice.PaymentType.ToLower());
     }
 
-    private async Task<bool> BeAValidOrganisationType(Invoice invoice)
+    private async Task<bool> BeAValidOrganisationCode(Invoice invoice)
     {
-        var organisationTypes = await _referenceDataApi.GetOrganisationsAsync(invoice.InvoiceType);
+        var organisationCodes = await _referenceDataApi.GetOrganisationsAsync(invoice.InvoiceType);
 
-        if (!organisationTypes.IsSuccess || !organisationTypes.Data.Any())
+        if (!organisationCodes.IsSuccess || !organisationCodes.Data.Any())
         {
             return false;
         }
 
-        return organisationTypes.Data.Any(x => x.Code.ToLower() == invoice.Organisation.ToLower());
+        return organisationCodes.Data.Any(x => x.Code.ToLower() == invoice.Organisation.ToLower());
     }
 }

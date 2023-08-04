@@ -48,9 +48,8 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 await responseDataTask;
-                var responseData = responseDataTask.Result;
-
-                IEnumerable<PaymentScheme> paymentSchemes = responseData.ToList();
+                var paymentSchemes = responseDataTask.Result.ToList();
+ 
                 if (paymentSchemes.Any())
                 {
                     return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK)
@@ -120,9 +119,8 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 await responseDataTask;
-                var responseData = responseDataTask.Result;
-
-                IEnumerable<PaymentType> paymentSchemes = responseData.ToList();
+                var paymentSchemes = responseDataTask.Result.ToList();
+ 
                 if (paymentSchemes.Any())
                 {
                     return new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK)
@@ -191,14 +189,13 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 await responseDataTask;
-                var responseData = responseDataTask.Result;
-
-                IEnumerable<Organisation> organisation = responseData.ToList();
-                if (organisation.Any())
+                var organisations = responseDataTask.Result.ToList();
+                
+                if (organisations.Any())
                 {
                     return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
                     {
-                        Data = organisation
+                        Data = organisations
                     };
                 }
 

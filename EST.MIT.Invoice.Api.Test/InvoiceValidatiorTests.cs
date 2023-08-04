@@ -78,6 +78,7 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
@@ -127,9 +128,9 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             CreatedBy = "Test User",
-            Status = "status",
-            PaymentType = "AP",
+            Status = "status",            
             PaymentRequests = new List<InvoiceHeader> {
                 new InvoiceHeader {
                     PaymentRequestId = "123456789",
@@ -183,6 +184,7 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "EU",
             CreatedBy = "Test User",
             Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
@@ -264,6 +266,7 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
@@ -347,6 +350,7 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
@@ -397,6 +401,7 @@ public class InvoiceValidatiorTests
             Organisation = "Test Org",
             Reference = "123456789",
             SchemeType = "bps",
+            PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
             PaymentRequests = new List<InvoiceHeader> {
