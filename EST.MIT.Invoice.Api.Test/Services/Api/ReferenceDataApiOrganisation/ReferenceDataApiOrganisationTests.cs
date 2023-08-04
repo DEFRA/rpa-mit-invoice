@@ -1,6 +1,8 @@
 ﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService;
+using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
 using Invoices.Api.Models;
 using Microsoft.Extensions.Logging;
@@ -18,13 +20,31 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
     public class ReferenceDataApiOrganisationTests
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepository;
+        private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
         private string _invoiceType = "RPA";
 
         private readonly ReferenceDataApi _referenceDataApi;
         public ReferenceDataApiOrganisationTests()
         {
             _mockReferenceDataRepository = new Mock<IReferenceDataRepository>();
-            _referenceDataApi = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>());
+            _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
+
+            _httpContentDeserializerMock.Setup(x => x.DeserializeList<Organisation>(It.IsAny<HttpContent>()))
+             .ReturnsAsync(new List<Organisation>()
+             {
+                        new Organisation()
+                        {
+                            Code = "RPA",
+                            Description =  "First Organisation"
+                        },
+                        new Organisation()
+                        {
+                            Code = "RPA",
+                            Description =  "Second Organisation"
+                        }
+             });
+
+            _referenceDataApi = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
         }
 
         [Fact]
@@ -38,12 +58,12 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
                     {
                     new Organisation()
                     {
-                        Code = "ORG1",
+                        Code = "RPA",
                         Description =  "First Organisation"
                     },
                     new Organisation()
                     {
-                        Code = "ORG2",
+                        Code = "RPA",
                         Description =  "Second Organisation"
                     }
                     }))
@@ -61,12 +81,12 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             {
                     new Organisation()
                     {
-                        Code = "ORG1",
+                        Code = "RPA",
                         Description =  "First Organisation"
                     },
                     new Organisation()
                     {
-                        Code = "ORG2",
+                        Code = "RPA",
                         Description =  "Second Organisation"
                     }
              });
@@ -94,7 +114,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
                 Content = new StringContent("123")
             });
 
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
+
+            var response = service.GetOrganisationsAsync(_invoiceType).Result;
 
             response.IsSuccess.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -144,7 +166,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
 
         [Fact]
-        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_ThrowsInvalidException()
+        public async Task GetOrganisationAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
@@ -153,17 +175,37 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             var responseData = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent("BAD DATA", Encoding.UTF8, "application/json")
 
             };
 
             mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
-                .ReturnsAsync(() => throw new InvalidOperationException());
+                .ReturnsAsync(responseData);
 
-            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
-            // Act and Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.GetOrganisationsAsync(_invoiceType));
+            // Act
+            var result = await service.GetOrganisationsAsync(_invoiceType);
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            result.IsSuccess.Should().BeFalse();
+            result.Data.Should().BeEmpty();
+            result.Errors.Should().ContainKey($"deserializing");
+
+            var errors = result.Errors["deserializing"].ToList();
+
+            Assert.Equal("An error occurred while processing the response.", errors[0]);
+
+            // Verify error logging
+            mockLogger.Verify(
+                x => x.Log(
+                    It.IsAny<LogLevel>(),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => true),
+                    It.IsAny<Exception?>(),
+                    It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)),
+                Times.Exactly(2));
         }
 
         [Fact]
@@ -182,7 +224,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
             mockRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
                 .ReturnsAsync(responseData);
 
-            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object);
+            var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
             // Act
             var result = await service.GetOrganisationsAsync(_invoiceType);
