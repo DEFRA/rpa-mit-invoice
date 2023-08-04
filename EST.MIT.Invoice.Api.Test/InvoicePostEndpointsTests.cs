@@ -35,7 +35,6 @@ public class InvoicePostEndpointTests
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var orgnisationErrors = new Dictionary<string, List<string>>();
 
-
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
