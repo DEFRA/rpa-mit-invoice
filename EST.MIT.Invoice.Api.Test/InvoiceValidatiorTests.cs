@@ -18,7 +18,7 @@ public class InvoiceValidatiorTests
     {
         var paymentSchemeErrors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
-        var payTypesErrors = new Dictionary<string, List<string>>();    
+        var payTypesErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
@@ -45,7 +45,7 @@ public class InvoiceValidatiorTests
         var paymentTypes = new List<PaymentType>()
         {
             new PaymentType()
-            { 
+            {
                 Code = "AP"
             }
         };
@@ -60,7 +60,7 @@ public class InvoiceValidatiorTests
              .Returns(Task.FromResult(organisationRespnse));
 
         _referenceDataApiMock
-            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(),Arg.Any<String>())
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<String>())
             .Returns(Task.FromResult(paymentTypeResponse));
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
