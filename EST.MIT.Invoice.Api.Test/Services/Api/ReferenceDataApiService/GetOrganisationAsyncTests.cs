@@ -1,21 +1,15 @@
 ﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.API.Models;
-using EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService;
 using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
-using Invoices.Api.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
+namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 {
     public class ReferenceDataApiOrganisationTests
     {
@@ -234,3 +228,4 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiOrganisation
         }
     }
 }
+
