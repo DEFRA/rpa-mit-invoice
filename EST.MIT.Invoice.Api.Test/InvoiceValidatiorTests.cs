@@ -566,25 +566,25 @@ public class InvoiceValidatiorTests
     public async Task Given_Invoice_When_PaymentType_Is_Valid_But_Repo_Fails_Then_Invoice_Fails()
     {
         //Arrange
-        //var errors = new Dictionary<string, List<string>>();
-        //var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
-        //var paymentTypes = new List<PaymentType>()
-        //{
-        //    new PaymentType()
-        //    {
-        //        Code = "DOM"
-        //    },
-        //    new PaymentType()
-        //    {
-        //        Code = "EU"
-        //    }
-        //};
-        //paymentTypesResponse.IsSuccess = false;
-        //paymentTypesResponse.Data = paymentTypes;
+        var errors = new Dictionary<string, List<string>>();
+        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var paymentTypes = new List<PaymentType>()
+        {
+            new PaymentType()
+            {
+                Code = "DOM"
+            },
+            new PaymentType()
+            {
+                Code = "EU"
+            }
+        };
+        paymentTypesResponse.IsSuccess = false;
+        paymentTypesResponse.Data = paymentTypes;
 
-        //_referenceDataApiMock
-        //    .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-        //    .Returns(Task.FromResult(paymentTypesResponse));
+        _referenceDataApiMock
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentTypesResponse));
 
 
         Invoice invoice = new Invoice()
@@ -637,15 +637,15 @@ public class InvoiceValidatiorTests
     public async Task Given_Invoice_When_PaymentType_Is_Valid_But_Repo_Returns_Nothing_Then_Invoice_Fails()
     {
         //Arrange
-        //var errors = new Dictionary<string, List<string>>();
-        //var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
-        //var paymentTypes = new List<PaymentType>();
-        //paymentTypesResponse.IsSuccess = true;
-        //paymentTypesResponse.Data = paymentTypes;
+        var errors = new Dictionary<string, List<string>>();
+        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var paymentTypes = new List<PaymentType>();
+        paymentTypesResponse.IsSuccess = true;
+        paymentTypesResponse.Data = paymentTypes;
 
-        //_referenceDataApiMock
-        //    .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-        //    .Returns(Task.FromResult(paymentTypesResponse));
+        _referenceDataApiMock
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentTypesResponse));
 
 
         Invoice invoice = new Invoice()
