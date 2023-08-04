@@ -84,4 +84,71 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
     }
+
+    [Fact]
+    public void GetOrganisationListAsync_Returns_200()
+    {
+        _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
+
+        var factory = _mockHttpMessageHandler.CreateClientFactory();
+
+        Mock.Get(factory).Setup(x => x.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var client = _mockHttpMessageHandler.CreateClient();
+            client.BaseAddress = new Uri("https://localhost");
+            return client;
+        });
+
+        var repo = new ReferenceDataRepository(factory);
+
+        var response = repo.GetOrganisationsListAsync(_invoiceType);
+
+        response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("RPA")]
+    public void GetOrganisationListAsync_Returns_200_When_InvoiceType(string invoiceType)
+    {
+        _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
+
+        var factory = _mockHttpMessageHandler.CreateClientFactory();
+
+        Mock.Get(factory).Setup(x => x.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var client = _mockHttpMessageHandler.CreateClient();
+            client.BaseAddress = new Uri("https://localhost");
+            return client;
+        });
+
+        var repo = new ReferenceDataRepository(factory);
+
+        var response = repo.GetOrganisationsListAsync(invoiceType);
+
+        response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public void HandleHttpResponseErrorForOrganisation_Handed_FailCode()
+    {
+        _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.BadRequest, "Test BadRequest");
+
+        var factory = _mockHttpMessageHandler.CreateClientFactory();
+
+        Mock.Get(factory).Setup(x => x.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var client = _mockHttpMessageHandler.CreateClient();
+            client.BaseAddress = new Uri("https://localhost");
+            return client;
+        });
+
+        var repo = new ReferenceDataRepository(factory);
+
+        var response = repo.GetOrganisationsListAsync(_invoiceType);
+
+        response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
+    }
+
 }
