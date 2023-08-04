@@ -45,7 +45,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetOrganisationsListAsync(string? invoiceType)
     {
-        var client = _clientFactory.CreateClient("ReferenceDataApi");
+        var client = _clientFactory.CreateClient("ReferenceDataApi.Organisations");
 
         var response = (string.IsNullOrEmpty(invoiceType))
            ? await client.GetAsync($"/organisations")

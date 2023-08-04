@@ -176,8 +176,7 @@ public class ReferenceDataApi : IReferenceDataApi
             }
             try
             {
-                var responseDataTask = response.Content.ReadFromJsonAsync<IEnumerable<Organisation>>();
-                await responseDataTask;
+                var responseDataTask = _httpContentDeserializer.DeserializeList<Organisation>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -187,22 +186,20 @@ public class ReferenceDataApi : IReferenceDataApi
                     throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
                 }
 
+                await responseDataTask;
                 var responseData = responseDataTask.Result;
-                if (responseData != null)
+
+                IEnumerable<Organisation> organisation = responseData.ToList();
+                if (organisation.Any())
                 {
-                    var organisation = responseData.ToList();
-
-                    if (organisation.Any())
+                    return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
                     {
-                        return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK)
-                        {
-                            Data = responseData
-                        };
-                    }
-
-                    _logger.LogInformation("No content returned from API");
-                    return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound);
+                        Data = organisation
+                    };
                 }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.NotFound);
 
             }
             catch (Exception ex)
