@@ -432,7 +432,7 @@ public class InvoiceValidatiorTests
 
         //Assert
         response.Errors.Count.Equals(0);
-    } 
+    }
 
     [Fact]
     public async Task Given_Invoice_When_SchemeType_Is_Valid_But_Repo_Returns_Nothing_Then_Invoice_Fails()
