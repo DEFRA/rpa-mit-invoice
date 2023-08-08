@@ -1,6 +1,7 @@
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using FluentValidation;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Invoices.Api.Models;
 
@@ -12,7 +13,15 @@ public class InvoiceValidator : AbstractValidator<Invoice>
     public InvoiceValidator(IReferenceDataApi referenceDataApi)
     {
         _referenceDataApi = referenceDataApi;
-        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(model => model)
+                           .Must((x, Cancellation) => BeNotNullOrEmpty(x))
+                           .WithMessage("Invoice ID must not be null or empty")
+                           .Must((x, cancellation) => BeMaximumCharacterTwenty(x))
+                           .WithMessage("Invoice Id must not be more than 20 characters")
+                           .Must((x, cancellation) => BeMinimumCharacterOne(x))
+                           .WithMessage("Invoice Id must contain at least one character")
+                           .Must((x, cancellation) => BeWithoutSpaces(x))
+                           .WithMessage("Invoice ID cannot contain spaces");
         RuleFor(x => x.SchemeType)
             .NotEmpty();
         RuleFor(x => x.Organisation)
@@ -43,6 +52,46 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .MustAsync((x, CancellationToken) => BeAValidOrganisationCode(x))
             .WithMessage("Organisation is Invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
+    }
+
+    private static bool BeNotNullOrEmpty(Invoice invoice)
+    {
+        if(string.IsNullOrEmpty(invoice.Id))
+        {
+            return false;
+        }
+
+        return true;    
+    }
+
+    private static bool BeMaximumCharacterTwenty(Invoice invoice)
+    {
+        if(invoice.Id.Length > 20)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool BeMinimumCharacterOne(Invoice invoice)
+    {
+        if(invoice.Id.Length < 1)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool BeWithoutSpaces(Invoice invoice)
+    {
+        if (Regex.IsMatch(invoice.Id, @"\s"))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private async Task<bool> BeAValidSchemeType(Invoice invoice)
