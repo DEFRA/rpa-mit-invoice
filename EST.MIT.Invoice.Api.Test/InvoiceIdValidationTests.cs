@@ -72,7 +72,7 @@ public class InvoiceIdValidationTests
     }
 
     [Fact]
-    public async Task Given_Invoice_When_InvoidId_Is_Null_Or_Empty_Then_Failure_Message_InvoiceId_Is_Missing_Is_Thrown()
+    public async Task Given_Invoice_When_InvoiceId_Is_Null_Or_Empty_Then_Failure_Message_InvoiceId_Is_Missing_Is_Thrown()
     {
         //Arrange
         Invoice invoice = new Invoice()
@@ -118,8 +118,8 @@ public class InvoiceIdValidationTests
         var response = await _invoiceValidator.TestValidateAsync(invoice);
 
         //Assert
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice ID must not be null or empty")) == 1);
-        Assert.True(response.Errors[0].ErrorMessage == "Invoice ID must not be null or empty");
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice Id is missing")) == 1);
+        Assert.True(response.Errors[0].ErrorMessage == "Invoice Id is missing");
     }
 
     [Fact]
@@ -271,8 +271,8 @@ public class InvoiceIdValidationTests
         var response = await _invoiceValidator.TestValidateAsync(invoice);
 
         //Assert
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice ID cannot contain spaces")) == 1);
-        Assert.True(response.Errors[0].ErrorMessage == "Invoice ID cannot contain spaces");
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice Id cannot contain spaces")) == 1);
+        Assert.True(response.Errors[0].ErrorMessage == "Invoice Id cannot contain spaces");
     }
 }
 
