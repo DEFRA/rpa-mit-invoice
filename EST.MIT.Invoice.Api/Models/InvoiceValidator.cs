@@ -1,6 +1,6 @@
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using FluentValidation;
-using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Invoices.Api.Models;
 
@@ -12,7 +12,15 @@ public class InvoiceValidator : AbstractValidator<Invoice>
     public InvoiceValidator(IReferenceDataApi referenceDataApi)
     {
         _referenceDataApi = referenceDataApi;
-        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Invoice Id is missing")
+            .MaximumLength(20)
+            .WithMessage("Invoice Id must not be more than 20 characters")
+            .MinimumLength(1)
+            .WithMessage("Invoice Id must contain at least one character")
+            .Must(BeWithoutSpaces)
+            .WithMessage("Invoice Id cannot contain spaces");
         RuleFor(x => x.SchemeType)
             .NotEmpty();
         RuleFor(x => x.Organisation)
@@ -43,6 +51,15 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .MustAsync((x, CancellationToken) => BeAValidOrganisationCode(x))
             .WithMessage("Organisation is Invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
+    }
+
+    private bool BeWithoutSpaces(string id)
+    {
+        if (Regex.IsMatch(id, @"\s"))
+        {
+            return false;
+        }
+        return true;
     }
 
     private async Task<bool> BeAValidSchemeType(Invoice invoice)
