@@ -56,17 +56,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
     private static bool BeNotNullOrEmpty(Invoice invoice)
     {
-        if(string.IsNullOrEmpty(invoice.Id))
-        {
-            return false;
-        }
-
-        return true;    
-    }
-
-    private static bool BeMaximumCharacterTwenty(Invoice invoice)
-    {
-        if(invoice.Id.Length > 20)
+        if (string.IsNullOrEmpty(invoice.Id))
         {
             return false;
         }
@@ -74,13 +64,21 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         return true;
     }
 
-    private static bool BeMinimumCharacterOne(Invoice invoice)
+    private static bool BeMaximumCharacterTwenty(Invoice invoice)
     {
-        if(invoice.Id.Length < 1)
+        if (invoice.Id.Length > 20)
         {
             return false;
         }
+        return true;
+    }
 
+    private static bool BeMinimumCharacterOne(Invoice invoice)
+    {
+        if (invoice.Id.Length < 1)
+        {
+            return false;
+        }
         return true;
     }
 
@@ -90,7 +88,6 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         {
             return false;
         }
-
         return true;
     }
 
