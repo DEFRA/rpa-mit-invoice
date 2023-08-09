@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics;
+using System.Reflection;
+using FluentValidation;
 
 namespace Invoices.Api.Models;
 
@@ -19,6 +21,20 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value).NotEmpty();
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator());
+
+        RuleFor(model => model)
+            .Must(HaveSameCurrencyTypes)
+            .WithMessage("Cannot mix currencies in an invoice")
+            .When(model => model.InvoiceLines != null && model.InvoiceLines.Any());
+    }
+
+    private bool HaveSameCurrencyTypes(InvoiceHeader invoiceHeader)
+    {
+        // get all the currency types from the invoice lines
+        var allCurrencyTypes = invoiceHeader.InvoiceLines.Select(x => x.Currency).Distinct();
+
+        // check that all invoice lines have the same currency
+        return allCurrencyTypes.Count() <= 1;
     }
 }
 
