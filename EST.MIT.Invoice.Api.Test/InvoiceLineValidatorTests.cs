@@ -104,7 +104,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData("NOT GBP")]
         [InlineData("NOT EUR")]
         [InlineData("12345")]
-        public void Given_InvoiceLine_When_Currency_Is_Invalid_Then_Invoice_Fails(string? currency)
+        public void Given_InvoiceLine_When_Currency_Is_Invalid_Then_InvoiceLine_Fails(string? currency)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -130,7 +130,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("GBP")]
         [InlineData("EUR")]
-        public void Given_InvoiceLine_When_Currency_Is_Valid_Then_Invoice_Passes(string currency)
+        public void Given_InvoiceLine_When_Currency_Is_Valid_Then_InvoiceLine_Passes(string currency)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -152,6 +152,101 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             Assert.Empty(response.Errors);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        [InlineData(10.0)]
+        [InlineData(10.00)]
+        [InlineData(10.000)]
+        [InlineData(10.1)]
+        [InlineData(10.10)]
+        [InlineData(10.100)]
+        [InlineData(-10)]
+        [InlineData(-10.0)]
+        [InlineData(-10.00)]
+        [InlineData(-10.000)]
+        [InlineData(-10.1)]
+        [InlineData(-10.10)]
+        [InlineData(-10.100)]
+        public void Given_InvoiceLine_When_Value_Has_Correct_Decimal_Places_Then_InvoiceLine_Passes(decimal value)
+        {
+            // this is because decimal places that have a value of 0 are not
+            // counted unless they are followed by a non-zero value
+
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = value
+            };
+
+            //Act
+            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            Assert.Empty(response.Errors);
+        }
+
+        [Theory]
+        [InlineData(10.101)]
+        [InlineData(10.1234)]
+        [InlineData(10.00001)]
+        public void Given_InvoiceLine_When_Value_Has_More_Than_2DP_Then_InvoiceLine_Fails(decimal value)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = value
+            };
+
+            //Act
+            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            Assert.Single(response.Errors);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
+        }
+
+        [Fact]
+        public void Given_InvoiceLine_When_Value_Is_Equal_To_Zero_Then_InvoiceLine_Fails()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 0
+            };
+
+            //Act
+            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            Assert.Single(response.Errors);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
         }
     }
 }
