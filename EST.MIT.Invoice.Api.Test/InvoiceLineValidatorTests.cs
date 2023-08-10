@@ -18,7 +18,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
             {
-                Currency = "£",
+                Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678"
@@ -38,7 +38,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
             {
-                Currency = "£",
+                Currency = "GBP",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 234.8M
@@ -58,7 +58,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
             {
-                Currency = "£",
+                Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
                 Value = 234.8M
@@ -78,7 +78,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
             {
-                Currency = "£",
+                Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
@@ -94,7 +94,64 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.Errors.Count.Equals(0);
+            Assert.Empty(response.Errors);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("NOT GBP")]
+        [InlineData("NOT EUR")]
+        [InlineData("12345")]
+        public void Given_InvoiceLine_When_Currency_Is_Invalid_Then_Invoice_Fails(string? currency)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = currency ?? "",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M
+            };
+
+            //Act
+            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Currency must be GBP or EUR")) == 1);
+        }
+
+        [Theory]
+        [InlineData("GBP")]
+        [InlineData("EUR")]
+        public void Given_InvoiceLine_When_Currency_Is_Valid_Then_Invoice_Passes(string currency)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = currency,
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M
+            };
+
+            //Act
+            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Description);
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            Assert.Empty(response.Errors);
         }
     }
 }

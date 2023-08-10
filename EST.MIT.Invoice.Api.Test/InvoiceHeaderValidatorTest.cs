@@ -28,7 +28,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -65,7 +65,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -103,7 +103,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -140,7 +140,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -175,7 +175,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -213,7 +213,7 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = 23456,
-                        Currency = "£",
+                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
@@ -243,6 +243,54 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.Errors.Count.Equals(0);
+        }
+
+        [Theory]
+        [InlineData("GBP", "EUR")]
+        [InlineData("EUR", "GBP")]
+        public void Given_InvoiceHeader_When_Currencies_Are_Different_Then_InvoiceHeader_Fails(string currencyOne, string currencyTwo)
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                ContractNumber = "ED34566",
+                DeliveryBody = "XYZ",
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                FRN = 1000000000,
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 23456,
+                        Currency = currencyOne,
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "WE4567"
+                    },
+                    new InvoiceLine()
+                    {
+                        Value = 23456,
+                        Currency = currencyTwo,
+                        Description = "ABD",
+                        FundCode = "FUNDCODE2",
+                        SchemeCode = "WE4567"
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 2345678.65M
+            };
+
+            //Act
+            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+
+            //Assert
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
+            Assert.Single(response.Errors);
         }
     }
 }
