@@ -269,8 +269,3 @@ public class InvoiceIdValidationTests
         Assert.True(response.Errors[0].ErrorMessage == "Invoice Id cannot contain spaces");
     }
 }
-
-
-    
-
-
