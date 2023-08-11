@@ -29,10 +29,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
-        var valueAsString = value.ToString(CultureInfo.InvariantCulture);
-        var twoDecimalPlacesRegex = new Regex(RegexConstants.TwoDecimalPlaces);
-
-        return twoDecimalPlacesRegex.IsMatch(valueAsString);
+        return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 }
 

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using Invoices.Api.Util;
@@ -46,10 +44,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
-        var valueAsString = value.ToString(CultureInfo.InvariantCulture);
-        var twoDecimalPlacesRegex = new Regex(RegexConstants.TwoDecimalPlaces);
-
-        return twoDecimalPlacesRegex.IsMatch(valueAsString);
+        return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 }
 
