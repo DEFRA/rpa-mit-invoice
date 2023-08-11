@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Results;
 using Invoices.Api.Endpoints;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
 using Microsoft.AspNetCore.Http;
-using Moq;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -21,8 +18,62 @@ public class InvoiceBulkPostEndpointsTest
         Substitute.For<ICosmosService>();
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
-    private readonly IValidator<BulkInvoices> _validator = new BulkInvoiceValidator();
+    private readonly IReferenceDataApi _referenceDataApiMock =
+         Substitute.For<IReferenceDataApi>();
+    private readonly IValidator<BulkInvoices> _validator;
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+
+    public InvoiceBulkPostEndpointsTest()
+    {
+        var paymentSchemeErrors = new Dictionary<string, List<string>>();
+        var orgnisationErrors = new Dictionary<string, List<string>>();
+        var payTypesErrors = new Dictionary<string, List<string>>();
+
+        var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
+        var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
+        var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
+
+        var paymentSchemes = new List<PaymentScheme>()
+        {
+            new PaymentScheme()
+            {
+                Code = "bps"
+            }
+        };
+        response.Data = paymentSchemes;
+
+        var organisation = new List<Organisation>()
+        {
+            new Organisation()
+            {
+                 Code = "Test Org"
+            }
+        };
+        organisationRespnse.Data = organisation;
+
+        var paymentTypes = new List<PaymentType>()
+        {
+            new PaymentType()
+            {
+                Code = "DOM"
+            }
+        };
+        paymentTypeResponse.Data = paymentTypes;
+
+        _referenceDataApiMock
+            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(response));
+
+        _referenceDataApiMock
+             .GetOrganisationsAsync(Arg.Any<string>())
+             .Returns(Task.FromResult(organisationRespnse));
+
+        _referenceDataApiMock
+            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<String>())
+            .Returns(Task.FromResult(paymentTypeResponse));
+
+        _validator = new BulkInvoiceValidator(_referenceDataApiMock);
+    }
 
     [Fact]
     public async Task CreateBulkInvoices_ShouldReturnOk()
