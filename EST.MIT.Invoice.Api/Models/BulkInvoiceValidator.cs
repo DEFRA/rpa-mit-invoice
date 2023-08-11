@@ -6,11 +6,9 @@ namespace Invoices.Api.Models;
 
 public class BulkInvoiceValidator : AbstractValidator<BulkInvoices>
 {
-    private readonly IReferenceDataApi _referenceDataApi;
-
     public BulkInvoiceValidator(IReferenceDataApi referenceDataApi)
     {
-        _referenceDataApi = referenceDataApi;
+        var _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.Reference).NotEmpty();
         RuleFor(x => x.SchemeType).NotEmpty();
