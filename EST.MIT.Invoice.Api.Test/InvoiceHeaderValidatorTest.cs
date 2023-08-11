@@ -298,18 +298,10 @@ namespace EST.MIT.Invoice.Api.Test
 
         [Theory]
         [InlineData(10)]
-        [InlineData(10.0)]
-        [InlineData(10.00)]
         [InlineData(10.000)]
-        [InlineData(10.1)]
-        [InlineData(10.10)]
         [InlineData(10.100)]
         [InlineData(-10)]
-        [InlineData(-10.0)]
-        [InlineData(-10.00)]
         [InlineData(-10.000)]
-        [InlineData(-10.1)]
-        [InlineData(-10.10)]
         [InlineData(-10.100)]
         public void Given_InvoiceHeader_When_Value_Has_Correct_Decimal_Places_Then_InvoiceHeader_Passes(decimal value)
         {
