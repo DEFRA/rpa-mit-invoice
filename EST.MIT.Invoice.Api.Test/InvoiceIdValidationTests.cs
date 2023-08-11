@@ -267,7 +267,7 @@ public class InvoiceIdValidationTests
         //Assert
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice Id cannot contain spaces")) == 1);
         Assert.True(response.Errors[0].ErrorMessage == "Invoice Id cannot contain spaces");
-    }    
+    }
 }
 
 
