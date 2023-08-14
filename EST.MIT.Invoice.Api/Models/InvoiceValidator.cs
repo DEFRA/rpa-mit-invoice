@@ -114,7 +114,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
     public bool BeNoDuplicate(Invoice invoice)
     {
-        var notDuplicate = invoice.PaymentRequests.GroupBy(x => x.PaymentRequestId).All(x => x.Count() ==1);
+        var notDuplicate = invoice.PaymentRequests.GroupBy(x => x.PaymentRequestId).All(x => x.Count() == 1);
 
         if (!notDuplicate)
         {
