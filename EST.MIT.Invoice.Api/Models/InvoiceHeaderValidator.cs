@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using FluentValidation;
+using Invoices.Api.Util;
 
 namespace Invoices.Api.Models;
 
@@ -19,7 +20,11 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.PaymentRequestId).NotEmpty();
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
-        RuleFor(x => x.Value).NotEmpty();
+        RuleFor(x => x.Value)
+            .NotEqual(0)
+            .WithMessage("Invoice value must be non-zero")
+            .Must(HaveNoMoreThanTwoDecimalPlaces)
+            .WithMessage("Invoice value cannot be more than 2dp");
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator());
 
         RuleFor(model => model)
@@ -35,6 +40,11 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 
         // check that all invoice lines have the same currency
         return allCurrencyTypes.Count() <= 1;
+    }
+
+    private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
+    {
+        return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 }
 
