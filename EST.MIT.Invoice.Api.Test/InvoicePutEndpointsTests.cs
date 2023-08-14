@@ -140,6 +140,57 @@ public class InvoicePutEndpointTests
             Status = status,
             InvoiceType = "ap",
             AccountType = "ap",
+
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                },
+                new InvoiceHeader {
+                    PaymentRequestId = "123456561",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+            }
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);

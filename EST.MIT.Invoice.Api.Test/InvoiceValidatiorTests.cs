@@ -698,8 +698,82 @@ public class InvoiceValidatiorTests
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Payment Type is invalid")) == 1);
     }
-}
 
+    [Fact]
+    public async Task Given_Invoice_When_Nested_Class_InvoiceHeader_PaymentRequestId_Is_Duplicated_Then_Failure_Message_PaymentRequestId_Is_Duplicated_In_This_Batch()
+    {
+        Invoice invoice = new Invoice()
+        {
+            Id = "123456789",
+            InvoiceType = "AP",
+            AccountType = "AP",
+            Organisation = "Test Org",
+            Reference = "123456789",
+            SchemeType = "BPS",
+            PaymentType = "AP",
+            CreatedBy = "Test User",
+            Status = "status",
+            PaymentRequests = new List<InvoiceHeader> {
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                },
+                new InvoiceHeader {
+                    PaymentRequestId = "123456789",
+                    SourceSystem = "Manual",
+                    MarketingYear = 2023,
+                    DeliveryBody = "Test Org",
+                    FRN = 1000000000,
+                    PaymentRequestNumber = 123456789,
+                    ContractNumber = "123456789",
+                    Value = 100,
+                    DueDate = "2023-01-01",
+                    AgreementNumber = "DE4567",
+                    AppendixReferences = new AppendixReferences {
+                        ClaimReferenceNumber = "123456789"
+                    },
+                    InvoiceLines = new List<InvoiceLine> {
+                        new InvoiceLine {
+                            Currency = "GBP",
+                            Value = 100,
+                            SchemeCode = "123456789",
+                            FundCode = "123456789",
+                            Description = "Description"
+                        }
+                    }
+                }
+
+            }
+        };
+
+
+        //Act
+        var response = await _invoiceValidator.TestValidateAsync(invoice);
+
+        //Assert
+        Assert.True(response.Errors[0].ErrorMessage.Equals("Payment request ID is duplicated in this batch"));
+    }
+}
 
 
 
