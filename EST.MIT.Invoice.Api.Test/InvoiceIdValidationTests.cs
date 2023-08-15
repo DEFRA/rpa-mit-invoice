@@ -50,25 +50,19 @@ public class InvoiceIdValidationTests
         };
         paymentTypeResponse.Data = paymentTypes;
 
-
+        _referenceDataApiMock
+         .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
+         .Returns(Task.FromResult(response));
 
         _referenceDataApiMock
-     .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
-     .Returns(Task.FromResult(response));
+        .GetOrganisationsAsync(Arg.Any<string>())
+        .Returns(Task.FromResult(organisationRespnse));
 
         _referenceDataApiMock
-             .GetOrganisationsAsync(Arg.Any<string>())
-             .Returns(Task.FromResult(organisationRespnse));
-
-        _referenceDataApiMock
-            .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<String>())
-            .Returns(Task.FromResult(paymentTypeResponse));
-
+        .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<String>())
+        .Returns(Task.FromResult(paymentTypeResponse));
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
-
-
-
     }
 
     [Fact]
@@ -275,4 +269,3 @@ public class InvoiceIdValidationTests
         Assert.True(response.Errors[0].ErrorMessage == "Invoice Id cannot contain spaces");
     }
 }
-
