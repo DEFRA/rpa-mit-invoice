@@ -67,7 +67,7 @@ public class BulkInvoiceDuplicateIdValidationTests
     }
 
     [Fact]
-    public async Task Given_BulkInvoice_When_Nested_Class_Invoice_Id_Is_Duplicated_Then_Failure_Message_Invoice_ID_Is_Duplicated_In_This_Batch()
+    public async Task Given_BulkInvoice_When_Nested_Class_Invoice_PaymentRequests_Property_PaymentRequestId_Is_Duplicated_Then_Failure_Message_PaymentRequestId__Is_Duplicated_In_This_Batch()
     {
         //Arrange
         BulkInvoices bulkInvoices = new BulkInvoices()
@@ -159,7 +159,7 @@ public class BulkInvoiceDuplicateIdValidationTests
         var response = await _bulkInvoiceValidator.TestValidateAsync(bulkInvoices);
 
         //Assert
-        Assert.True(response.Errors[0].ErrorMessage.Equals("Invoice ID is duplicated in this batch"));
+        Assert.True(response.Errors[0].ErrorMessage.Equals("Payment Request Id is duplicated in this batch"));
     }
 }
 

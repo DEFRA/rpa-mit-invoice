@@ -38,10 +38,6 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         RuleForEach(x => x.PaymentRequests).SetValidator(new InvoiceHeaderValidator()).When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
-            .Must(BeNoDuplicate)
-            .WithMessage("Payment request ID is duplicated in this batch");
-
-        RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))
             .WithMessage("Scheme Type is invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation));
@@ -110,16 +106,5 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         }
 
         return organisationCodes.Data.Any(x => x.Code.ToLower() == invoice.Organisation.ToLower());
-    }
-
-    public bool BeNoDuplicate(Invoice invoice)
-    {
-        var notDuplicate = invoice.PaymentRequests.GroupBy(x => x.PaymentRequestId).All(x => x.Count() == 1);
-
-        if (!notDuplicate)
-        {
-            return false;
-        }
-        return true;
     }
 }

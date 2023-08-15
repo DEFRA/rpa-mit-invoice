@@ -15,19 +15,16 @@ public class BulkInvoiceValidator : AbstractValidator<BulkInvoices>
 
         RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new InvoiceValidator(_referenceDataApi));
         RuleFor(model => model)
-            .Must(BeNoDuplicate)
-            .WithMessage("Invoice ID is duplicated in this batch");
+            .Must(HaveNoDuplicatedPaymentRequestIds)
+            .WithMessage("Payment Request Id is duplicated in this batch");
     }
 
-    public bool BeNoDuplicate(BulkInvoices bulkInvoice)
+    public bool HaveNoDuplicatedPaymentRequestIds(BulkInvoices bulkInvoice)
     {
-        var notDuplicate = bulkInvoice.Invoices.GroupBy(x => x.Id).All(x => x.Count() == 1);
-
-        if (!notDuplicate)
-        {
-            return false;
-        }
-        return true;
+        return bulkInvoice.Invoices
+            .SelectMany(x => x.PaymentRequests)
+            .GroupBy(x => x.PaymentRequestId)
+            .All(x => x.Count() == 1);
     }
 }
 
