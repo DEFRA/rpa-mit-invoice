@@ -13,7 +13,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
     {
         _referenceDataApi = referenceDataApi;
         RuleFor(x => x.Id)
-            .NotEmpty(); 
+            .NotEmpty();
         RuleFor(x => x.SchemeType)
             .NotEmpty();
         RuleFor(x => x.Organisation)
