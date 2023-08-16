@@ -585,8 +585,6 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Single(response.Errors);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("The ABS invoice value must be less than 1 Billion")) == 1);
         }
-    }
-}
 
         [Fact]
         public async Task Given_InvoiceHeader_When_PaymentRequestId_Is_Null_Or_Empty_Then_Failure_Message_PaymentRequestId_Is_Missing_Is_Thrown()
