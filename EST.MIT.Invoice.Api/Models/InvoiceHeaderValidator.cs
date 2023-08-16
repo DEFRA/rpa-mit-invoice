@@ -24,12 +24,16 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .NotEqual(0)
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
-            .WithMessage("Invoice value cannot be more than 2dp");
+            .WithMessage("Invoice value cannot be more than 2dp")
+            .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
+            .WithMessage("The ABS invoice value must be less than 1 Billion");
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator());
 
         RuleFor(model => model)
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
+            .Must(HaveAValueEqualToTheSumOfLinesValue)
+            .WithMessage((model) => $"Invoice Value ({model.Value}) does not equal the sum of Line Values ({model.InvoiceLines.Sum(x => x.Value)})")
             .When(model => model.InvoiceLines != null && model.InvoiceLines.Any());
     }
 
@@ -45,6 +49,19 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
+    }
+
+    private static bool HaveAMaximumAbsoluteValueOf(decimal value, decimal absoluteValue)
+    {
+        return Math.Abs(value) <= absoluteValue;
+    }
+
+    private bool HaveAValueEqualToTheSumOfLinesValue(InvoiceHeader invoiceHeader)
+    {
+        var invoiceValue = invoiceHeader.Value;
+        var sumOfLinesValue = invoiceHeader.InvoiceLines.Sum(x => x.Value);
+
+        return invoiceValue == sumOfLinesValue;
     }
 }
 
