@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using System.Text.RegularExpressions;
 using Invoices.Api.Util;
 
 namespace Invoices.Api.Models;
