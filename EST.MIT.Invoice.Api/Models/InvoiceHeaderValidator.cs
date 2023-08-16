@@ -51,7 +51,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 
-    private bool HaveAMaximumAbsoluteValueOf(decimal value, decimal absoluteValue)
+    private static bool HaveAMaximumAbsoluteValueOf(decimal value, decimal absoluteValue)
     {
         return Math.Abs(value) <= absoluteValue;
     }
@@ -59,7 +59,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
     private bool HaveAValueEqualToTheSumOfLinesValue(InvoiceHeader invoiceHeader)
     {
         var invoiceValue = invoiceHeader.Value;
-        var sumOfLinesValue = invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any() ? invoiceHeader.InvoiceLines.Sum(x => x.Value) : 0;
+        var sumOfLinesValue = invoiceHeader.InvoiceLines.Sum(x => x.Value);
 
         return invoiceValue == sumOfLinesValue;
     }
