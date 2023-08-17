@@ -18,7 +18,14 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         RuleFor(x => x.DeliveryBody).NotEmpty();
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
-        RuleFor(x => x.PaymentRequestId).NotEmpty();
+        RuleFor(x => x.PaymentRequestId).NotEmpty()
+            .WithMessage("PaymentRequestId is missing")
+            .MaximumLength(20)
+            .WithMessage("PaymentRequestId must not be more than 20 characters")
+            .MinimumLength(1)
+            .WithMessage("PaymentRequestId must contain at least one character")
+            .Must(BeWithoutSpaces)
+            .WithMessage("PaymentRequestId cannot contain spaces");
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
             .NotEqual(0)
@@ -62,6 +69,15 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         var sumOfLinesValue = invoiceHeader.InvoiceLines.Sum(x => x.Value);
 
         return invoiceValue == sumOfLinesValue;
+    }
+
+    private bool BeWithoutSpaces(string id)
+    {
+        if (Regex.IsMatch(id, @"\s"))
+        {
+            return false;
+        }
+        return true;
     }
 }
 

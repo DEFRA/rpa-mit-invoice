@@ -585,5 +585,170 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Single(response.Errors);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("The ABS invoice value must be less than 1 Billion")) == 1);
         }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_PaymentRequestId_Is_Null_Or_Empty_Then_Failure_Message_PaymentRequestId_Is_Missing_Is_Thrown()
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                PaymentRequestId = string.Empty,
+                SourceSystem = "Manual",
+                MarketingYear = 2023,
+                DeliveryBody = "Test Org",
+                PaymentRequestNumber = 123456789,
+                AgreementNumber = "123456789",
+                ContractNumber = "123456789",
+                Value = 100,
+                DueDate = "2023-01-01",
+                FRN = 1000000000,
+                AppendixReferences = new AppendixReferences
+                {
+                    ClaimReferenceNumber = "123456789"
+                },
+
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine
+                    {
+                        Currency = "GBP",
+                        Description = "Test Description",
+                        Value = 100,
+                        SchemeCode = "123456789",
+                        FundCode = "123456789",
+                    }
+                }
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId is missing")) == 1);
+            Assert.True(response.Errors[0].ErrorMessage == "PaymentRequestId is missing");
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_PaymentRequestId_Characters_Are_Greater_Than_Twenty_Then_Failure_Message_PaymentRequestId_Must_Not_Be_More_Than_Twenty_Is_Thrown()
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                PaymentRequestId = "123456789ABCDEFGHIJKLMNOP",
+                SourceSystem = "Manual",
+                MarketingYear = 2023,
+                DeliveryBody = "Test Org",
+                PaymentRequestNumber = 123456789,
+                AgreementNumber = "123456789",
+                ContractNumber = "123456789",
+                Value = 100,
+                DueDate = "2023-01-01",
+                FRN = 1000000000,
+                AppendixReferences = new AppendixReferences
+                {
+                    ClaimReferenceNumber = "123456789"
+                },
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine
+                    {
+                        Currency = "GBP",
+                        Description = "Test Description",
+                        Value = 100,
+                        SchemeCode = "123456789",
+                        FundCode = "123456789",
+                    }
+                }
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId must not be more than 20 characters")) == 1);
+            Assert.True(response.Errors[0].ErrorMessage == "PaymentRequestId must not be more than 20 characters");
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_PaymentRequestId_Contain_No_Characters_Then_Fialure_Message_PaymentRequestId_Must_Be_Atleast_One_Character_Is_Thrown()
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                PaymentRequestId = "",
+                SourceSystem = "Manual",
+                MarketingYear = 2023,
+                DeliveryBody = "Test Org",
+                PaymentRequestNumber = 123456789,
+                AgreementNumber = "123456789",
+                ContractNumber = "123456789",
+                Value = 100,
+                DueDate = "2023-01-01",
+                FRN = 1000000000,
+                AppendixReferences = new AppendixReferences
+                {
+                    ClaimReferenceNumber = "123456789"
+                },
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine
+                    {
+                        Currency = "GBP",
+                        Description = "Test Description",
+                        Value = 100,
+                        SchemeCode = "123456789",
+                        FundCode = "123456789",
+                    }
+                }
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert            
+            Assert.True(response.Errors[1].ErrorMessage == "PaymentRequestId must contain at least one character");
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_PaymentRequestId_Contain_Spaces_Then_Failure_Message_PaymentRequestIsId_Cannot_Contain_Spaces_Is_Thrown()
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                PaymentRequestId = " S DEF ",
+                SourceSystem = "Manual",
+                MarketingYear = 2023,
+                DeliveryBody = "Test Org",
+                PaymentRequestNumber = 123456789,
+                AgreementNumber = "123456789",
+                ContractNumber = "123456789",
+                Value = 100,
+                DueDate = "2023-01-01",
+                FRN = 1000000000,
+                AppendixReferences = new AppendixReferences
+                {
+                    ClaimReferenceNumber = "123456789"
+                },
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine
+                    {
+                        Currency = "GBP",
+                        Description = "Test Description",
+                        Value = 100,
+                        SchemeCode = "123456789",
+                        FundCode = "123456789",
+                    }
+                }
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId cannot contain spaces")) == 1);
+            Assert.True(response.Errors[0].ErrorMessage == "PaymentRequestId cannot contain spaces");
+        }
     }
 }
+
