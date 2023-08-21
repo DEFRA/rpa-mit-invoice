@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using EST.MIT.Invoice.Api.Services.API.Models;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using FluentValidation;
@@ -11,6 +13,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
     {
+        _organisation = organisation;
         var _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.AgreementNumber).NotEmpty();
@@ -46,6 +49,10 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((model) => $"Invoice Value ({model.Value}) does not equal the sum of Line Values ({model.InvoiceLines.Sum(x => x.Value)})")
             .When(model => model.InvoiceLines != null && model.InvoiceLines.Any());
+
+        RuleFor(model => model)
+            .Must(model => HaveAnAllowedCustomerId(model.DeliveryBody, model.SingleBusinessIdentifier, model.FirmReferenceNumber, model.VendorId))
+            .WithMessage("The customer id is not valid for this delivery body and organisation combination");
     }
 
     private bool HaveSameCurrencyTypes(InvoiceHeader invoiceHeader)
@@ -83,6 +90,57 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         }
         return true;
     }
-}
 
+    private bool HaveAnAllowedCustomerId(string deliveryBody, string singleBusinessIdentifier, string firmReferenceNumber, string vendorId)
+    {
+        var allowedDeliveryBodies = new List<string>(){"DE", "DF"};
+        var organisationCodeForSBIorFRN = "RDT";
+        var organisationCodeForVendorIdorFRN = "NE";
+
+        if (allowedDeliveryBodies.Contains(deliveryBody) || this._organisation == organisationCodeForSBIorFRN)
+        {
+            var customerId = !string.IsNullOrWhiteSpace(singleBusinessIdentifier) ? singleBusinessIdentifier : "";
+            if (string.IsNullOrWhiteSpace(customerId))
+            {
+                customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
+            }
+
+            var isNumeric = long.TryParse(customerId, out _);
+            if (isNumeric && (customerId.Length is > 8 and < 11))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        else if (this._organisation == organisationCodeForVendorIdorFRN)
+        {
+            var customerId = !string.IsNullOrWhiteSpace(vendorId) ? vendorId : "";
+            if (string.IsNullOrWhiteSpace(customerId))
+            {
+                customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
+            }
+
+            var isNumeric = long.TryParse(customerId, out _);
+            if (isNumeric && (customerId.Length is > 5 and < 11))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        else
+        {
+            var customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
+
+            var isNumeric = long.TryParse(customerId, out _);
+            if (isNumeric && (customerId.Length == 10))
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
 

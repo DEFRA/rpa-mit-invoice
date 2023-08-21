@@ -40,7 +40,8 @@ public static class InvoiceTestData
                             SchemeCode = "123456789",
                             FundCode = "123456789"
                         }
-                    }
+                    },
+                    FirmReferenceNumber = "1000000000",
                 }
             }
         };

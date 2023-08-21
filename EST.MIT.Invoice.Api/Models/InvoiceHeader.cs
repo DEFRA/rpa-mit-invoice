@@ -32,4 +32,15 @@ public class InvoiceHeader
     public List<InvoiceLine> InvoiceLines { get; init; } = default!;
     [JsonProperty("appendixReferences")]
     public AppendixReferences AppendixReferences { get; init; } = default!;
+
+    // The FirmReferenceNumber will replace the frn field in the future, this is just to allow for a smooth transition
+    // as maybe the type of frn should be a string anyway.
+    [JsonProperty("firmReferenceNumber")]
+    public string FirmReferenceNumber { get; init; }
+
+    [JsonProperty("singleBusinessIdentifier")]
+    public string SingleBusinessIdentifier { get; init; }
+
+    [JsonProperty("vendorId")]
+    public string VendorId { get; init; }
 }
