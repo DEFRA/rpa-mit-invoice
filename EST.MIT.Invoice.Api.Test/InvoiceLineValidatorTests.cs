@@ -272,5 +272,46 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Single(response.Errors);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
         }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_SchemeCode_Is_Valid_Then_InvoiceLine_Pass()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_SchemeCode_Is_InValid_Then_InvoiceLine_Throws_Error_SchemeCode_Is_InValid()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5699",
+                Value = 30
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("SchemeCode is invalid"));
+        }
     }
 }
