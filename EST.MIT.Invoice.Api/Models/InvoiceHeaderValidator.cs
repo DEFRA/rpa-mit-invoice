@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using EST.MIT.Invoice.Api.Services.Api.Models;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using FluentValidation;
 using Invoices.Api.Util;
 
@@ -7,8 +9,10 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
-    public InvoiceHeaderValidator()
+    private readonly IReferenceDataApi _referenceDataApi;
+    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, SchemeCodeRoute route)
     {
+       _referenceDataApi = referenceDataApi;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.FRN).NotEmpty();
@@ -34,7 +38,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
-        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator());
+        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(_referenceDataApi, route));
 
         RuleFor(model => model)
             .Must(HaveSameCurrencyTypes)
