@@ -24,12 +24,12 @@ public class InvoiceValidator : AbstractValidator<Invoice>
         };
 
         RuleFor(x => x.Id)
-            .NotEmpty(); 
-        RuleFor(x => x.Status).NotEmpty(); 
+            .NotEmpty();
+        RuleFor(x => x.Status).NotEmpty();
         RuleFor(x => x.AccountType)
             .NotEmpty()
             .Must(x => this._validAccountTypes.Contains(x.ToUpper()))
-            .WithMessage("Account Type is invalid. Should be AP or AR"); 
+            .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleFor(x => x.PaymentRequests)
             .NotEmpty();
         RuleForEach(x => x.PaymentRequests).SetValidator(x => new InvoiceHeaderValidator(_referenceDataApi, _schemeCodeRoute)).When(x => x.PaymentRequests != null);

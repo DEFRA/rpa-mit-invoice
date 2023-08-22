@@ -12,7 +12,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
     private readonly IReferenceDataApi _referenceDataApi;
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, SchemeCodeRoute route)
     {
-       _referenceDataApi = referenceDataApi;
+        _referenceDataApi = referenceDataApi;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.FRN).NotEmpty();
