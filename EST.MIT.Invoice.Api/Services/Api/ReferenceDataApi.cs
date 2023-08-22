@@ -231,4 +231,75 @@ public class ReferenceDataApi : IReferenceDataApi
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
         return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.InternalServerError, error);
     }
+
+    public async Task<ApiResponse<IEnumerable<SchemeCode>>> GetSchemeCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var error = new Dictionary<string, List<string>>();
+        var response = await _referenceDataRepository.GetSchemeCodesListAsync(invoiceType, organisation,paymentType, schemeType);
+
+        _logger.LogInformation($"Calling Reference Data API for Scheme Codes");
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                _logger.LogWarning("No content returned from API");
+                return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.NoContent);
+            }
+
+            try
+            {
+                var responseDataTask = _httpContentDeserializer.DeserializeList<SchemeCode>(response.Content);
+
+                var message = responseDataTask.Exception?.Message;
+
+                if (responseDataTask.IsFaulted)
+                {
+                    _logger.LogError("Error message is ", message);
+                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
+                }
+
+                await responseDataTask;
+                var schemeCodes = responseDataTask.Result.ToList();
+
+                if (schemeCodes.Any())
+                {
+                    return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK)
+                    {
+                        Data = schemeCodes
+                    };
+                }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.NotFound);
+
+            }
+            catch (Exception ex)
+            {
+                error.Add("deserializing", new List<string>() { ex.Message });
+                return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.InternalServerError, error)
+                {
+                    Data = new List<SchemeCode>()
+                };
+            }
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            _logger.LogInformation("No content returned from API");
+            return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.NotFound);
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError("Invalid request was sent to API");
+            error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
+
+            return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.BadRequest, error);
+        }
+
+        _logger.LogError("Unknown response from API");
+        error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
+        return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.InternalServerError, error);
+    }
 }
