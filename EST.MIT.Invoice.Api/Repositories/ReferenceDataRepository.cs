@@ -65,11 +65,11 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
         var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
             ? await client.GetAsync($"/schemeCodes")
-            :await client.GetAsync($"/schemeCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            : await client.GetAsync($"/schemeCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
-            response.Content = new StringContent(await response.Content.ReadAsStringAsync()); 
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
         }
 
         return response;

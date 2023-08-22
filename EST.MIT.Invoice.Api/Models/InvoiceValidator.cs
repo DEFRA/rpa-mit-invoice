@@ -17,7 +17,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
         _schemeCodeRoute = new SchemeCodeRoute()
         {
-            InvoiceType =  RuleFor(x => x.InvoiceType).NotNull().ToString(),
+            InvoiceType = RuleFor(x => x.InvoiceType).NotNull().ToString(),
             Organisation = RuleFor(x => x.Organisation).NotEmpty().ToString(),
             PaymentType = RuleFor(x => x.PaymentType).NotEmpty().ToString(),
             SchemeType = RuleFor(x => x.SchemeType).NotEmpty().ToString(),

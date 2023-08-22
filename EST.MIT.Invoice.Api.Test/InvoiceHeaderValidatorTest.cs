@@ -3,7 +3,6 @@ using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 using System.Net;
 
@@ -42,7 +41,7 @@ namespace EST.MIT.Invoice.Api.Test
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
 
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route );
+            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
         }
 
         [Fact]
@@ -185,7 +184,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.PaymentRequestNumber);
@@ -221,7 +220,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.DueDate);
@@ -259,7 +258,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -319,7 +318,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
@@ -368,7 +367,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -536,7 +535,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);

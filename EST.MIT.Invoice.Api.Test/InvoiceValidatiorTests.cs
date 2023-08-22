@@ -54,7 +54,7 @@ public class InvoiceValidatiorTests
         paymentTypeResponse.Data = paymentTypes;
 
         var schemeCodes = new List<SchemeCode>()
-        { 
+        {
             new SchemeCode()
             {
                 Code = "123456789"

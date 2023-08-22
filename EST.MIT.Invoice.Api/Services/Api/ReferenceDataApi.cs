@@ -235,7 +235,7 @@ public class ReferenceDataApi : IReferenceDataApi
     public async Task<ApiResponse<IEnumerable<SchemeCode>>> GetSchemeCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetSchemeCodesListAsync(invoiceType, organisation,paymentType, schemeType);
+        var response = await _referenceDataRepository.GetSchemeCodesListAsync(invoiceType, organisation, paymentType, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Scheme Codes");
 
