@@ -1,5 +1,8 @@
-﻿using FluentValidation.TestHelper;
+﻿using EST.MIT.Invoice.Api.Services.Api.Models;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using FluentValidation.TestHelper;
 using Invoices.Api.Models;
+using NSubstitute;
 
 namespace EST.MIT.Invoice.Api.Test
 {
@@ -7,9 +10,20 @@ namespace EST.MIT.Invoice.Api.Test
     {
         private readonly InvoiceLineValidator _invoiceLineValidator;
 
+        private readonly IReferenceDataApi _referenceDataApiMock =
+     Substitute.For<IReferenceDataApi>();
+
+        private SchemeCodeRoute route = new SchemeCodeRoute()
+        {
+            PaymentType = "AP",
+            InvoiceType = "AP",
+            Organisation = "Test Org",
+            SchemeType = "bps"
+        };
+
         public InvoiceLineValidatorTests()
         {
-            _invoiceLineValidator = new InvoiceLineValidator();
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock,route );
         }
 
         [Fact]
