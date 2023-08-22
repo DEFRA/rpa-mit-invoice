@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace EST.MIT.Invoice.Api.Services.Api.Models
+namespace EST.MIT.Invoice.Api.Services.API.Models
 {
     public class SchemeCode
     {
