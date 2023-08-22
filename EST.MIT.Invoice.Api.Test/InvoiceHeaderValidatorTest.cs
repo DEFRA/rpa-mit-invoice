@@ -1,9 +1,11 @@
 ﻿using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
+using System.Net;
 
 namespace EST.MIT.Invoice.Api.Test
 {
@@ -14,7 +16,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly IReferenceDataApi _referenceDataApiMock =
      Substitute.For<IReferenceDataApi>();
 
-        private SchemeCodeRoute route = new SchemeCodeRoute()
+        private readonly SchemeCodeRoute route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
@@ -24,11 +26,27 @@ namespace EST.MIT.Invoice.Api.Test
 
         public InvoiceHeaderValidatorTest()
         {
+            var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+
+            var schemeCodes = new List<SchemeCode>()
+            {
+                new SchemeCode()
+                {
+                    Code = "WE4567"
+                }
+            };
+            schemeCodeResponse.Data = schemeCodes;
+
+            _referenceDataApiMock
+            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(schemeCodeResponse));
+
             _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route );
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_AgreementNumber_Is_Null_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_AgreementNumber_Is_Null_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -57,7 +75,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.AgreementNumber);
@@ -65,7 +83,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_FRN_Is_Empty_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_FRN_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -94,7 +112,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.FRN);
@@ -102,7 +120,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_SourceSystem_Is_Empty_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_SourceSystem_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -131,7 +149,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.SourceSystem);
@@ -139,7 +157,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_PaymentRequestNumber_Is_Empty_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_PaymentRequestNumber_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -167,7 +185,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.PaymentRequestNumber);
@@ -175,7 +193,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_DueDate_Is_Empty_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_DueDate_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -203,7 +221,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.DueDate);
@@ -211,7 +229,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_No_Field_Is_Empty_Then_InvoiceHeader_Pass()
+        public async Task Given_InvoiceHeader_When_No_Field_Is_Empty_Then_InvoiceHeader_Pass()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -241,7 +259,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -263,7 +281,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("GBP", "EUR")]
         [InlineData("EUR", "GBP")]
-        public void Given_InvoiceHeader_When_Currencies_Are_Different_Then_InvoiceHeader_Fails(string currencyOne, string currencyTwo)
+        public async Task Given_InvoiceHeader_When_Currencies_Are_Different_Then_InvoiceHeader_Fails(string currencyOne, string currencyTwo)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -301,7 +319,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
@@ -317,7 +335,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(-10)]
         [InlineData(-10.000)]
         [InlineData(-10.100)]
-        public void Given_InvoiceHeader_When_Value_Has_Correct_Decimal_Places_Then_InvoiceHeader_Passes(decimal value)
+        public async Task Given_InvoiceHeader_When_Value_Has_Correct_Decimal_Places_Then_InvoiceHeader_Passes(decimal value)
         {
             // this is because decimal places that have a value of 0 are not
             // counted unless they are followed by a non-zero value
@@ -350,7 +368,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -373,7 +391,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(10.101)]
         [InlineData(10.1234)]
         [InlineData(10.00001)]
-        public void Given_InvoiceHeader_When_Value_Has_More_Than_2DP_Then_InvoiceHeader_Fails(decimal value)
+        public async Task Given_InvoiceHeader_When_Value_Has_More_Than_2DP_Then_InvoiceHeader_Fails(decimal value)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -403,7 +421,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -425,7 +443,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_Value_Is_Equal_To_Zero_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_Value_Is_Equal_To_Zero_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -455,7 +473,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -480,7 +498,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(10, 3, 6)]
         [InlineData(10, -5, -5)]
         [InlineData(10, -5, 5)]
-        public void Given_InvoiceHeader_When_Value_Does_Not_Equal_Sum_Of_InvoiceLines_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
+        public async Task Given_InvoiceHeader_When_Value_Does_Not_Equal_Sum_Of_InvoiceLines_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -518,7 +536,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await  _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -542,7 +560,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(1000000000, 999999999, 1)]
         [InlineData(1000000000, 3, 999999997)]
         [InlineData(-1000000000, 1, -1000000001)]
-        public void Given_InvoiceHeader_When_Absolute_Value_Is_Not_Less_Than_1_Billion_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
+        public async Task Given_InvoiceHeader_When_Absolute_Value_Is_Not_Less_Than_1_Billion_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -580,7 +598,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);

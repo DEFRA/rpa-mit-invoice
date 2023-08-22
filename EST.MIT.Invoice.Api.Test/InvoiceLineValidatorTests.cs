@@ -1,8 +1,10 @@
 ﻿using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
 using NSubstitute;
+using System.Net;
 
 namespace EST.MIT.Invoice.Api.Test
 {
@@ -13,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly IReferenceDataApi _referenceDataApiMock =
      Substitute.For<IReferenceDataApi>();
 
-        private SchemeCodeRoute route = new SchemeCodeRoute()
+        private readonly SchemeCodeRoute route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
@@ -23,11 +25,27 @@ namespace EST.MIT.Invoice.Api.Test
 
         public InvoiceLineValidatorTests()
         {
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock,route );
+            var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+
+            var schemeCodes = new List<SchemeCode>()
+            {
+                new SchemeCode()
+                {
+                    Code = "DR5678"
+                }
+            };
+            schemeCodeResponse.Data = schemeCodes;
+
+            _referenceDataApiMock
+            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(schemeCodeResponse));
+
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route);
         }
 
         [Fact]
-        public void Given_InvoiceLine_When_Value_Is_Empty_Then_InvoiceLine_Fails()
+        public async Task Given_InvoiceLine_When_Value_Is_Empty_Then_InvoiceLine_Fails()
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -39,7 +57,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.Value);
@@ -47,7 +65,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceLine_When_Description_Is_Empty_Then_InvoiceLine_Fails()
+        public async Task Given_InvoiceLine_When_Description_Is_Empty_Then_InvoiceLine_Fails()
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -59,15 +77,15 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.Description);
-            response.Errors.Count.Equals(1);
+            response.Errors.Count.Equals(2);
         }
 
         [Fact]
-        public void Given_InvoiceLine_When_SchemeCode_Is_Empty_Then_InvoiceLine_Fails()
+        public async Task Given_InvoiceLine_When_SchemeCode_Is_Empty_Then_InvoiceLine_Fails()
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -79,7 +97,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
@@ -87,7 +105,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceLine_When_No_Field_Is_Empty_Then_InvoiceLine_Pass()
+        public async Task Given_InvoiceLine_When_No_Field_Is_Empty_Then_InvoiceLine_Pass()
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -100,7 +118,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
@@ -118,7 +136,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData("NOT GBP")]
         [InlineData("NOT EUR")]
         [InlineData("12345")]
-        public void Given_InvoiceLine_When_Currency_Is_Invalid_Then_InvoiceLine_Fails(string? currency)
+        public async Task Given_InvoiceLine_When_Currency_Is_Invalid_Then_InvoiceLine_Fails(string? currency)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -131,7 +149,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
@@ -144,7 +162,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("GBP")]
         [InlineData("EUR")]
-        public void Given_InvoiceLine_When_Currency_Is_Valid_Then_InvoiceLine_Passes(string currency)
+        public async Task Given_InvoiceLine_When_Currency_Is_Valid_Then_InvoiceLine_Passes(string currency)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -157,7 +175,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
@@ -175,7 +193,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(-10)]
         [InlineData(-10.000)]
         [InlineData(-10.100)]
-        public void Given_InvoiceLine_When_Value_Has_Correct_Decimal_Places_Then_InvoiceLine_Passes(decimal value)
+        public async Task Given_InvoiceLine_When_Value_Has_Correct_Decimal_Places_Then_InvoiceLine_Passes(decimal value)
         {
             // this is because decimal places that have a value of 0 are not
             // counted unless they are followed by a non-zero value
@@ -191,7 +209,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
@@ -206,7 +224,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(10.101)]
         [InlineData(10.1234)]
         [InlineData(10.00001)]
-        public void Given_InvoiceLine_When_Value_Has_More_Than_2DP_Then_InvoiceLine_Fails(decimal value)
+        public async Task Given_InvoiceLine_When_Value_Has_More_Than_2DP_Then_InvoiceLine_Fails(decimal value)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -219,7 +237,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
@@ -231,7 +249,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceLine_When_Value_Is_Equal_To_Zero_Then_InvoiceLine_Fails()
+        public async Task Given_InvoiceLine_When_Value_Is_Equal_To_Zero_Then_InvoiceLine_Fails()
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -244,7 +262,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceLineValidator.TestValidate(invoiceLine);
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);

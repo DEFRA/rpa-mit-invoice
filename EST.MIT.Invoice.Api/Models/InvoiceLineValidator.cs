@@ -7,15 +7,15 @@ using Invoices.Api.Util;
 
 namespace Invoices.Api.Models;
 
-public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
+public class InvoiceLineValidator : AbstractValidator<InvoiceLine> 
 {
     private readonly string[] _validCurrencyTypes = { "GBP", "EUR" };
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly SchemeCodeRoute _route;
-    public InvoiceLineValidator(IReferenceDataApi referenceDataApi,  SchemeCodeRoute route )
+    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, SchemeCodeRoute route )
     {
         _route = route; 
-         _referenceDataApi = referenceDataApi;  
+        _referenceDataApi = referenceDataApi;  
 
         RuleFor(x => x.SchemeCode).NotEmpty();
         RuleFor(model => model)
