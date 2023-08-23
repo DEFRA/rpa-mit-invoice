@@ -35,11 +35,13 @@ public class InvoicePutEndpointTests
     {
         var errors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
+        var schemeCodeErrors = new Dictionary<string, List<string>>();
 
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
-
+        var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()
@@ -58,6 +60,15 @@ public class InvoicePutEndpointTests
         };
 
         organisationRespnse.Data = organisation;
+
+        var schemeCodes = new List<SchemeCode>()
+        {
+            new SchemeCode()
+            {
+                Code = "123456789"
+            }
+        };
+        schemeCodeResponse.Data = schemeCodes;
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
@@ -79,6 +90,10 @@ public class InvoicePutEndpointTests
         _referenceDataApiMock
              .GetOrganisationsAsync(Arg.Any<string>())
              .Returns(Task.FromResult(organisationRespnse));
+
+        _referenceDataApiMock
+            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(schemeCodeResponse));
 
         _validator = new InvoiceValidator(_referenceDataApiMock);
     }
