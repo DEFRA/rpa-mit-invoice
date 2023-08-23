@@ -100,17 +100,17 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return true;
     }
 
-    private bool HaveOnlySBIOrFRN(string singleBusinessIdentifier, string firmReferenceNumber)
+    private static bool HaveOnlySBIOrFRN(string singleBusinessIdentifier, string firmReferenceNumber)
     {
         return string.IsNullOrWhiteSpace(singleBusinessIdentifier) || string.IsNullOrWhiteSpace(firmReferenceNumber);
     }
 
-    private bool HaveValidSBI(string singleBusinessIdentifier)
+    private static bool HaveValidSBI(string singleBusinessIdentifier)
     {
         return singleBusinessIdentifier.Length == 9;
     }
 
-    private bool HaveValidFRN(string firmReferenceNumber)
+    private static bool HaveValidFRN(string firmReferenceNumber)
     {
         return firmReferenceNumber.Length == 10;
     }

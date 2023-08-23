@@ -47,7 +47,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             Assert.Single(error);
-            Assert.NotNull(error.FirstOrDefault(x => x.ErrorMessage.Contains("FRN must be between 1000000000 and 9999999999")));
+            Assert.NotNull(error.FirstOrDefault(x => x.ErrorMessage != null && x.ErrorMessage.Contains("FRN must be between 1000000000 and 9999999999")));
         }
 
         [Fact]
