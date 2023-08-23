@@ -36,11 +36,8 @@ public class InvoiceHeader
     // The FirmReferenceNumber will replace the frn field in the future, this is just to allow for a smooth transition
     // as maybe the type of frn should be a string anyway.
     [JsonProperty("firmReferenceNumber")]
-    public string FirmReferenceNumber { get; init; }
+    public string FirmReferenceNumber { get; init; } = default!;
 
     [JsonProperty("singleBusinessIdentifier")]
-    public string SingleBusinessIdentifier { get; init; }
-
-    [JsonProperty("vendorId")]
-    public string VendorId { get; init; }
+    public string SingleBusinessIdentifier { get; init; } = default!;
 }

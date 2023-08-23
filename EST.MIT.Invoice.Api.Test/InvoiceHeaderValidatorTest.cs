@@ -11,7 +11,6 @@ namespace EST.MIT.Invoice.Api.Test
     public class InvoiceHeaderValidatorTest
     {
         private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
-        private readonly string _organisation;
 
         private readonly IReferenceDataApi _referenceDataApiMock =
      Substitute.For<IReferenceDataApi>();

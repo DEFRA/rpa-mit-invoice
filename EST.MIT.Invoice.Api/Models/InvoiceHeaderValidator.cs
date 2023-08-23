@@ -13,7 +13,6 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
     {
-        _organisation = organisation;
         var _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.AgreementNumber).NotEmpty();
@@ -43,16 +42,26 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("The ABS invoice value must be less than 1 Billion");
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(_referenceDataApi, route));
 
-        RuleFor(model => model)
+        RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
-            .WithMessage((model) => $"Invoice Value ({model.Value}) does not equal the sum of Line Values ({model.InvoiceLines.Sum(x => x.Value)})")
-            .When(model => model.InvoiceLines != null && model.InvoiceLines.Any());
+            .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
+            .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any());
 
-        RuleFor(model => model)
-            .Must(model => HaveAnAllowedCustomerId(model.DeliveryBody, model.SingleBusinessIdentifier, model.FirmReferenceNumber, model.VendorId))
-            .WithMessage("The customer id is not valid for this delivery body and organisation combination");
+        RuleFor(invoiceHeader => invoiceHeader)
+            .Must(invoiceHeader => HaveOnlySBIOrFRN(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber))
+            .WithMessage("Invoice must only have an SBI or FRN, not both")
+            .Must(invoiceHeader => HaveValidSBI(invoiceHeader.SingleBusinessIdentifier))
+            .WithMessage("SBI must be 9 characters long")
+            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.SingleBusinessIdentifier)
+                && string.IsNullOrWhiteSpace(invoiceHeader.FirmReferenceNumber),
+                ApplyConditionTo.CurrentValidator)
+            .Must(invoiceHeader => HaveValidFRN(invoiceHeader.FirmReferenceNumber))
+            .WithMessage("FRN must be 10 characters long")
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.SingleBusinessIdentifier)
+                && !string.IsNullOrWhiteSpace(invoiceHeader.FirmReferenceNumber),
+                ApplyConditionTo.CurrentValidator);
     }
 
     private bool HaveSameCurrencyTypes(InvoiceHeader invoiceHeader)
@@ -91,56 +100,19 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return true;
     }
 
-    private bool HaveAnAllowedCustomerId(string deliveryBody, string singleBusinessIdentifier, string firmReferenceNumber, string vendorId)
+    private bool HaveOnlySBIOrFRN(string singleBusinessIdentifier, string firmReferenceNumber)
     {
-        var allowedDeliveryBodies = new List<string>(){"DE", "DF"};
-        var organisationCodeForSBIorFRN = "RDT";
-        var organisationCodeForVendorIdorFRN = "NE";
+        return string.IsNullOrWhiteSpace(singleBusinessIdentifier) || string.IsNullOrWhiteSpace(firmReferenceNumber);
+    }
 
-        if (allowedDeliveryBodies.Contains(deliveryBody) || this._organisation == organisationCodeForSBIorFRN)
-        {
-            var customerId = !string.IsNullOrWhiteSpace(singleBusinessIdentifier) ? singleBusinessIdentifier : "";
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
-            }
+    private bool HaveValidSBI(string singleBusinessIdentifier)
+    {
+        return singleBusinessIdentifier.Length == 9;
+    }
 
-            var isNumeric = long.TryParse(customerId, out _);
-            if (isNumeric && (customerId.Length is > 8 and < 11))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        else if (this._organisation == organisationCodeForVendorIdorFRN)
-        {
-            var customerId = !string.IsNullOrWhiteSpace(vendorId) ? vendorId : "";
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
-            }
-
-            var isNumeric = long.TryParse(customerId, out _);
-            if (isNumeric && (customerId.Length is > 5 and < 11))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        else
-        {
-            var customerId = !string.IsNullOrWhiteSpace(firmReferenceNumber) ? firmReferenceNumber : "";
-
-            var isNumeric = long.TryParse(customerId, out _);
-            if (isNumeric && (customerId.Length == 10))
-            {
-                return true;
-            }
-
-            return false;
-        }
+    private bool HaveValidFRN(string firmReferenceNumber)
+    {
+        return firmReferenceNumber.Length == 10;
     }
 }
 
