@@ -1,6 +1,11 @@
-﻿using FluentValidation.TestHelper;
+﻿using System.Net;
+using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
+using EST.MIT.Invoice.Api.Services.API.Models;
+using FluentValidation.TestHelper;
 using Invoices.Api.Models;
 using Newtonsoft.Json.Linq;
+using NSubstitute;
 
 namespace EST.MIT.Invoice.Api.Test
 {
@@ -8,13 +13,40 @@ namespace EST.MIT.Invoice.Api.Test
     {
         private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
 
+        private readonly IReferenceDataApi _referenceDataApiMock =
+            Substitute.For<IReferenceDataApi>();
+
+        private readonly SchemeCodeRoute route = new()
+        {
+            PaymentType = "AP",
+            InvoiceType = "AP",
+            Organisation = "Test Org",
+            SchemeType = "bps"
+        };
+
         public InvoiceHeaderValidatorCustomerIdTest()
         {
-            _invoiceHeaderValidator = new InvoiceHeaderValidator();
+            var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+
+            var schemeCodes = new List<SchemeCode>()
+            {
+                new SchemeCode()
+                {
+                    Code = "WE4567"
+                }
+            };
+            schemeCodeResponse.Data = schemeCodes;
+
+            _referenceDataApiMock
+                .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(schemeCodeResponse));
+
+            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_All_Is_Ok_Then_InvoiceHeader_Passes()
+        public async Task Given_InvoiceHeader_When_All_Is_Ok_Then_InvoiceHeader_Passes()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -45,7 +77,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -65,7 +97,7 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public void Given_InvoiceHeader_When_SBI_And_FRN_Supplied_Then_InvoiceHeader_Fails()
+        public async Task Given_InvoiceHeader_When_SBI_And_FRN_Supplied_Then_InvoiceHeader_Fails()
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -97,7 +129,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -121,7 +153,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("10000000")]
         [InlineData("1000000000")]
-        public void Given_InvoiceHeader_When_SBI_Is_Invalid_Then_InvoiceHeader_Fails(string sbi)
+        public async Task Given_InvoiceHeader_When_SBI_Is_Invalid_Then_InvoiceHeader_Fails(string sbi)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -152,7 +184,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -176,7 +208,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("100000000")]
         [InlineData("10000000000")]
-        public void Given_InvoiceHeader_When_FRN_Is_Invalid_Then_InvoiceHeader_Fails(string frn)
+        public async Task Given_InvoiceHeader_When_FRN_Is_Invalid_Then_InvoiceHeader_Fails(string frn)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -207,7 +239,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = _invoiceHeaderValidator.TestValidate(invoiceHeader);
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
