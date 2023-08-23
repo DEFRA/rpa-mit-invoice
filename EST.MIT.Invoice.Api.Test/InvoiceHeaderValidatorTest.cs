@@ -552,7 +552,6 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestNumber = 123456,
                 Value = invoiceValue,
                 FirmReferenceNumber = "1000000000",
-                
             };
 
             //Act
