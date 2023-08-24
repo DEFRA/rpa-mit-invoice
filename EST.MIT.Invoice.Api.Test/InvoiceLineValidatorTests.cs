@@ -28,6 +28,10 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
 
+            var fundCodesErrors = new Dictionary<string, List<string>>();
+            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);  
+
+
             var schemeCodes = new List<SchemeCode>()
             {
                 new SchemeCode()
@@ -37,9 +41,22 @@ namespace EST.MIT.Invoice.Api.Test
             };
             schemeCodeResponse.Data = schemeCodes;
 
+            var fundCodes = new List<FundCode>()
+            {
+                new FundCode()
+                {
+                    Code = "34ERTY6"
+                }
+            };
+            fundCodeResponse.Data = fundCodes;  
+
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+            _referenceDataApiMock
+            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(fundCodeResponse));
 
             _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route);
         }
@@ -312,6 +329,47 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("SchemeCode is invalid"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_FundCode_Is_Valid_Then_InvoiceLine_Pass()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_FundCode_Is_InValid_Then_InvoiceLine_Throws_Error_FundCode_Is_InValid_For_This_Route()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTKK",
+                SchemeCode = "DR5678",
+                Value = 30
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
         }
     }
 }
