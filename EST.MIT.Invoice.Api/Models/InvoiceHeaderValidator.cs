@@ -9,7 +9,7 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
-    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, SchemeCodeRoute route)
+    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
     {
         var _referenceDataApi = referenceDataApi;
 

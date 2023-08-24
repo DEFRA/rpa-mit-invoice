@@ -1,6 +1,6 @@
 ﻿namespace EST.MIT.Invoice.Api.Services.Api.Models
 {
-    public class SchemeCodeRoute
+    public class FieldsRoute
     {
         public string? InvoiceType { get; set; }
         public string? Organisation { get; set; }

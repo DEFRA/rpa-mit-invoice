@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly IReferenceDataApi _referenceDataApiMock =
      Substitute.For<IReferenceDataApi>();
 
-        private readonly SchemeCodeRoute route = new()
+        private readonly FieldsRoute route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
