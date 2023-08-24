@@ -63,7 +63,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidFundCodes(InvoiceLine invoice)
     {
-        return true;
+        if (string.IsNullOrWhiteSpace(invoice.FundCode))
+        {
+            return false;
+        }
+        var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if(!fundCodes.IsSuccess || !fundCodes.Data.Any())
+        {
+            return false;
+        }
+
+        return fundCodes.Data.Any(x => x.Code.ToLower() == invoice.FundCode.ToLower());
     }
 }
 
