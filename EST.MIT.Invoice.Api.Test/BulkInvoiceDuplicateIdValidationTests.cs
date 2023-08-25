@@ -26,7 +26,7 @@ public class BulkInvoiceDuplicateIdValidationTests
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);   
+        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -71,7 +71,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                 Code = "123456789"
             }
         };
-        fundCodeResponse.Data = fundCodes;  
+        fundCodeResponse.Data = fundCodes;
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())

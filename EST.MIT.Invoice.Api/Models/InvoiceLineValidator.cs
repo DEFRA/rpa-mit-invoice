@@ -69,7 +69,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
         var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
-        if(!fundCodes.IsSuccess || !fundCodes.Data.Any())
+        if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
         {
             return false;
         }

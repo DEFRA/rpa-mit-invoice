@@ -29,7 +29,7 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
 
             var fundCodesErrors = new Dictionary<string, List<string>>();
-            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);  
+            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
 
 
             var schemeCodes = new List<SchemeCode>()
@@ -48,7 +48,7 @@ namespace EST.MIT.Invoice.Api.Test
                     Code = "34ERTY6"
                 }
             };
-            fundCodeResponse.Data = fundCodes;  
+            fundCodeResponse.Data = fundCodes;
 
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
