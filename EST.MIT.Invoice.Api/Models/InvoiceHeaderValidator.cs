@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
@@ -40,12 +40,34 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("The ABS invoice value must be less than 1 Billion");
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(_referenceDataApi, route));
 
-        RuleFor(model => model)
+        RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
-            .WithMessage((model) => $"Invoice Value ({model.Value}) does not equal the sum of Line Values ({model.InvoiceLines.Sum(x => x.Value)})")
-            .When(model => model.InvoiceLines != null && model.InvoiceLines.Any());
+            .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
+            .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
+            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber, invoiceHeader.VendorID))
+            .WithMessage("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID");
+
+        RuleFor(invoiceHeader => invoiceHeader.FirmReferenceNumber)
+            .InclusiveBetween(1000000000, 9999999999)
+            .WithMessage("FRN is not in valid range (1000000000 .. 9999999999)")
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.SingleBusinessIdentifier == 0
+                    && invoiceHeader.FirmReferenceNumber != 0,
+                ApplyConditionTo.CurrentValidator);
+
+        RuleFor(invoiceHeader => invoiceHeader.SingleBusinessIdentifier)
+            .InclusiveBetween(105000000, 999999999)
+            .WithMessage("SBI is not in valid range (105000000 .. 999999999)")
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.FirmReferenceNumber == 0
+                    && invoiceHeader.SingleBusinessIdentifier != 0,
+                ApplyConditionTo.CurrentValidator);
+
+        RuleFor(invoiceHeader => invoiceHeader.VendorID)
+            .Length(6)
+            .WithMessage("VendorID must be 6 characters")
+            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader is { SingleBusinessIdentifier: 0, FirmReferenceNumber: 0 },
+                ApplyConditionTo.CurrentValidator);
     }
 
     private bool HaveSameCurrencyTypes(InvoiceHeader invoiceHeader)
@@ -83,6 +105,12 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         }
         return true;
     }
+
+    private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)
+    {
+        // return true if only one of the three values is populated
+        return (singleBusinessIdentifier != 0 && firmReferenceNumber == 0 && string.IsNullOrWhiteSpace(vendorId))
+            || (singleBusinessIdentifier == 0 && firmReferenceNumber != 0 && string.IsNullOrWhiteSpace(vendorId))
+            || (singleBusinessIdentifier == 0 && firmReferenceNumber == 0 && !string.IsNullOrWhiteSpace(vendorId));
+    }
 }
-
-

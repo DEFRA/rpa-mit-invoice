@@ -1,4 +1,4 @@
-﻿using EST.MIT.Invoice.Api.Services.Api.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.API.Interfaces;
 using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentValidation.TestHelper;
@@ -329,7 +329,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = 2345678.65M
+                Value = 2345678.65M,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -378,7 +379,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = value
+                Value = value,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -431,7 +433,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = value
+                Value = value,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -483,7 +486,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = 0
+                Value = 0,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -546,7 +550,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = invoiceValue
+                Value = invoiceValue,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -608,7 +613,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = invoiceValue
+                Value = invoiceValue,
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act

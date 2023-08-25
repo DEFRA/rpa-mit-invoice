@@ -307,7 +307,7 @@ public class InvoicePostEndpointTests
                 new()
                 {
                     Value = 123456789,
-                    PaymentRequestId = "abc"
+                    PaymentRequestId = "abc",
                 }
             }
         };

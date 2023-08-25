@@ -39,14 +39,16 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 SourceSystem = "SOURCE SYSTEM",
-                Value = 2345678.65M
+                Value = 2345678.65M,
+                FirmReferenceNumber = 1000000000
             };
 
             //Act
             var error = ValidateModel(invoiceHeader);
 
             //Assert
-            Assert.True(error.Count(x => x.ErrorMessage.Contains("FRN must be between 1000000000 and 9999999999")) > 0);
+            Assert.Single(error);
+            Assert.NotNull(error.FirstOrDefault(x => x.ErrorMessage != null && x.ErrorMessage.Contains("FRN must be between 1000000000 and 9999999999")));
         }
 
         [Fact]
@@ -147,7 +149,8 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 SourceSystem = "SOURCE SYSTEM",
-                Value = 2345678.65M
+                Value = 2345678.65M,
+                FirmReferenceNumber = 1000000000
             };
 
             //Act
