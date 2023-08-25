@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         private string _schemeType = "BPS";
         public ReferenceDataRepository_GetFundCodeListAsync()
         {
-            _mockHttpMessageHandler = new Mock<HttpMessageHandler>();   
+            _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         }
 
         [Fact]
@@ -96,4 +96,4 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         }
     }
 }
-}
+
