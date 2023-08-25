@@ -36,11 +36,14 @@ public class InvoicePutEndpointTests
         var errors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var fundCodeErrors = new Dictionary<string, List<string>>();
 
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -70,11 +73,15 @@ public class InvoicePutEndpointTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        _referenceDataApiMock
-            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(paymentSchemesResponse));
+        var fundCodes = new List<FundCode>()
+        {
+            new FundCode()
+            {
+                Code = "123456789"
+            }
+        };
+        fundCodeResponse.Data = fundCodes;
 
-        var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
         var paymentTypes = new List<PaymentType>()
         {
             new PaymentType()
@@ -94,6 +101,14 @@ public class InvoicePutEndpointTests
         _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+        _referenceDataApiMock
+            .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(paymentSchemesResponse));
+
+        _referenceDataApiMock
+             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+             .Returns(Task.FromResult(fundCodeResponse));
 
         _validator = new InvoiceValidator(_referenceDataApiMock);
     }

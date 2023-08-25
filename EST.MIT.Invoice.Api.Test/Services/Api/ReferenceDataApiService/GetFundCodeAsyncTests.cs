@@ -44,7 +44,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         [Fact]
         public void GetFundCodeAsync_Returns_List()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetSchemeCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(JsonSerializer.Serialize(new List<FundCode>()
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();

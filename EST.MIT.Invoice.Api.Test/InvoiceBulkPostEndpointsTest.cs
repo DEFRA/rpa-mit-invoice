@@ -29,11 +29,13 @@ public class InvoiceBulkPostEndpointsTest
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var payTypesErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var fundCodeErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -71,6 +73,15 @@ public class InvoiceBulkPostEndpointsTest
         };
         schemeCodeResponse.Data = schemeCodes;
 
+        var fundCodes = new List<FundCode>()
+        {
+            new FundCode()
+            {
+                Code = "123456789"
+            }
+        };
+        fundCodeResponse.Data = fundCodes;
+
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(response));
@@ -86,6 +97,10 @@ public class InvoiceBulkPostEndpointsTest
         _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+        _referenceDataApiMock
+            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(fundCodeResponse));
 
         _validator = new BulkInvoiceValidator(_referenceDataApiMock);
     }
@@ -111,7 +126,6 @@ public class InvoiceBulkPostEndpointsTest
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
-
 
     [Fact]
     public async Task CreateBulkInvoices_ShouldReturnBadRequest_ValidationFailed()
