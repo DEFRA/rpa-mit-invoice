@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly IReferenceDataApi _referenceDataApiMock =
      Substitute.For<IReferenceDataApi>();
 
-        private readonly SchemeCodeRoute route = new()
+        private readonly FieldsRoute route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
@@ -26,7 +26,9 @@ namespace EST.MIT.Invoice.Api.Test
         public InvoiceHeaderValidatorTest()
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var fundCodeErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -37,9 +39,22 @@ namespace EST.MIT.Invoice.Api.Test
             };
             schemeCodeResponse.Data = schemeCodes;
 
+            var fundCodes = new List<FundCode>()
+            {
+                new FundCode()
+                {
+                    Code = "FUNDCODE"
+                }
+            };
+            fundCodeResponse.Data = fundCodes;
+
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+            _referenceDataApiMock
+            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(fundCodeResponse));
 
             _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
         }
@@ -307,7 +322,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Value = 0.65M,
                         Currency = currencyTwo,
                         Description = "ABD",
-                        FundCode = "FUNDCODE2",
+                        FundCode = "FUNDCODE",
                         SchemeCode = "WE4567"
                     }
                 },

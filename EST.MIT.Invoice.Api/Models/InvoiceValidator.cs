@@ -9,13 +9,13 @@ public class InvoiceValidator : AbstractValidator<Invoice>
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly string[] _validAccountTypes = { "AP", "AR" };
 
-    private readonly SchemeCodeRoute _schemeCodeRoute;
+    private readonly FieldsRoute _route;
 
     public InvoiceValidator(IReferenceDataApi referenceDataApi)
     {
         _referenceDataApi = referenceDataApi;
 
-        _schemeCodeRoute = new SchemeCodeRoute()
+        _route = new FieldsRoute()
         {
             InvoiceType = RuleFor(x => x.InvoiceType).NotNull().ToString(),
             Organisation = RuleFor(x => x.Organisation).NotEmpty().ToString(),
@@ -32,7 +32,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleFor(x => x.PaymentRequests)
             .NotEmpty();
-        RuleForEach(x => x.PaymentRequests).SetValidator(x => new InvoiceHeaderValidator(_referenceDataApi, _schemeCodeRoute)).When(x => x.PaymentRequests != null);
+        RuleForEach(x => x.PaymentRequests).SetValidator(x => new InvoiceHeaderValidator(_referenceDataApi, _route)).When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))

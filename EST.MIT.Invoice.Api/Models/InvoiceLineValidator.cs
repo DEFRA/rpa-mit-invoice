@@ -11,8 +11,8 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 {
     private readonly string[] _validCurrencyTypes = { "GBP", "EUR" };
     private readonly IReferenceDataApi _referenceDataApi;
-    private readonly SchemeCodeRoute _route;
-    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, SchemeCodeRoute route)
+    private readonly FieldsRoute _route;
+    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
     {
         _route = route;
         _referenceDataApi = referenceDataApi;
@@ -27,10 +27,12 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .WithMessage("Invoice line value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice line value cannot be more than 2dp");
-
         RuleFor(x => x.Description).NotEmpty();
         RuleFor(x => x.FundCode).NotEmpty();
-
+        RuleFor(model => model)
+           .MustAsync((x, cancellation) => BeAValidFundCodes(x))
+           .WithMessage("Fund Code is invalid for this route")
+           .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
         RuleFor(x => x.Currency)
             .NotEmpty()
             .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
@@ -57,6 +59,22 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
 
         return schemeCodes.Data.Any(x => x.Code.ToLower() == invoice.SchemeCode.ToLower());
+    }
+
+    private async Task<bool> BeAValidFundCodes(InvoiceLine invoice)
+    {
+        if (string.IsNullOrWhiteSpace(invoice.FundCode))
+        {
+            return false;
+        }
+        var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
+        {
+            return false;
+        }
+
+        return fundCodes.Data.Any(x => x.Code.ToLower() == invoice.FundCode.ToLower());
     }
 }
 
