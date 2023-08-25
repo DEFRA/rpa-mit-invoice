@@ -39,7 +39,8 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 SourceSystem = "SOURCE SYSTEM",
-                Value = 2345678.65M
+                Value = 2345678.65M,
+                FirmReferenceNumber = 1000000000
             };
 
             //Act
@@ -148,7 +149,8 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 SourceSystem = "SOURCE SYSTEM",
-                Value = 2345678.65M
+                Value = 2345678.65M,
+                FirmReferenceNumber = 1000000000
             };
 
             //Act

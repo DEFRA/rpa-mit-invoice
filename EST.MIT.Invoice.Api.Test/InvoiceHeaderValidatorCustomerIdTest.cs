@@ -73,7 +73,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                FirmReferenceNumber = "1000000000",
+                FirmReferenceNumber = 1000000000,
             };
 
             //Act
@@ -96,8 +96,14 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Empty(response.Errors);
         }
 
-        [Fact]
-        public async Task Given_InvoiceHeader_When_SBI_And_FRN_Supplied_Then_InvoiceHeader_Fails()
+        [Theory]
+        [InlineData(100000000, 1000000000, "100000")]
+        [InlineData(0, 1000000000, "100000")]
+        [InlineData(100000000, 0, "100000")]
+        [InlineData(100000000, 1000000000, "")]
+        [InlineData(0, 0, "")]
+        [InlineData(0, 0, null)]
+        public async Task Given_InvoiceHeader_When_SBI_FRN_And_VendorId_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendorId)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -124,8 +130,9 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                FirmReferenceNumber = "1000000000",
-                SingleBusinessIdentifier = "100000000",
+                FirmReferenceNumber = frn,
+                SingleBusinessIdentifier = sbi,
+                VendorId = vendorId,
             };
 
             //Act
@@ -147,13 +154,13 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have an SBI or FRN, not both")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor Id")) == 1);
         }
 
         [Theory]
-        [InlineData("10000000")]
-        [InlineData("1000000000")]
-        public async Task Given_InvoiceHeader_When_SBI_Is_Invalid_Then_InvoiceHeader_Fails(string sbi)
+        [InlineData(10000000)]
+        [InlineData(1000000000)]
+        public async Task Given_InvoiceHeader_When_SBI_Is_Invalid_Then_InvoiceHeader_Fails(int sbi)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -202,13 +209,13 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SBI must be 9 characters long")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Single Business Identifier (SBI) must be between 100000000 and 999999999")) == 1);
         }
 
         [Theory]
-        [InlineData("100000000")]
-        [InlineData("10000000000")]
-        public async Task Given_InvoiceHeader_When_FRN_Is_Invalid_Then_InvoiceHeader_Fails(string frn)
+        [InlineData(100000000)]
+        [InlineData(10000000000)]
+        public async Task Given_InvoiceHeader_When_FRN_Is_Invalid_Then_InvoiceHeader_Fails(long frn)
         {
             //Arrange
             InvoiceHeader invoiceHeader = new InvoiceHeader()
@@ -257,7 +264,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("FRN must be 10 characters long")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Firm Reference Number (FRN) must be between 1000000000 and 9999999999")) == 1);
         }
     }
 }

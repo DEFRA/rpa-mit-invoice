@@ -141,7 +141,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                 }
                             },
-                            FirmReferenceNumber = "1000000000",
+                            FirmReferenceNumber = 1000000000,
                         }
                     }
                 },
@@ -180,7 +180,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                 }
                             },
-                            FirmReferenceNumber = "1000000000",
+                            FirmReferenceNumber = 1000000000,
                         }
                     }
                 }
