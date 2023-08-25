@@ -42,5 +42,5 @@ public class InvoiceHeader
     public int SingleBusinessIdentifier { get; init; } = default!;
 
     [JsonProperty("vendorId")]
-    public string VendorId { get; init; } = default!;
+    public string VendorID { get; init; } = default!;
 }

@@ -47,24 +47,28 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Cannot mix currencies in an invoice")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
-            .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any());
+            .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
+            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber, invoiceHeader.VendorID))
+            .WithMessage("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID");
 
-        RuleFor(invoiceHeader => invoiceHeader)
-            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber, invoiceHeader.VendorId))
-            .WithMessage("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor Id")
-            .Must(invoiceHeader => HaveValidVendorId(invoiceHeader.VendorId))
-            .WithMessage("Vendor Id must be between 6 and 10 characters long")
-            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.VendorId) && invoiceHeader is { SingleBusinessIdentifier: 0, FirmReferenceNumber: 0 },
-                ApplyConditionTo.CurrentValidator)
-            .Must(invoiceHeader => invoiceHeader.FirmReferenceNumber.ToString().Length == 10)
-            .WithMessage("Firm Reference Number (FRN) must be between 1000000000 and 9999999999")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorId) && invoiceHeader.SingleBusinessIdentifier == 0
-                && invoiceHeader.FirmReferenceNumber != 0,
-                ApplyConditionTo.CurrentValidator)
-            .Must(invoiceHeader => invoiceHeader.SingleBusinessIdentifier.ToString().Length == 9)
-            .WithMessage("Single Business Identifier (SBI) must be between 100000000 and 999999999")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorId) && invoiceHeader.FirmReferenceNumber == 0
-                && invoiceHeader.SingleBusinessIdentifier != 0,
+        RuleFor(invoiceHeader => invoiceHeader.FirmReferenceNumber)
+            .InclusiveBetween(1000000000, 9999999999)
+            .WithMessage("FRN is not in valid range (1000000000 .. 9999999999)")
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.SingleBusinessIdentifier == 0
+                    && invoiceHeader.FirmReferenceNumber != 0,
+                ApplyConditionTo.CurrentValidator);
+
+        RuleFor(invoiceHeader => invoiceHeader.SingleBusinessIdentifier)
+            .InclusiveBetween(105000000, 999999999)
+            .WithMessage("SBI is not in valid range (105000000 .. 999999999)")
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.FirmReferenceNumber == 0
+                    && invoiceHeader.SingleBusinessIdentifier != 0,
+                ApplyConditionTo.CurrentValidator);
+
+        RuleFor(invoiceHeader => invoiceHeader.VendorID)
+            .Length(6)
+            .WithMessage("VendorID must be 6 characters")
+            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader is { SingleBusinessIdentifier: 0, FirmReferenceNumber: 0 },
                 ApplyConditionTo.CurrentValidator);
     }
 
@@ -110,10 +114,5 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return (singleBusinessIdentifier != 0 && firmReferenceNumber == 0 && string.IsNullOrWhiteSpace(vendorId))
             || (singleBusinessIdentifier == 0 && firmReferenceNumber != 0 && string.IsNullOrWhiteSpace(vendorId))
             || (singleBusinessIdentifier == 0 && firmReferenceNumber == 0 && !string.IsNullOrWhiteSpace(vendorId));
-    }
-
-    private static bool HaveValidVendorId(string vendorId)
-    {
-        return vendorId.Length is >= 6 and <= 10;
     }
 }

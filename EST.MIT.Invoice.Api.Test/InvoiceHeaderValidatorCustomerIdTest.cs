@@ -132,7 +132,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Value = 10M,
                 FirmReferenceNumber = frn,
                 SingleBusinessIdentifier = sbi,
-                VendorId = vendorId,
+                VendorID = vendorId,
             };
 
             //Act
@@ -154,7 +154,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor Id")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID")) == 1);
         }
 
         [Theory]
@@ -209,7 +209,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Single Business Identifier (SBI) must be between 100000000 and 999999999")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SBI is not in valid range (105000000 .. 999999999)")) == 1);
         }
 
         [Theory]
@@ -264,7 +264,62 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Firm Reference Number (FRN) must be between 1000000000 and 9999999999")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("FRN is not in valid range (1000000000 .. 9999999999)")) == 1);
+        }
+
+        [Theory]
+        [InlineData("10000")]
+        [InlineData("1000000")]
+        public async Task Given_InvoiceHeader_When_VendorID_Is_Invalid_Then_InvoiceHeader_Fails(string vendorID)
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                ContractNumber = "ED34566",
+                DeliveryBody = "XYZ",
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                FRN = 1000000000,
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 10M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "WE4567"
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 10M,
+                VendorID = vendorID,
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestId);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+            response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
+            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
+            response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+
+            Assert.Single(response.Errors);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("VendorID must be 6 characters")) == 1);
         }
     }
 }
