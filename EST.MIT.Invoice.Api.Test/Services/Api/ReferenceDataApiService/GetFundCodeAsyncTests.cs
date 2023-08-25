@@ -234,6 +234,5 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
     }
+}
 
-}
-}
