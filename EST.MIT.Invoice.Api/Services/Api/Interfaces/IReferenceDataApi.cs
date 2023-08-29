@@ -1,7 +1,7 @@
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 
 
-namespace EST.MIT.Invoice.Api.Services.API.Interfaces;
+namespace EST.MIT.Invoice.Api.Services.Api.Interfaces;
 public interface IReferenceDataApi
 {
     Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemeTypesAsync(string? invoiceType, string? organisation);

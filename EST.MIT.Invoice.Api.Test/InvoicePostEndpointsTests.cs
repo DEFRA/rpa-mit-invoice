@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.WebSockets;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using Invoices.Api.Services;
 using Invoices.Api.Endpoints;
 using NSubstitute;

@@ -1,7 +1,7 @@
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using System.Net;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Util;
 
 

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace EST.MIT.Invoice.Api.Services.API.Models;
+namespace EST.MIT.Invoice.Api.Services.Api.Models;
 
 public class ApiResponse
 {

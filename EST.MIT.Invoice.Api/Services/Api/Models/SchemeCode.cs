@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
-namespace EST.MIT.Invoice.Api.Services.API.Models
+namespace EST.MIT.Invoice.Api.Services.Api.Models
 {
     [ExcludeFromCodeCoverage]
     public class SchemeCode : ReferenceDataBaseApiModel

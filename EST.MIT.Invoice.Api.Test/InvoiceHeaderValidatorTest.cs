@@ -1,10 +1,9 @@
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
-using FluentValidation.TestHelper;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using Invoices.Api.Models;
 using NSubstitute;
 using System.Net;
+using FluentValidation.TestHelper;
 
 namespace EST.MIT.Invoice.Api.Test
 {
@@ -12,8 +11,7 @@ namespace EST.MIT.Invoice.Api.Test
     {
         private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
 
-        private readonly IReferenceDataApi _referenceDataApiMock =
-     Substitute.For<IReferenceDataApi>();
+        private readonly IReferenceDataApi _referenceDataApiMock = Substitute.For<IReferenceDataApi>();
 
         private readonly FieldsRoute route = new()
         {
@@ -27,10 +25,10 @@ namespace EST.MIT.Invoice.Api.Test
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
-var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+            var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
-var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+            var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -66,17 +64,16 @@ var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(H
             deliveryBodyCodesResponse.Data = deliveryBodyCodes;
 
             _referenceDataApiMock
-            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(schemeCodeResponse));
-
-           
-            _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(deliveryBodyCodesResponse));
+                .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(schemeCodeResponse));
 
             _referenceDataApiMock
-            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(fundCodeResponse));
+                .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(deliveryBodyCodesResponse));
+
+            _referenceDataApiMock
+                .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(fundCodeResponse));
 
             _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
         }
@@ -852,7 +849,8 @@ var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(H
                 MarketingYear = 2022,
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
-                Value = 10
+                Value = 10,
+                FirmReferenceNumber = 9999999999,
             };
 
             //Act

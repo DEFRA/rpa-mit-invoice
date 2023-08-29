@@ -1,6 +1,6 @@
 ﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -15,10 +15,10 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepositoryMock;
         private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-        private string _invoiceType = "RPA";
-        private string _organisation = "EST";
-        private string _paymentType = "AP";
-        private string _schemeType = "BPS";
+        private readonly string _invoiceType = "RPA";
+        private readonly string _organisation = "EST";
+        private readonly string _paymentType = "AP";
+        private readonly string _schemeType = "BPS";
 
         public GetFundCodeAsyncTests()
         {

@@ -1,6 +1,6 @@
 ﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepository;
         private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-        private string _invoiceType = "RPA";
+        private readonly string _invoiceType = "RPA";
 
         private readonly ReferenceDataApi _referenceDataApi;
         public ReferenceDataApiOrganisationTests()

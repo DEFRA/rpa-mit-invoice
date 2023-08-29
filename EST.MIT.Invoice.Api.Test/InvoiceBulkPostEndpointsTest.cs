@@ -1,6 +1,6 @@
 using System.Net;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentAssertions;
 using FluentValidation;
 using Invoices.Api.Endpoints;
@@ -119,9 +119,7 @@ public class InvoiceBulkPostEndpointsTest
             .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodesResponse));
 
-        _referenceDataApiMock        _referenceDataApiMock
-             .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(deliveryBodyCodesResponse));
+        _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 

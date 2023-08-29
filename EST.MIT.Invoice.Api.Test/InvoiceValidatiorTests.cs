@@ -1,8 +1,8 @@
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
 
 namespace Invoices.Api.Test;
@@ -109,7 +109,6 @@ public class InvoiceValidatiorTests
         _referenceDataApiMock
             .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodesResponse));
-             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>
 
         _referenceDataApiMock
              .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())

@@ -1,4 +1,4 @@
-﻿using EST.MIT.Invoice.Api.Services.API.Models;
+﻿using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
 
 namespace EST.MIT.Invoice.Api.Test.Services.Api.Models

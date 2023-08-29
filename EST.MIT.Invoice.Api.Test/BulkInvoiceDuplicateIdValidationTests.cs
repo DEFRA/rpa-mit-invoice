@@ -1,5 +1,5 @@
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
 using NSubstitute;

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
 using Invoices.Api.Util;
 
@@ -10,7 +10,7 @@ namespace Invoices.Api.Models;
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
     private readonly IReferenceDataApi _referenceDataApi;
-    private readonly SchemeCodeRoute _route;
+    private readonly FieldsRoute _route;
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
 
     {
