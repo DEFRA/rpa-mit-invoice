@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace EST.MIT.Invoice.Api.Services.API.Models
 {
     [ExcludeFromCodeCoverage]
-    public class SchemeCode : ReferenceDataBaseApiModel
+    public class DeliveryBodyCode : ReferenceDataBaseApiModel
     {
     }
 }

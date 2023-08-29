@@ -23,7 +23,7 @@ public static class InvoiceTestData
                     FRN = 123456789,
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
+                    DeliveryBody = "RP00",
                     PaymentRequestNumber = 123456789,
                     AgreementNumber = "123456789",
                     ContractNumber = "123456789",

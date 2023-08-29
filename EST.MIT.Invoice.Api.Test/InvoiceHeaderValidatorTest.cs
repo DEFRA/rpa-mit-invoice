@@ -27,8 +27,10 @@ namespace EST.MIT.Invoice.Api.Test
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
+var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -48,9 +50,29 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
+            var deliveryBodyCodes = new List<DeliveryBodyCode>()
+            {
+                new DeliveryBodyCode()
+                {
+                    Code = "RP00",
+                    Description =  "England"
+                },
+                new DeliveryBodyCode()
+                {
+                    Code = "RP01",
+                    Description =  "Scotland"
+                }
+            };
+            deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+           
+            _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodesResponse));
 
             _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -67,7 +89,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -105,7 +127,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ERT456",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
@@ -142,7 +164,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -179,7 +201,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -215,7 +237,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
@@ -251,7 +273,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -303,7 +325,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -361,7 +383,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -415,7 +437,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -468,7 +490,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -524,7 +546,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -587,7 +609,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -647,7 +669,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = string.Empty,
                 SourceSystem = "Manual",
                 MarketingYear = 2023,
-                DeliveryBody = "Test Org",
+                DeliveryBody = "RP00",
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
                 ContractNumber = "123456789",
@@ -689,7 +711,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "123456789ABCDEFGHIJKLMNOP",
                 SourceSystem = "Manual",
                 MarketingYear = 2023,
-                DeliveryBody = "Test Org",
+                DeliveryBody = "RP00",
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
                 ContractNumber = "123456789",
@@ -730,7 +752,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "",
                 SourceSystem = "Manual",
                 MarketingYear = 2023,
-                DeliveryBody = "Test Org",
+                DeliveryBody = "RP00",
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
                 ContractNumber = "123456789",
@@ -770,7 +792,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = " S DEF ",
                 SourceSystem = "Manual",
                 MarketingYear = 2023,
-                DeliveryBody = "Test Org",
+                DeliveryBody = "RP00",
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
                 ContractNumber = "123456789",
@@ -800,6 +822,58 @@ namespace EST.MIT.Invoice.Api.Test
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId cannot contain spaces")) == 1);
             Assert.True(response.Errors[0].ErrorMessage == "PaymentRequestId cannot contain spaces");
+        }
+
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_DeliveryBody_Is_InValid_Then_InvoiceHeader_Throws_Error_DeliveryBody_Is_InValid()
+        {
+            //Arrange
+            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                ContractNumber = "ED34566",
+                DeliveryBody = "XYZ",
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                FRN = 1000000000,
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 10,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "WE4567"
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 10
+            };
+
+            //Act
+            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestId);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
+            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
+            response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+
+            Assert.Single(response.Errors);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Delivery Body is invalid for this Route")) == 1);
         }
     }
 }

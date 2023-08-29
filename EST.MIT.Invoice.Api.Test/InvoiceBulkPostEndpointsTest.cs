@@ -29,12 +29,14 @@ public class InvoiceBulkPostEndpointsTest
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var payTypesErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
@@ -73,6 +75,21 @@ public class InvoiceBulkPostEndpointsTest
         };
         schemeCodeResponse.Data = schemeCodes;
 
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00",
+                Description =  "England"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01",
+                Description =  "Scotland"
+            }
+        };
+        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+
         var fundCodes = new List<FundCode>()
         {
             new FundCode()
@@ -99,6 +116,12 @@ public class InvoiceBulkPostEndpointsTest
             .Returns(Task.FromResult(schemeCodeResponse));
 
         _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodesResponse));
+
+        _referenceDataApiMock        _referenceDataApiMock
+             .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodesResponse));
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
