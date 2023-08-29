@@ -6,9 +6,9 @@ using Invoices.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute.ReturnsExtensions;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
 
 namespace Invoices.Api.Test;
@@ -36,12 +36,13 @@ public class InvoicePutEndpointTests
         var errors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
 
-
-        var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
+        var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
+        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
 
@@ -91,6 +92,21 @@ public class InvoicePutEndpointTests
         };
         paymentTypesResponse.Data = paymentTypes;
 
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00",
+                Description =  "England"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01",
+                Description =  "Scotland"
+            }
+        };
+        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+
         _referenceDataApiMock
             .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(paymentTypesResponse));
@@ -101,6 +117,10 @@ public class InvoicePutEndpointTests
         _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodesResponse));
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())

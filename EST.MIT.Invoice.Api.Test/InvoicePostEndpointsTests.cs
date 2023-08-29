@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.WebSockets;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using Invoices.Api.Services;
 using Invoices.Api.Endpoints;
 using NSubstitute;
@@ -35,10 +35,12 @@ public class InvoicePostEndpointTests
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
 
@@ -88,6 +90,21 @@ public class InvoicePostEndpointTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00",
+                Description =  "England"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01",
+                Description =  "Scotland"
+            }
+        };
+        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+
         _referenceDataApiMock
             .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(paymentTypesResponse));
@@ -99,6 +116,10 @@ public class InvoicePostEndpointTests
         _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodesResponse));
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())

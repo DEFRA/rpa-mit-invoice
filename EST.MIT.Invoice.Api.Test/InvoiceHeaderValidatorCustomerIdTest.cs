@@ -1,10 +1,8 @@
 ﻿using System.Net;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using EST.MIT.Invoice.Api.Services.API.Models;
 using FluentValidation.TestHelper;
 using Invoices.Api.Models;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 
 namespace EST.MIT.Invoice.Api.Test
@@ -28,8 +26,10 @@ namespace EST.MIT.Invoice.Api.Test
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
+            var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+            var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -49,6 +49,21 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
+            var deliveryBodyCodes = new List<DeliveryBodyCode>()
+            {
+                new DeliveryBodyCode()
+                {
+                    Code = "RP00",
+                    Description =  "England"
+                },
+                new DeliveryBodyCode()
+                {
+                    Code = "RP01",
+                    Description =  "Scotland"
+                }
+            };
+            deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+
             _referenceDataApiMock
                 .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(schemeCodeResponse));
@@ -56,6 +71,10 @@ namespace EST.MIT.Invoice.Api.Test
             _referenceDataApiMock
                 .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(fundCodeResponse));
+
+            _referenceDataApiMock
+                .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(deliveryBodyCodesResponse));
 
             _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
         }
@@ -69,7 +88,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -126,7 +145,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -183,7 +202,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -238,7 +257,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -293,7 +312,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
+                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,

@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 {
-    public class GetFundCodeAsyncTests
+    public class GetDeliveryBodyCodesAsyncTests
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepositoryMock;
         private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
@@ -20,80 +20,80 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         private readonly string _paymentType = "AP";
         private readonly string _schemeType = "BPS";
 
-        public GetFundCodeAsyncTests()
+        public GetDeliveryBodyCodesAsyncTests()
         {
             _mockReferenceDataRepositoryMock = new Mock<IReferenceDataRepository>();
             _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
 
-            _httpContentDeserializerMock.Setup(x => x.DeserializeList<FundCode>(It.IsAny<HttpContent>()))
-                .ReturnsAsync(new List<FundCode>()
+            _httpContentDeserializerMock.Setup(x => x.DeserializeList<DeliveryBodyCode>(It.IsAny<HttpContent>()))
+                .ReturnsAsync(new List<DeliveryBodyCode>()
                 {
-                new FundCode()
-                {
-                    Code = "DOM",
-                    Description =  "Domestic"
-                },
-                new FundCode()
-                {
-                    Code = "EU",
-                    Description =  "European Union"
-                }
+                    new DeliveryBodyCode()
+                    {
+                        Code = "RP00",
+                        Description =  "England"
+                    },
+                    new DeliveryBodyCode()
+                    {
+                        Code = "RP01",
+                        Description =  "Scotland"
+                    }
                 });
         }
 
         [Fact]
-        public void GetFundCodeAsync_Returns_List()
+        public void GetDeliveryBodyCodesAsync_Returns_List()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StringContent(JsonSerializer.Serialize(new List<FundCode>()
+                    Content = new StringContent(JsonSerializer.Serialize(new List<DeliveryBodyCode>()
                     {
-                    new FundCode()
-                    {
-                        Code = "DOM",
-                        Description =  "Domestic"
-                    },
-                    new FundCode()
-                    {
-                        Code = "EU",
-                        Description =  "European Union"
-                    }
+                        new DeliveryBodyCode()
+                        {
+                            Code = "RP00",
+                            Description =  "England"
+                        },
+                        new DeliveryBodyCode()
+                        {
+                            Code = "RP01",
+                            Description =  "Scotland"
+                        }
                     }))
                 });
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();
-            response.Data.Should().BeOfType<List<FundCode>>();
+            response.Data.Should().BeOfType<List<DeliveryBodyCode>>();
             response.Data.Should().HaveCount(2);
-            response.Data.Should().BeEquivalentTo(new List<FundCode>()
+            response.Data.Should().BeEquivalentTo(new List<DeliveryBodyCode>()
             {
-                new FundCode()
+                new DeliveryBodyCode()
                 {
-                    Code = "DOM",
-                    Description =  "Domestic"
+                    Code = "RP00",
+                    Description =  "England"
                 },
-                new FundCode()
+                new DeliveryBodyCode()
                 {
-                    Code = "EU",
-                    Description =  "European Union"
+                    Code = "RP01",
+                    Description =  "Scotland"
                 }
             });
         }
 
         [Fact]
-        public void GetFundCodeAsync_API_Returns_NoContent()
+        public void GetDeliveryBodyCodesAsync_API_Returns_NoContent()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.IsSuccess.Should().BeFalse();
@@ -101,9 +101,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetFundAsync_Deserialise_Fail()
+        public void GetDeliveryBodyCodesAsync_Deserialise_Fail()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("123")
@@ -111,7 +111,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.IsSuccess.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -120,14 +120,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetFundCodeAsync_API_Returns_NotFound()
+        public void GetDeliveryBodyCodesAsync_API_Returns_NotFound()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             response.IsSuccess.Should().BeFalse();
@@ -135,14 +135,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetFundCodeAsync_API_Returns_BadRequest()
+        public void GetDeliveryBodyCodesAsync_API_Returns_BadRequest()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.IsSuccess.Should().BeFalse();
@@ -151,14 +151,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetFundCodeAsync_API_Returns_Unexpected()
+        public void GetDeliveryBodyCodesAsync_API_Returns_Unexpected()
         {
-            _mockReferenceDataRepositoryMock.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             response.IsSuccess.Should().BeFalse();
@@ -167,7 +167,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetFundCodeAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
+        public async Task GetDeliveryBodyCodesAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
@@ -180,13 +180,13 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             };
 
             mockRepository
-                .Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(response);
 
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
             // Act
-            var result = await service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var result = await service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -210,7 +210,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetFundCodeAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetDeliveryBodyCodesAsync_ResponseDataIsNull_ReturnsNotFound()
         {
             // Arrange
             var mockRepository = new Mock<IReferenceDataRepository>();
@@ -222,17 +222,16 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
                 Content = new StringContent("[]", Encoding.UTF8, "application/json") // Empty array simulates no data
             };
 
-            mockRepository.Setup(x => x.GetFundCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockRepository.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(responseData);
 
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
             // Act
-            var result = await service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var result = await service.GetDeliveryBodyCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
     }
 }
-

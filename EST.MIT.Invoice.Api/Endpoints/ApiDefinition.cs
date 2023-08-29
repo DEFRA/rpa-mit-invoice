@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Util;
 

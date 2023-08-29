@@ -1,5 +1,5 @@
 ﻿using EST.MIT.Invoice.Api.Repositories.Interfaces;
-using EST.MIT.Invoice.Api.Services.API.Models;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -16,8 +16,8 @@ public class GetSchemeTypesAsyncTests
 {
     private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepository;
     private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-    private string _invoiceType = "RPA";
-    private string _organisation = "EST";
+    private readonly string _invoiceType = "RPA";
+    private readonly string _organisation = "EST";
 
     public GetSchemeTypesAsyncTests()
     {

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
 using Invoices.Api.Util;
 
@@ -9,17 +9,23 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
+    private readonly IReferenceDataApi _referenceDataApi;
+    private readonly FieldsRoute _route;
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
-    {
-        var _referenceDataApi = referenceDataApi;
 
+    {
+        _referenceDataApi = referenceDataApi;
+        _route = route;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.FRN).NotEmpty();
         RuleFor(x => x.InvoiceLines).NotEmpty();
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.ContractNumber).NotEmpty();
-        RuleFor(x => x.DeliveryBody).NotEmpty();
+        RuleFor(x => x.DeliveryBody)
+            .NotEmpty()
+            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
+            .WithMessage("Delivery Body is invalid for this Route");
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.PaymentRequestId).NotEmpty()
@@ -38,7 +44,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
-        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(_referenceDataApi, route));
+        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(this._referenceDataApi, route));
 
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
@@ -104,6 +110,24 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             return false;
         }
         return true;
+    }
+
+
+    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
+    {
+        if (string.IsNullOrWhiteSpace(deliveryBody))
+        {
+            return false;
+        }
+
+        var deliveryBodyCodes = await _referenceDataApi.GetDeliveryBodyCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!deliveryBodyCodes.IsSuccess || !deliveryBodyCodes.Data.Any())
+        {
+            return false;
+        }
+
+        return deliveryBodyCodes.Data.Any(x => x.Code.ToLower() == deliveryBody.ToLower());
     }
 
     private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)

@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
-namespace EST.MIT.Invoice.Api.Services.API.Models
+namespace EST.MIT.Invoice.Api.Services.Api.Models
 {
-    public class SchemeCode
+    [ExcludeFromCodeCoverage]
+    public class SchemeCode : ReferenceDataBaseApiModel
     {
-        [JsonProperty("code")]
-        public string Code { get; set; } = default!;
-        [JsonProperty("description")]
-        public string Description { get; set; } = default!;
     }
 }

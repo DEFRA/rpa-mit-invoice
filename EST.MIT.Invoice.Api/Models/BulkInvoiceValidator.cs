@@ -1,5 +1,5 @@
 
-using EST.MIT.Invoice.Api.Services.API.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
 
 namespace Invoices.Api.Models;
