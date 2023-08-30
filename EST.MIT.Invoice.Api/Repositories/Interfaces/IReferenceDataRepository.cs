@@ -8,4 +8,5 @@ public interface IReferenceDataRepository
     Task<HttpResponseMessage> GetSchemeCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
     Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
     Task<HttpResponseMessage> GetFundCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
+    Task<HttpResponseMessage> GetMainAccountsListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
 }
