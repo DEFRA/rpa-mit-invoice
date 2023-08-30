@@ -31,6 +31,7 @@ public class InvoiceBulkPostEndpointsTest
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
+        var mainAccountErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
@@ -38,6 +39,7 @@ public class InvoiceBulkPostEndpointsTest
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+        var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -99,6 +101,15 @@ public class InvoiceBulkPostEndpointsTest
         };
         fundCodeResponse.Data = fundCodes;
 
+        var mainAccounts = new List<MainAccount>()
+        {
+            new MainAccount()
+            {
+                Code = "123456789"
+            }
+        };
+        mainAccountResponse.Data = mainAccounts;
+
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(response));
@@ -122,6 +133,10 @@ public class InvoiceBulkPostEndpointsTest
         _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
+
+        _referenceDataApiMock
+            .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountResponse));
 
         _validator = new BulkInvoiceValidator(_referenceDataApiMock);
     }

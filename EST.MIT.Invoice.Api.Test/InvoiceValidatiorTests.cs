@@ -22,7 +22,7 @@ public class InvoiceValidatiorTests
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
-        var mainAccountErrors = new Dictionary<string, List<string>>(); 
+        var mainAccountErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
@@ -167,7 +167,7 @@ public class InvoiceValidatiorTests
                             Description = "Test Description",
                             Value = 100,
                             SchemeCode = "123456789",
-                            FundCode = "123456789"                           
+                            FundCode = "123456789"
                         }
                     }
                 }
