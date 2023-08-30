@@ -30,6 +30,9 @@ namespace EST.MIT.Invoice.Api.Test
             var fundCodesErrors = new Dictionary<string, List<string>>();
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
 
+            var mainAccountErrors = new Dictionary<string, List<string>>();
+            var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
+
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -49,6 +52,16 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
+            var mainAccounts = new List<MainAccount>()
+            {
+                new MainAccount()
+                {
+                    Code = "AccountA"
+                }
+
+            };
+            mainAccountResponse.Data = mainAccounts;
+
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
@@ -56,6 +69,10 @@ namespace EST.MIT.Invoice.Api.Test
             _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
+
+            _referenceDataApiMock
+            .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountResponse));
 
             _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route);
         }
@@ -370,5 +387,48 @@ namespace EST.MIT.Invoice.Api.Test
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
         }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_Valid_Then_InvoiceLine_Pass()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountA"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_InValid_Then_InvoiceLine_Throws_Error_Account_Is_InValid_For_This_Route()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTKK",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountB"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+        }             
     }
 }

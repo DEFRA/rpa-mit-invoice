@@ -22,6 +22,7 @@ public class InvoiceValidatiorTests
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
+        var mainAccountErrors = new Dictionary<string, List<string>>(); 
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
@@ -29,6 +30,7 @@ public class InvoiceValidatiorTests
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+        var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -90,6 +92,16 @@ public class InvoiceValidatiorTests
         };
         fundCodeResponse.Data = fundCodes;
 
+        var mainAccounts = new List<MainAccount>()
+        {
+            new MainAccount()
+            {
+                Code = "AccountA"
+            }
+
+        };
+        mainAccountResponse.Data = mainAccounts;
+
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(response));
@@ -113,6 +125,9 @@ public class InvoiceValidatiorTests
         _referenceDataApiMock
              .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(fundCodeResponse));
+        _referenceDataApiMock
+            .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountResponse));
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
     }
@@ -152,7 +167,7 @@ public class InvoiceValidatiorTests
                             Description = "Test Description",
                             Value = 100,
                             SchemeCode = "123456789",
-                            FundCode = "123456789"
+                            FundCode = "123456789"                           
                         }
                     }
                 }
