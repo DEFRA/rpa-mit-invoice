@@ -37,6 +37,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .NotEmpty()
             .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
             .WithMessage("Currency must be GBP or EUR");
+        RuleFor(x => x.MainAccount).NotEmpty();
+        RuleFor(model => model)
+            .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
+            .WithMessage("Account is Invalid for this route")
+            .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));  
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
@@ -75,6 +80,22 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
 
         return fundCodes.Data.Any(x => x.Code.ToLower() == invoice.FundCode.ToLower());
+    }
+
+    private async Task<bool> BeAValidMainAccounts(InvoiceLine invoice)
+    {
+        if (string.IsNullOrWhiteSpace(invoice.MainAccount))
+        {
+            return false;
+        }
+        var mainAccounts = await _referenceDataApi.GetMainAccountsAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!mainAccounts.IsSuccess || !mainAccounts.Data.Any())
+        {
+            return false;
+        }
+
+        return mainAccounts.Data.Any(x => x.Code.ToLower() == invoice.MainAccount.ToLower());
     }
 }
 
