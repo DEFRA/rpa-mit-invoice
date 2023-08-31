@@ -38,7 +38,8 @@ public static class InvoiceTestData
                             Description = "Test Description",
                             Value = 100,
                             SchemeCode = "123456789",
-                            FundCode = "123456789"
+                            FundCode = "123456789",
+                            MainAccount = "AccountA"
                         }
                     },
                     FirmReferenceNumber = 1000000000,

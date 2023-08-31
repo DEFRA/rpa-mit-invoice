@@ -111,7 +111,7 @@ public class InvoicePostEndpointTests
         {
             new MainAccount()
             {
-                Code = "123456789"
+                Code = "AccountA"
             }
         };
         mainAccountResponse.Data = mainAccounts;
@@ -209,7 +209,8 @@ public class InvoicePostEndpointTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }
@@ -261,7 +262,8 @@ public class InvoicePostEndpointTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }
@@ -310,7 +312,8 @@ public class InvoicePostEndpointTests
                             Currency = "GBP",
                             Value = 100,
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }

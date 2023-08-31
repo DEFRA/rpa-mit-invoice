@@ -105,7 +105,7 @@ public class InvoiceBulkPostEndpointsTest
         {
             new MainAccount()
             {
-                Code = "123456789"
+                Code = "AccountA"
             }
         };
         mainAccountResponse.Data = mainAccounts;

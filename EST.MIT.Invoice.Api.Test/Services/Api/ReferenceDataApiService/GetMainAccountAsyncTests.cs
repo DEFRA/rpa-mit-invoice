@@ -68,7 +68,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetFundCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetMainAccountsAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();

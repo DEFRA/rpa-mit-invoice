@@ -58,7 +58,6 @@ namespace EST.MIT.Invoice.Api.Test
                 {
                     Code = "AccountA"
                 }
-
             };
             mainAccountResponse.Data = mainAccounts;
 
@@ -86,7 +85,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678"
+                SchemeCode = "DR5678",
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -106,7 +106,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 234.8M
+                Value = 234.8M,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -126,7 +127,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                Value = 234.8M
+                Value = 234.8M,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -147,7 +149,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -178,7 +181,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -204,7 +208,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -238,7 +243,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = value
+                Value = value,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -266,7 +272,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = value
+                Value = value,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -291,7 +298,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 0
+                Value = 0,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -316,7 +324,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -357,7 +366,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -378,7 +388,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTKK",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountA"
             };
 
             //Act
@@ -418,7 +429,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 Currency = "GBP",
                 Description = "Description",
-                FundCode = "34ERTKK",
+                FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
                 MainAccount = "AccountB"
@@ -429,6 +440,6 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
-        }             
+        }
     }
 }
