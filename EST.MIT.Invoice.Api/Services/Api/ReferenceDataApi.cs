@@ -37,7 +37,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentScheme>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<PaymentScheme>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -108,7 +108,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentType>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<PaymentType>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -178,7 +178,7 @@ public class ReferenceDataApi : IReferenceDataApi
             }
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<Organisation>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<Organisation>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -249,7 +249,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<SchemeCode>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<SchemeCode>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -320,7 +320,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<DeliveryBodyCode>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<DeliveryBodyCode>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -391,7 +391,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<FundCode>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<FundCode>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 

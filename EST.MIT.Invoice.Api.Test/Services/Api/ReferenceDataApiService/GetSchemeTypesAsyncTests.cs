@@ -25,7 +25,7 @@ public class GetSchemeTypesAsyncTests
 
         _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
 
-        _httpContentDeserializerMock.Setup(x => x.DeserializeList<PaymentScheme>(It.IsAny<HttpContent>()))
+        _httpContentDeserializerMock.Setup(x => x.DeserializeListAsync<PaymentScheme>(It.IsAny<HttpContent>()))
             .ReturnsAsync(new List<PaymentScheme>()
             {
                 new PaymentScheme()

@@ -23,7 +23,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             _mockReferenceDataRepository = new Mock<IReferenceDataRepository>();
             _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
 
-            _httpContentDeserializerMock.Setup(x => x.DeserializeList<Organisation>(It.IsAny<HttpContent>()))
+            _httpContentDeserializerMock.Setup(x => x.DeserializeListAsync<Organisation>(It.IsAny<HttpContent>()))
              .ReturnsAsync(new List<Organisation>()
              {
                         new Organisation()

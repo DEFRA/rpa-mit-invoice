@@ -31,12 +31,9 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
     {
         var cacheKey = new { invoiceType, organisation, paymentType, schemeType };
         var apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(false);
-
-        _logger.Log(LogLevel.Information, "Trying to fetch the list of route combinations from cache.");
-
+        
         if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<RouteCombination> routeCombinations))
         {
-            _logger.Log(LogLevel.Information, "Route combinations found in cache.");
             apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
             {
                 Data = routeCombinations
@@ -50,7 +47,6 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
 
                 if (_memoryCache.TryGetValue(cacheKey, out routeCombinations))
                 {
-                    _logger.Log(LogLevel.Information, "Route combinations found in cache.");
                     apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
                     {
                         Data = routeCombinations
@@ -58,8 +54,6 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
                 }
                 else
                 {
-                    _logger.Log(LogLevel.Information, "Route combinations not found in cache. Fetching from API.");
-
                     var routeCombinationsResponse = await this.GetRouteCombinationsFromApiAsync(invoiceType, organisation, paymentType, schemeType);
 
                     if (routeCombinationsResponse.IsSuccess)
@@ -88,7 +82,6 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         return apiResponse;
     }
 
-
     private async Task<ApiResponse<IEnumerable<RouteCombination>>> GetRouteCombinationsFromApiAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
         var error = new Dictionary<string, List<string>>();
@@ -106,7 +99,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<RouteCombination>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<RouteCombination>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
