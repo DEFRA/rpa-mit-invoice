@@ -400,6 +400,29 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
+        public async Task Given_InvoiceLine_When_FundCode_Is_NullOrWhiteSpace_Then_InvoiceLine_Throws_Errors()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountA"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.FundCode);
+            Assert.True(response.Errors[0].ErrorMessage.Equals("'Fund Code' must not be empty."));
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Fund Code cannot be null or whitespace"));
+        }
+
+        [Fact]
         public async Task Given_InvoiceLine_When_MainAccount_Is_Valid_Then_InvoiceLine_Pass()
         {
             //Arrange
@@ -440,6 +463,29 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_NullOrWhiteSpace_Then_InvoiceLine_Throws_Errors()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = ""
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.MainAccount);
+            Assert.True(response.Errors[0].ErrorMessage.Equals("'Main Account' must not be empty."));
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Account cannot be null or whitespace"));
         }
     }
 }

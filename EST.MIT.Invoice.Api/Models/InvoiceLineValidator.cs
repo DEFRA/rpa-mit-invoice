@@ -30,6 +30,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         RuleFor(x => x.Description).NotEmpty();
         RuleFor(x => x.FundCode).NotEmpty();
         RuleFor(model => model)
+            .MustAsync((x, cancellation) => BeAValidFundCodes(x))
+            .WithMessage("Fund Code cannot be null or whitespace")
+            .When(model => string.IsNullOrWhiteSpace(model.FundCode));
+
+        RuleFor(model => model)
            .MustAsync((x, cancellation) => BeAValidFundCodes(x))
            .WithMessage("Fund Code is invalid for this route")
            .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
@@ -38,6 +43,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
             .WithMessage("Currency must be GBP or EUR");
         RuleFor(x => x.MainAccount).NotEmpty();
+        RuleFor(model => model)
+            .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
+            .WithMessage("Account cannot be null or whitespace")
+            .When(model => string.IsNullOrWhiteSpace(model.MainAccount));
+
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
             .WithMessage("Account is Invalid for this route")
