@@ -78,7 +78,7 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetRouteCombinationsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(routeCombinationsResponse));
 
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock,route);
+            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
 
         [Fact]

@@ -31,7 +31,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
     {
         var cacheKey = new { invoiceType, organisation, paymentType, schemeType };
         var apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(false);
-        
+
         if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<RouteCombination> routeCombinations))
         {
             apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
@@ -69,7 +69,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
                     }
                     else
                     {
-                        apiResponse =  routeCombinationsResponse;
+                        apiResponse = routeCombinationsResponse;
                     }
                 }
             }

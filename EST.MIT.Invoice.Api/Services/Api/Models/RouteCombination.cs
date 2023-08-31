@@ -20,7 +20,7 @@ public class RouteCombination
     /// Delivery body code component of valid combination
     /// </summary>
     public string DeliveryBodyCode { get; init; } = default!;
-    
+
     /// <summary>
     /// Creates instance of RouteCombination
     /// </summary>
