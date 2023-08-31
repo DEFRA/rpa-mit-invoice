@@ -12,6 +12,9 @@ public class InvoiceValidatiorTests
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
 
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+        Substitute.For<ICachedReferenceDataApi>();
+
     private InvoiceValidator _invoiceValidator;
 
     public InvoiceValidatiorTests()
@@ -20,15 +23,15 @@ public class InvoiceValidatiorTests
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var payTypesErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
-        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
+        var routeCombinationErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+        var routeCombinationsResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK, routeCombinationErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -52,7 +55,7 @@ public class InvoiceValidatiorTests
         {
             new PaymentType()
             {
-                Code = "AP"
+                Code = "DOM"
             }
         };
         paymentTypeResponse.Data = paymentTypes;
@@ -66,21 +69,6 @@ public class InvoiceValidatiorTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        var deliveryBodyCodes = new List<DeliveryBodyCode>()
-        {
-            new DeliveryBodyCode()
-            {
-                Code = "RP00",
-                Description =  "England"
-            },
-            new DeliveryBodyCode()
-            {
-                Code = "RP01",
-                Description =  "Scotland"
-            }
-        };
-        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
-
         var fundCodes = new List<FundCode>()
         {
             new FundCode()
@@ -89,6 +77,23 @@ public class InvoiceValidatiorTests
             }
         };
         fundCodeResponse.Data = fundCodes;
+
+        var routeCombinations = new List<RouteCombination>()
+        {
+            new RouteCombination()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP00",
+                SchemeCode = "SchemeCodeValue",
+            },
+            new RouteCombination()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP01",
+                SchemeCode = "SchemeCodeValue",
+            }
+        };
+        routeCombinationsResponse.Data = routeCombinations;
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
@@ -107,14 +112,14 @@ public class InvoiceValidatiorTests
             .Returns(Task.FromResult(schemeCodeResponse));
 
         _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(deliveryBodyCodesResponse));
-
-        _referenceDataApiMock
              .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(fundCodeResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
+        _cachedReferenceDataApiMock
+            .GetRouteCombinationsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(routeCombinationsResponse));
+
+        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
     [Fact]
@@ -203,7 +208,8 @@ public class InvoiceValidatiorTests
                             SchemeCode = "123456789",
                             FundCode = "123456789"
                         }
-                    }
+                    },
+                    FirmReferenceNumber = 9999999999,
                 }
             }
         };
@@ -307,7 +313,7 @@ public class InvoiceValidatiorTests
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(apiResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
+        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
 
         Invoice invoice = new Invoice()
         {
@@ -390,7 +396,7 @@ public class InvoiceValidatiorTests
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(apiResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock);
+        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
 
 
         Invoice invoice = new Invoice()

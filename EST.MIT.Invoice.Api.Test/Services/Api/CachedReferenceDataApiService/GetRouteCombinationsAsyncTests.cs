@@ -103,7 +103,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_API_Returns_NoContent()
+        public async Task GetRouteCombinationsAsync_API_Returns_NoContent()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -124,7 +124,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_Deserialize_Fail()
+        public async Task GetRouteCombinationsAsync_Deserialize_Fail()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -150,7 +150,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_API_Returns_NotFound()
+        public async Task GetRouteCombinationsAsync_API_Returns_NotFound()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -171,7 +171,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_API_Returns_BadRequest()
+        public async Task GetRouteCombinationsAsync_API_Returns_BadRequest()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -193,7 +193,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_API_Returns_Unexpected()
+        public async Task GetRouteCombinationsAsync_API_Returns_Unexpected()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -215,7 +215,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
+        public async Task GetRouteCombinationsAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
@@ -260,7 +260,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetRouteCombinationsAsync_ResponseDataIsNull_ReturnsNotFound()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };

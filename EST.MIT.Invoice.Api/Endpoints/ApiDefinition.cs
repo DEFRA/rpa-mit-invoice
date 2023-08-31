@@ -11,6 +11,7 @@ public static class ApiDefinition
     public static IServiceCollection AddApiServices(this IServiceCollection services)
     {
         services.AddSingleton<IReferenceDataApi, ReferenceDataApi>();
+        services.AddSingleton<ICachedReferenceDataApi, CachedReferenceDataApi>();
         services.AddSingleton<IHttpContentDeserializer, HttpContentDeserializer>();
         return services;
     }
