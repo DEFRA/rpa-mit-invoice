@@ -106,4 +106,18 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
         return response;
     }
+
+    public async Task<HttpResponseMessage> GetRouteCombinationsListAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    {
+        var client = _clientFactory.CreateClient("ReferenceApi.Combinations");
+
+        var response = await client.GetAsync($"/combinations?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
+        }
+
+        return response;
+    }
 }
