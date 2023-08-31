@@ -454,7 +454,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            if (response.Content.Headers.ContentLength == 0)  
+            if (response.Content.Headers.ContentLength == 0)
             {
                 _logger.LogWarning("No content returned from API");
                 return new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.NoContent);

@@ -19,5 +19,5 @@ public class InvoiceLine
     [JsonProperty("fundCode")]
     public string FundCode { get; set; } = null!;
     [JsonProperty("mainAccount")]
-    public string MainAccount { get; set; } = null!;    
+    public string MainAccount { get; set; } = null!;
 }

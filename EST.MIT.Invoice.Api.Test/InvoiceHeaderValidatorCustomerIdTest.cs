@@ -175,7 +175,7 @@ namespace EST.MIT.Invoice.Api.Test
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
                         MainAccount = "AccountA"
-                        
+
                     }
                 },
                 MarketingYear = 2022,

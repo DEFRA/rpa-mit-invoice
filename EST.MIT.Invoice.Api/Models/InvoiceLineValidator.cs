@@ -41,7 +41,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
             .WithMessage("Account is Invalid for this route")
-            .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));  
+            .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
