@@ -27,6 +27,8 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         private readonly string _organisation = "EST";
         private readonly string _paymentType = "AP";
         private readonly string _schemeType = "BPS";
+        private readonly List<RouteCombination> routeCombinations;
+
 
         public GetRouteCombinationsAsyncTests()
         {
@@ -35,7 +37,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             _mockHttpContentDeserializer = Substitute.For<IHttpContentDeserializer>();
             _mockMemoryCache = Substitute.For<IMemoryCache>();
 
-            var routeCombinations = new List<RouteCombination>()
+            routeCombinations = new List<RouteCombination>()
             {
                 new RouteCombination()
                 {
@@ -62,13 +64,12 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-            var cacheValue = new List<RouteCombination> { new RouteCombination() };
 
             // Set up NSubstitute
             _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>())
                 .Returns(x =>
                 {
-                    x[1] = cacheValue;  // Set the "out" parameter
+                    x[1] = routeCombinations;  // Set the "out" parameter
                     return true;
                 });
 
@@ -260,7 +261,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetRouteCombinationsAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetDeliveryBodyCodesAsync_ResponseDataIsNull_ReturnsNotFound()
         {
             // Arrange
             var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
