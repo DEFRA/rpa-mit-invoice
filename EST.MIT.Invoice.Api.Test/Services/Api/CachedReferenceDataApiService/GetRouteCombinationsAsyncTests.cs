@@ -9,6 +9,7 @@ using Moq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService;
 using NSubstitute;
 
@@ -19,7 +20,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         private readonly IReferenceDataRepository _mockReferenceDataRepository;
         private readonly ILogger<CachedReferenceDataApi> _mockLogger;
         private readonly IHttpContentDeserializer _mockHttpContentDeserializer;
-        private readonly IMemoryCache _mockMemoryCache;
+        private readonly ICacheService _mockCacheService;
 
         private CachedReferenceDataApi _service;
 
@@ -35,7 +36,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             _mockReferenceDataRepository = Substitute.For<IReferenceDataRepository>();
             _mockLogger = Substitute.For<ILogger<CachedReferenceDataApi>>();
             _mockHttpContentDeserializer = Substitute.For<IHttpContentDeserializer>();
-            _mockMemoryCache = Substitute.For<IMemoryCache>();
+            _mockCacheService = Substitute.For<ICacheService>();
 
             routeCombinations = new List<RouteCombination>()
             {
@@ -55,23 +56,18 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 {
                     Content = new StringContent(JsonSerializer.Serialize(routeCombinations), Encoding.UTF8, "application/json")
                 }));
+            _mockCacheService.GetData<IEnumerable<RouteCombination>?>(Arg.Any<object>())
+                .Returns(x => null);
 
-            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, _mockHttpContentDeserializer, _mockMemoryCache);
+            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, _mockHttpContentDeserializer, _mockCacheService);
         }
 
         [Fact]
         public async Task GetRouteCombinationsAsync_ReturnsDataFromCache_WhenDataExists()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Set up NSubstitute
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>())
-                .Returns(x =>
-                {
-                    x[1] = routeCombinations;  // Set the "out" parameter
-                    return true;
-                });
+            _mockCacheService.GetData<IEnumerable<RouteCombination>?>(Arg.Any<object>())
+                .Returns(x => routeCombinations);
 
             // Act
             var result = await _service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
@@ -84,12 +80,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         [Fact]
         public async Task GetRouteCombinationsAsync_ReturnsDataFromApi_WhenNotInCache()
         {
-            // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             // Act
             var result = await _service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
 
@@ -107,11 +97,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_API_Returns_NoContent()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
 
@@ -128,11 +113,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_Deserialize_Fail()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -140,7 +120,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 }));
 
             // Act
-            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockMemoryCache);
+            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockCacheService);
             var result = await _service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
@@ -154,11 +134,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_API_Returns_NotFound()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)));
 
@@ -175,11 +150,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_API_Returns_BadRequest()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest)));
 
@@ -197,11 +167,6 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_API_Returns_Unexpected()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage((HttpStatusCode)418)));
 
@@ -219,25 +184,23 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetRouteCombinationsAsync_ResponseDataTaskIsFaulted_LogsErrorAndHandlesException()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
+            var mockRepository = new Mock<IReferenceDataRepository>();
+            var mockLogger = new Mock<ILogger<CachedReferenceDataApi>>();
 
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
-            var response = new HttpResponseMessage
+            var responseData = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent("BAD DATA", Encoding.UTF8, "application/json")
+
             };
 
-            this._mockReferenceDataRepository.GetRouteCombinationsListAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(x => Task.FromResult(response));
+            mockRepository.Setup(x => x.GetRouteCombinationsListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(responseData);
 
-            var mockLogger = new Mock<ILogger<CachedReferenceDataApi>>();
+            var service = new CachedReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer(), _mockCacheService);
 
             // Act
-            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, mockLogger.Object, new FaultedHttpContentDeserializer(), _mockMemoryCache);
-            var result = await _service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -261,14 +224,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetDeliveryBodyCodesAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetRouteCombinationsListAsync_ResponseDataIsNull_ReturnsNotFound()
         {
             // Arrange
-            var cacheKey = new { invoiceType = this._invoiceType, organisation = this._organisation, paymentType = this._paymentType, schemeType = this._schemeType };
-
-            // Mock cache to return false for TryGetValue indicating data is not in the cache.
-            _mockMemoryCache.TryGetValue(cacheKey, out Arg.Any<IEnumerable<RouteCombination>>()).Returns(false);
-
             var responseData = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
@@ -279,7 +237,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => Task.FromResult(responseData));
 
             // Act
-            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockMemoryCache);
+            _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockCacheService);
             var result = await _service.GetRouteCombinationsAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert

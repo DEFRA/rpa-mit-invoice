@@ -13,6 +13,7 @@ public static class ApiDefinition
         services.AddSingleton<IReferenceDataApi, ReferenceDataApi>();
         services.AddSingleton<ICachedReferenceDataApi, CachedReferenceDataApi>();
         services.AddSingleton<IHttpContentDeserializer, HttpContentDeserializer>();
+        services.AddSingleton<ICacheService, CacheService>();
         return services;
     }
 }

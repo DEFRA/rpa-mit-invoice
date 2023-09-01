@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using System.Net;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
@@ -13,27 +14,29 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
     private readonly IReferenceDataRepository _referenceDataRepository;
     private readonly ILogger<CachedReferenceDataApi> _logger;
     private readonly IHttpContentDeserializer _httpContentDeserializer;
-    private readonly IMemoryCache _memoryCache;
+    private readonly ICacheService _cacheService;
 
     private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
     public CachedReferenceDataApi(IReferenceDataRepository referenceDataRepository, ILogger<CachedReferenceDataApi> logger, IHttpContentDeserializer httpContentDeserializer,
-        IMemoryCache memoryCache)
+        ICacheService cacheService)
     {
         _referenceDataRepository = referenceDataRepository;
         _logger = logger;
         _httpContentDeserializer = httpContentDeserializer;
-        _memoryCache = memoryCache;
+        _cacheService = cacheService;
     }
-
 
     public async Task<ApiResponse<IEnumerable<RouteCombination>>> GetRouteCombinationsAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
         var cacheKey = new { invoiceType, organisation, paymentType, schemeType };
         var apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(false);
 
-        if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<RouteCombination> routeCombinations))
+        var cachedRouteCombinations = _cacheService.GetData<IEnumerable<RouteCombination>>(cacheKey);
+
+        if (cachedRouteCombinations != null)
         {
+            var routeCombinations = cachedRouteCombinations.ToList();
             apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
             {
                 Data = routeCombinations
@@ -45,8 +48,10 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
             {
                 await semaphore.WaitAsync();
 
-                if (_memoryCache.TryGetValue(cacheKey, out routeCombinations))
+                cachedRouteCombinations = _cacheService.GetData<IEnumerable<RouteCombination>>(cacheKey);
+                if (cachedRouteCombinations != null)
                 {
+                    var routeCombinations = cachedRouteCombinations.ToList();
                     apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
                     {
                         Data = routeCombinations
@@ -58,12 +63,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
 
                     if (routeCombinationsResponse.IsSuccess)
                     {
-                        var cacheEntryOptions = new MemoryCacheEntryOptions()
-                            .SetSlidingExpiration(TimeSpan.FromMinutes(30))
-                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(60))
-                            .SetPriority(CacheItemPriority.Normal);
-
-                        _memoryCache.Set(cacheKey, routeCombinationsResponse.Data, cacheEntryOptions);
+                        _cacheService.SetData(cacheKey, routeCombinationsResponse.Data);
 
                         apiResponse = routeCombinationsResponse;
                     }
