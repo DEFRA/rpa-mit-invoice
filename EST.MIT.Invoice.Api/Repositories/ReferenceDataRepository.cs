@@ -96,8 +96,8 @@ public class ReferenceDataRepository : IReferenceDataRepository
         var client = _clientFactory.CreateClient("ReferenceApi.FundCodes");
 
         var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-            ? await client.GetAsync($"/fundCodes")
-            : await client.GetAsync($"/fundCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            ? await client.GetAsync($"/funds")
+            : await client.GetAsync($"/funds?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -112,8 +112,8 @@ public class ReferenceDataRepository : IReferenceDataRepository
         var client = _clientFactory.CreateClient("ReferenceApi.MainAccounts");
 
         var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-            ? await client.GetAsync($"/mainAccounts")
-            : await client.GetAsync($"/mainAccounts?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            ? await client.GetAsync($"/accounts")
+            : await client.GetAsync($"/accounts?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {

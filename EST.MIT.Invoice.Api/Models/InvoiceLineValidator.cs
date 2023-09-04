@@ -28,28 +28,16 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice line value cannot be more than 2dp");
         RuleFor(x => x.Description).NotEmpty();
-        RuleFor(x => x.FundCode).NotEmpty();
-        RuleFor(model => model)
-            .MustAsync((x, cancellation) => BeAValidFundCodes(x))
-            .WithMessage("Fund Code cannot be null or whitespace")
-            .When(model => string.IsNullOrWhiteSpace(model.FundCode));
-
-        RuleFor(model => model)
-           .MustAsync((x, cancellation) => BeAValidFundCodes(x))
+        RuleFor(x => x.FundCode).NotEmpty()
+           .MustAsync((x, cancellation) => BeAValidFundCode(x))
            .WithMessage("Fund Code is invalid for this route")
            .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
         RuleFor(x => x.Currency)
             .NotEmpty()
             .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
             .WithMessage("Currency must be GBP or EUR");
-        RuleFor(x => x.MainAccount).NotEmpty();
-        RuleFor(model => model)
-            .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
-            .WithMessage("Account cannot be null or whitespace")
-            .When(model => string.IsNullOrWhiteSpace(model.MainAccount));
-
-        RuleFor(model => model)
-            .MustAsync((x, cancellation) => BeAValidMainAccounts(x))
+        RuleFor(x => x.MainAccount).NotEmpty()
+            .MustAsync((x, cancellation) => BeAValidMainAccount(x))
             .WithMessage("Account is Invalid for this route")
             .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
     }
@@ -76,12 +64,8 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         return schemeCodes.Data.Any(x => x.Code.ToLower() == invoice.SchemeCode.ToLower());
     }
 
-    private async Task<bool> BeAValidFundCodes(InvoiceLine invoice)
+    private async Task<bool> BeAValidFundCode(string fundCode)
     {
-        if (string.IsNullOrWhiteSpace(invoice.FundCode))
-        {
-            return false;
-        }
         var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
@@ -89,15 +73,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return false;
         }
 
-        return fundCodes.Data.Any(x => x.Code.ToLower() == invoice.FundCode.ToLower());
+        return fundCodes.Data.Any(x => x.Code.ToLower() == fundCode.ToLower());
     }
 
-    private async Task<bool> BeAValidMainAccounts(InvoiceLine invoice)
+    private async Task<bool> BeAValidMainAccount(string mainAccount)
     {
-        if (string.IsNullOrWhiteSpace(invoice.MainAccount))
-        {
-            return false;
-        }
         var mainAccounts = await _referenceDataApi.GetMainAccountsAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!mainAccounts.IsSuccess || !mainAccounts.Data.Any())
@@ -105,7 +85,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return false;
         }
 
-        return mainAccounts.Data.Any(x => x.Code.ToLower() == invoice.MainAccount.ToLower());
+        return mainAccounts.Data.Any(x => x.Code.ToLower() == mainAccount.ToLower());
     }
 }
 
