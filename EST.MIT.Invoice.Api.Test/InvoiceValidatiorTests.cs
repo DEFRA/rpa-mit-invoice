@@ -31,7 +31,7 @@ public class InvoiceValidatiorTests
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
-        var routeCombinationsResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -78,22 +78,22 @@ public class InvoiceValidatiorTests
         };
         fundCodeResponse.Data = fundCodes;
 
-        var routeCombinations = new List<ValidCombinationForRoute>()
+        var combinationsForRoute = new List<CombinationForRoute>()
         {
-            new ValidCombinationForRoute()
+            new CombinationForRoute()
             {
                 AccountCode = "AccountCodeValue",
                 DeliveryBodyCode = "RP00",
                 SchemeCode = "SchemeCodeValue",
             },
-            new ValidCombinationForRoute()
+            new CombinationForRoute()
             {
                 AccountCode = "AccountCodeValue",
                 DeliveryBodyCode = "RP01",
                 SchemeCode = "SchemeCodeValue",
             }
         };
-        routeCombinationsResponse.Data = routeCombinations;
+        combinationsForRouteResponse.Data = combinationsForRoute;
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
@@ -117,7 +117,7 @@ public class InvoiceValidatiorTests
 
         _cachedReferenceDataApiMock
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(routeCombinationsResponse));
+            .Returns(Task.FromResult(combinationsForRouteResponse));
 
         _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }

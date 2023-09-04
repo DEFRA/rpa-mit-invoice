@@ -28,7 +28,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         private readonly string _organisation = "EST";
         private readonly string _paymentType = "AP";
         private readonly string _schemeType = "BPS";
-        private readonly List<ValidCombinationForRoute> routeCombinations;
+        private readonly List<CombinationForRoute> combinationsForRoute;
 
 
         public GetCombinationsListForRouteAsyncTests()
@@ -38,9 +38,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             _mockHttpContentDeserializer = Substitute.For<IHttpContentDeserializer>();
             _mockCacheService = Substitute.For<ICacheService>();
 
-            routeCombinations = new List<ValidCombinationForRoute>()
+            combinationsForRoute = new List<CombinationForRoute>()
             {
-                new ValidCombinationForRoute()
+                new CombinationForRoute()
                 {
                     AccountCode = "AccountCodeValue",
                     DeliveryBodyCode = "DeliveryBodyCodeValue",
@@ -48,15 +48,15 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 },
             };
 
-            _mockHttpContentDeserializer.DeserializeListAsync<ValidCombinationForRoute>(Arg.Any<HttpContent>())
-                .Returns(x => Task.FromResult((IEnumerable<ValidCombinationForRoute>)routeCombinations));
+            _mockHttpContentDeserializer.DeserializeListAsync<CombinationForRoute>(Arg.Any<HttpContent>())
+                .Returns(x => Task.FromResult((IEnumerable<CombinationForRoute>)combinationsForRoute));
 
             _mockReferenceDataRepository.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StringContent(JsonSerializer.Serialize(routeCombinations), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JsonSerializer.Serialize(combinationsForRoute), Encoding.UTF8, "application/json")
                 }));
-            _mockCacheService.GetData<IEnumerable<ValidCombinationForRoute>?>(Arg.Any<object>())
+            _mockCacheService.GetData<IEnumerable<CombinationForRoute>?>(Arg.Any<object>())
                 .Returns(x => null);
 
             _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, _mockHttpContentDeserializer, _mockCacheService);
@@ -66,8 +66,8 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetCombinationsListForRouteAsync_ReturnsDataFromCache_WhenDataExists()
         {
             // Arrange
-            _mockCacheService.GetData<IEnumerable<ValidCombinationForRoute>?>(Arg.Any<object>())
-                .Returns(x => routeCombinations);
+            _mockCacheService.GetData<IEnumerable<CombinationForRoute>?>(Arg.Any<object>())
+                .Returns(x => combinationsForRoute);
 
             // Act
             var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);

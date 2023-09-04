@@ -29,7 +29,7 @@ namespace EST.MIT.Invoice.Api.Test
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
-            var routeCombinationsResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -49,22 +49,22 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
-            var routeCombinations = new List<ValidCombinationForRoute>()
+            var combinationsForRoute = new List<CombinationForRoute>()
             {
-                new ValidCombinationForRoute()
+                new CombinationForRoute()
                 {
                     AccountCode = "AccountCodeValue",
                     DeliveryBodyCode = "RP00",
                     SchemeCode = "SchemeCodeValue",
                 },
-                new ValidCombinationForRoute()
+                new CombinationForRoute()
                 {
                     AccountCode = "AccountCodeValue",
                     DeliveryBodyCode = "RP01",
                     SchemeCode = "SchemeCodeValue",
                 }
             };
-            routeCombinationsResponse.Data = routeCombinations;
+            combinationsForRouteResponse.Data = combinationsForRoute;
 
             _referenceDataApiMock
                 .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -76,7 +76,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             _cachedReferenceDataApiMock
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(routeCombinationsResponse));
+                .Returns(Task.FromResult(combinationsForRouteResponse));
 
             _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
