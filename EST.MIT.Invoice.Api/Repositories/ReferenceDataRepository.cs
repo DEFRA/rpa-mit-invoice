@@ -75,13 +75,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<HttpResponseMessage> GetFundCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceApi.DeliveryBodies");
+        var client = _clientFactory.CreateClient("ReferenceApi.FundCodes");
 
         var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-            ? await client.GetAsync($"/deliveryBodies")
-            : await client.GetAsync($"/deliveryBodies?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            ? await client.GetAsync($"/fundCodes")
+            : await client.GetAsync($"/fundCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -91,13 +91,11 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetFundCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceApi.FundCodes");
+        var client = _clientFactory.CreateClient("ReferenceApi.Combinations");
 
-        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-            ? await client.GetAsync($"/fundCodes")
-            : await client.GetAsync($"/fundCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+        var response = await client.GetAsync($"/combinations?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {

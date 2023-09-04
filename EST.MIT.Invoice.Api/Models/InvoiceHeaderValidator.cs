@@ -9,12 +9,11 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
-    private readonly IReferenceDataApi _referenceDataApi;
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
     private readonly FieldsRoute _route;
-    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
-
+    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
     {
-        _referenceDataApi = referenceDataApi;
+        _cachedReferenceDataApi = cachedReferenceDataApi;
         _route = route;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
@@ -44,7 +43,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
-        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(this._referenceDataApi, route));
+        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route));
 
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
@@ -112,7 +111,6 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return true;
     }
 
-
     private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
     {
         if (string.IsNullOrWhiteSpace(deliveryBody))
@@ -120,14 +118,15 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             return false;
         }
 
-        var deliveryBodyCodes = await _referenceDataApi.GetDeliveryBodyCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
+            _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
 
-        if (!deliveryBodyCodes.IsSuccess || !deliveryBodyCodes.Data.Any())
+        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
         {
             return false;
         }
 
-        return deliveryBodyCodes.Data.Any(x => x.Code.ToLower() == deliveryBody.ToLower());
+        return combinationsForRoute.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 
     private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)

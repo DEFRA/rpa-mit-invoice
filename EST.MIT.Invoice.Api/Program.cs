@@ -15,6 +15,7 @@ builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApiServices();
 builder.Services.AddRepositoryServices();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
 {

@@ -6,6 +6,6 @@ public interface IReferenceDataRepository
     Task<HttpResponseMessage> GetPaymentTypesListAsync(string? invoiceType, string? organisation, string? schemeType);
     Task<HttpResponseMessage> GetOrganisationsListAsync(string? invoiceType);
     Task<HttpResponseMessage> GetSchemeCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
-    Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
     Task<HttpResponseMessage> GetFundCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType);
+    Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType);
 }

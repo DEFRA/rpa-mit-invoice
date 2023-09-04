@@ -20,6 +20,8 @@ public class InvoiceBulkPostEndpointsTest
         Substitute.For<IEventQueueService>();
     private readonly IReferenceDataApi _referenceDataApiMock =
          Substitute.For<IReferenceDataApi>();
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+        Substitute.For<ICachedReferenceDataApi>();
     private readonly IValidator<BulkInvoices> _validator;
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
 
@@ -29,15 +31,15 @@ public class InvoiceBulkPostEndpointsTest
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var payTypesErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
-        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -75,21 +77,6 @@ public class InvoiceBulkPostEndpointsTest
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        var deliveryBodyCodes = new List<DeliveryBodyCode>()
-        {
-            new DeliveryBodyCode()
-            {
-                Code = "RP00",
-                Description =  "England"
-            },
-            new DeliveryBodyCode()
-            {
-                Code = "RP01",
-                Description =  "Scotland"
-            }
-        };
-        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
-
         var fundCodes = new List<FundCode>()
         {
             new FundCode()
@@ -98,6 +85,23 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
         fundCodeResponse.Data = fundCodes;
+
+        var combinationsForRoute = new List<CombinationForRoute>()
+        {
+            new CombinationForRoute()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP00",
+                SchemeCode = "SchemeCodeValue",
+            },
+            new CombinationForRoute()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP01",
+                SchemeCode = "SchemeCodeValue",
+            }
+        };
+        combinationsForRouteResponse.Data = combinationsForRoute;
 
         _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
@@ -116,14 +120,14 @@ public class InvoiceBulkPostEndpointsTest
             .Returns(Task.FromResult(schemeCodeResponse));
 
         _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(deliveryBodyCodesResponse));
-
-        _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
-        _validator = new BulkInvoiceValidator(_referenceDataApiMock);
+        _cachedReferenceDataApiMock
+            .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
+
+        _validator = new BulkInvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
     [Fact]

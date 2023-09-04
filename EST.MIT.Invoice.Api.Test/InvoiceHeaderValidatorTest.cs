@@ -12,6 +12,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock = Substitute.For<IReferenceDataApi>();
+        private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock = Substitute.For<ICachedReferenceDataApi>();
 
         private readonly FieldsRoute route = new()
         {
@@ -25,10 +26,10 @@ namespace EST.MIT.Invoice.Api.Test
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
-            var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
-            var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -48,34 +49,36 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
-            var deliveryBodyCodes = new List<DeliveryBodyCode>()
+            var combinationsForRoute = new List<CombinationForRoute>()
             {
-                new DeliveryBodyCode()
+                new CombinationForRoute()
                 {
-                    Code = "RP00",
-                    Description =  "England"
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP00",
+                    SchemeCode = "SchemeCodeValue",
                 },
-                new DeliveryBodyCode()
+                new CombinationForRoute()
                 {
-                    Code = "RP01",
-                    Description =  "Scotland"
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP01",
+                    SchemeCode = "SchemeCodeValue",
                 }
             };
-            deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+            combinationsForRouteResponse.Data = combinationsForRoute;
 
             _referenceDataApiMock
                 .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(schemeCodeResponse));
 
             _referenceDataApiMock
-                .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(deliveryBodyCodesResponse));
-
-            _referenceDataApiMock
                 .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(fundCodeResponse));
 
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
+            _cachedReferenceDataApiMock
+                .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(combinationsForRouteResponse));
+
+            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
 
         [Fact]

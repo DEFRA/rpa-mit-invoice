@@ -6,7 +6,7 @@ using System.Net;
 
 namespace EST.MIT.Invoice.Api.Test.Repositories
 {
-    public class ReferenceDataRepository_GetDeliveryBodyCodesListAsync
+    public class ReferenceDataRepository_GetCombinationsForRouteAsync
     {
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private string _invoiceType = "RPA";
@@ -14,13 +14,13 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         private string _paymentType = "AP";
         private string _schemeType = "BPS";
 
-        public ReferenceDataRepository_GetDeliveryBodyCodesListAsync()
+        public ReferenceDataRepository_GetCombinationsForRouteAsync()
         {
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         }
 
         [Fact]
-        public void GetDeliveryBodyCodesListAsync_Returns_200()
+        public void GetCombinationsForRouteAsync_Returns_200()
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -35,41 +35,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetDeliveryBodyCodesListAsync(_invoiceType, _organisation, _paymentType, _schemeType);
-
-            response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        [Theory]
-        [InlineData("", "", "", "")]
-        [InlineData("RPA", "", "", "")]
-        [InlineData("", "EST", "", "")]
-        [InlineData("", "", "AP", "")]
-        [InlineData("", "", "", "BPS")]
-        [InlineData("RPA", "EST", "", "")]
-        [InlineData("RPA", "", "", "BPS")]
-        [InlineData("", "EST", "PA", "")]
-        [InlineData("", "EST", "", "BPS")]
-        [InlineData("RPA", "EST", "PA", "")]
-        [InlineData("", "EST", "AP", "BPS")]
-        [InlineData("RPA", "EST", "", "BPS")]
-        [InlineData("RPA", "EST", "AP", "BPS")]
-        public void GetDeliveryBodyCodesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Or_SchemeType_Different_Combos(string invoiceType, string organisation, string paymentType, string schemeType)
-        {
-            _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
-
-            var factory = _mockHttpMessageHandler.CreateClientFactory();
-
-            Mock.Get(factory).Setup(x => x.CreateClient(It.IsAny<string>())).Returns(() =>
-            {
-                var client = _mockHttpMessageHandler.CreateClient();
-                client.BaseAddress = new Uri("https://localhost");
-                return client;
-            });
-
-            var repo = new ReferenceDataRepository(factory);
-
-            var response = repo.GetDeliveryBodyCodesListAsync(invoiceType, organisation, paymentType, schemeType);
+            var response = repo.GetCombinationsListForRouteAsync(_invoiceType, _organisation, _paymentType, _schemeType);
 
             response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -90,7 +56,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetDeliveryBodyCodesListAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var response = repo.GetCombinationsListForRouteAsync(_invoiceType, _organisation, _paymentType, _schemeType);
 
             response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
