@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EST.MIT.Invoice.Api.Services.Api.Models;
 
 [ExcludeFromCodeCoverageAttribute]
-public class RouteCombination
+public class ValidCombinationForRoute
 {
     /// <summary>
     /// Account code component of valid combination
@@ -22,12 +22,12 @@ public class RouteCombination
     public string DeliveryBodyCode { get; init; } = default!;
 
     /// <summary>
-    /// Creates instance of RouteCombination
+    /// Creates instance of ValidCombinationForRoute
     /// </summary>
     /// <param name="accountCode"></param>
     /// <param name="schemeCode"></param>
     /// <param name="deliveryBodyCode"></param>
-    public RouteCombination(string accountCode, string schemeCode, string deliveryBodyCode)
+    public ValidCombinationForRoute(string accountCode, string schemeCode, string deliveryBodyCode)
     {
         AccountCode = accountCode;
         SchemeCode = schemeCode;
@@ -35,9 +35,9 @@ public class RouteCombination
     }
 
     /// <summary>
-    /// Creates instance of RouteCombination
+    /// Creates instance of ValidCombinationForRoute
     /// </summary>
-    public RouteCombination()
+    public ValidCombinationForRoute()
     {
     }
 }

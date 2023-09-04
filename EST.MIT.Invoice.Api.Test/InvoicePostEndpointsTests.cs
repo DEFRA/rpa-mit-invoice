@@ -39,13 +39,13 @@ public class InvoicePostEndpointTests
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
-        var routeCombinationErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
-        var routeCombinationsResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK, routeCombinationErrors);
+        var routeCombinationsResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
         {
@@ -93,15 +93,15 @@ public class InvoicePostEndpointTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        var routeCombinations = new List<RouteCombination>()
+        var routeCombinations = new List<ValidCombinationForRoute>()
         {
-            new RouteCombination()
+            new ValidCombinationForRoute()
             {
                 AccountCode = "AccountCodeValue",
                 DeliveryBodyCode = "RP00",
                 SchemeCode = "SchemeCodeValue",
             },
-            new RouteCombination()
+            new ValidCombinationForRoute()
             {
                 AccountCode = "AccountCodeValue",
                 DeliveryBodyCode = "RP01",
@@ -131,7 +131,7 @@ public class InvoicePostEndpointTests
             .Returns(Task.FromResult(fundCodeResponse));
 
         _cachedReferenceDataApiMock
-            .GetRouteCombinationsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(routeCombinationsResponse));
 
         _validator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);

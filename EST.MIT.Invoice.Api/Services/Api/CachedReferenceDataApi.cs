@@ -27,17 +27,17 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         _cacheService = cacheService;
     }
 
-    public async Task<ApiResponse<IEnumerable<RouteCombination>>> GetRouteCombinationsAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    public async Task<ApiResponse<IEnumerable<ValidCombinationForRoute>>> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
         var cacheKey = new { invoiceType, organisation, paymentType, schemeType };
-        var apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(false);
+        var apiResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(false);
 
-        var cachedRouteCombinations = _cacheService.GetData<IEnumerable<RouteCombination>>(cacheKey);
+        var cachedRouteCombinations = _cacheService.GetData<IEnumerable<ValidCombinationForRoute>>(cacheKey);
 
         if (cachedRouteCombinations != null)
         {
             var routeCombinations = cachedRouteCombinations.ToList();
-            apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
+            apiResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK)
             {
                 Data = routeCombinations
             };
@@ -48,11 +48,11 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
             {
                 await semaphore.WaitAsync();
 
-                cachedRouteCombinations = _cacheService.GetData<IEnumerable<RouteCombination>>(cacheKey);
+                cachedRouteCombinations = _cacheService.GetData<IEnumerable<ValidCombinationForRoute>>(cacheKey);
                 if (cachedRouteCombinations != null)
                 {
                     var routeCombinations = cachedRouteCombinations.ToList();
-                    apiResponse = new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
+                    apiResponse = new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK)
                     {
                         Data = routeCombinations
                     };
@@ -82,10 +82,10 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         return apiResponse;
     }
 
-    private async Task<ApiResponse<IEnumerable<RouteCombination>>> GetRouteCombinationsFromApiAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    private async Task<ApiResponse<IEnumerable<ValidCombinationForRoute>>> GetRouteCombinationsFromApiAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetRouteCombinationsListAsync(invoiceType, organisation, paymentType, schemeType);
+        var response = await _referenceDataRepository.GetCombinationsListForRouteAsync(invoiceType, organisation, paymentType, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Route Combinations");
 
@@ -94,12 +94,12 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
             if (response.Content.Headers.ContentLength == 0)
             {
                 _logger.LogWarning("No content returned from API");
-                return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.NoContent);
+                return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.NoContent);
             }
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<RouteCombination>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<ValidCombinationForRoute>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -114,22 +114,22 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
 
                 if (routeCombinations.Any())
                 {
-                    return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.OK)
+                    return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.OK)
                     {
                         Data = routeCombinations
                     };
                 }
 
                 _logger.LogInformation("No content returned from API");
-                return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.NotFound);
+                return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.NotFound);
 
             }
             catch (Exception ex)
             {
                 error.Add("deserializing", new List<string>() { ex.Message });
-                return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.InternalServerError, error)
+                return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.InternalServerError, error)
                 {
-                    Data = new List<RouteCombination>()
+                    Data = new List<ValidCombinationForRoute>()
                 };
             }
         }
@@ -137,7 +137,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             _logger.LogInformation("No content returned from API");
-            return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.NotFound);
+            return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.NotFound);
         }
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
@@ -145,11 +145,11 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
             _logger.LogError("Invalid request was sent to API");
             error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
 
-            return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.BadRequest, error);
+            return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.BadRequest, error);
         }
 
         _logger.LogError("Unknown response from API");
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
-        return new ApiResponse<IEnumerable<RouteCombination>>(HttpStatusCode.InternalServerError, error);
+        return new ApiResponse<IEnumerable<ValidCombinationForRoute>>(HttpStatusCode.InternalServerError, error);
     }
 }

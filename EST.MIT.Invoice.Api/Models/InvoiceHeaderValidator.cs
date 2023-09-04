@@ -118,15 +118,15 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             return false;
         }
 
-        var routeCombinations = await _cachedReferenceDataApi.GetRouteCombinationsAsync(_route.InvoiceType ?? "",
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
             _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
 
-        if (!routeCombinations.IsSuccess || !routeCombinations.Data.Any())
+        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
         {
             return false;
         }
 
-        return routeCombinations.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
+        return combinationsForRoute.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 
     private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)
