@@ -21,7 +21,7 @@ public class HttpContentDeserializerTests
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         // Act
-        var result = await _deserializer.DeserializeList<string>(content);
+        var result = await _deserializer.DeserializeListAsync<string>(content);
 
         // Assert
         Assert.Equal(list, result);
@@ -34,7 +34,7 @@ public class HttpContentDeserializerTests
         var content = new StringContent("invalid json", Encoding.UTF8, "application/json");
 
         // Act and Assert
-        await Assert.ThrowsAsync<JsonException>(async () => await _deserializer.DeserializeList<string>(content));
+        await Assert.ThrowsAsync<JsonException>(async () => await _deserializer.DeserializeListAsync<string>(content));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class HttpContentDeserializerTests
         var content = new StringContent("[]", Encoding.UTF8, "application/json");
 
         // Act
-        var result = await _deserializer.DeserializeList<string>(content);
+        var result = await _deserializer.DeserializeListAsync<string>(content);
 
         // Assert
         Assert.Empty(result);

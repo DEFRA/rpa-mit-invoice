@@ -37,7 +37,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentScheme>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<PaymentScheme>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -108,7 +108,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<PaymentType>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<PaymentType>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -178,7 +178,7 @@ public class ReferenceDataApi : IReferenceDataApi
             }
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<Organisation>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<Organisation>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -249,7 +249,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<SchemeCode>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<SchemeCode>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 
@@ -303,77 +303,6 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<DeliveryBodyCode>>> GetDeliveryBodyCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
-    {
-        var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetDeliveryBodyCodesListAsync(invoiceType, organisation, paymentType, schemeType);
-
-        _logger.LogInformation($"Calling Reference Data API for Delivery Body Codes");
-
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            if (response.Content.Headers.ContentLength == 0)
-            {
-                _logger.LogWarning("No content returned from API");
-                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NoContent);
-            }
-
-            try
-            {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<DeliveryBodyCode>(response.Content);
-
-                var message = responseDataTask.Exception?.Message;
-
-                if (responseDataTask.IsFaulted)
-                {
-                    _logger.LogError("Error message is ", message);
-                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
-                }
-
-                await responseDataTask;
-                var deliveryBodyCodes = responseDataTask.Result.ToList();
-
-                if (deliveryBodyCodes.Any())
-                {
-                    return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK)
-                    {
-                        Data = deliveryBodyCodes
-                    };
-                }
-
-                _logger.LogInformation("No content returned from API");
-                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NotFound);
-
-            }
-            catch (Exception ex)
-            {
-                error.Add("deserializing", new List<string>() { ex.Message });
-                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.InternalServerError, error)
-                {
-                    Data = new List<DeliveryBodyCode>()
-                };
-            }
-        }
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            _logger.LogInformation("No content returned from API");
-            return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NotFound);
-        }
-
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            _logger.LogError("Invalid request was sent to API");
-            error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
-
-            return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.BadRequest, error);
-        }
-
-        _logger.LogError("Unknown response from API");
-        error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
-        return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.InternalServerError, error);
-    }
-
     public async Task<ApiResponse<IEnumerable<FundCode>>> GetFundCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
     {
         var error = new Dictionary<string, List<string>>();
@@ -391,7 +320,7 @@ public class ReferenceDataApi : IReferenceDataApi
 
             try
             {
-                var responseDataTask = _httpContentDeserializer.DeserializeList<FundCode>(response.Content);
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<FundCode>(response.Content);
 
                 var message = responseDataTask.Exception?.Message;
 

@@ -23,7 +23,7 @@ public class GetPaymentTypesAsyncTests
         _mockReferenceDataRepositoryMock = new Mock<IReferenceDataRepository>();
         _httpContentDeserializerMock = new Mock<IHttpContentDeserializer>();
 
-        _httpContentDeserializerMock.Setup(x => x.DeserializeList<PaymentType>(It.IsAny<HttpContent>()))
+        _httpContentDeserializerMock.Setup(x => x.DeserializeListAsync<PaymentType>(It.IsAny<HttpContent>()))
             .ReturnsAsync(new List<PaymentType>()
             {
                 new PaymentType()

@@ -22,6 +22,9 @@ public class InvoicePostEndpointTests
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
 
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+        Substitute.For<ICachedReferenceDataApi>();
+
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
@@ -35,15 +38,15 @@ public class InvoicePostEndpointTests
         var paymentSchemesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, errors);
         var orgnisationErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
-        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
         var mainAccountErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-        var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
         var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
 
         var paymentSchemes = new List<PaymentScheme>()
@@ -92,20 +95,22 @@ public class InvoicePostEndpointTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        var combinationsForRoute = new List<CombinationForRoute>()
         {
-            new DeliveryBodyCode()
+            new CombinationForRoute()
             {
-                Code = "RP00",
-                Description =  "England"
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP00",
+                SchemeCode = "SchemeCodeValue",
             },
-            new DeliveryBodyCode()
+            new CombinationForRoute()
             {
-                Code = "RP01",
-                Description =  "Scotland"
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP01",
+                SchemeCode = "SchemeCodeValue",
             }
         };
-        deliveryBodyCodesResponse.Data = deliveryBodyCodes;
+        combinationsForRouteResponse.Data = combinationsForRoute;
 
         var mainAccounts = new List<MainAccount>()
         {
@@ -129,10 +134,6 @@ public class InvoicePostEndpointTests
             .Returns(Task.FromResult(schemeCodeResponse));
 
         _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(deliveryBodyCodesResponse));
-
-        _referenceDataApiMock
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(paymentSchemesResponse));
 
@@ -140,6 +141,11 @@ public class InvoicePostEndpointTests
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
+        _cachedReferenceDataApiMock
+            .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
+
+        _validator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
         _referenceDataApiMock
             .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(mainAccountResponse));
@@ -193,7 +199,7 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
+                    DeliveryBody = "RP00",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -246,7 +252,7 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
+                    DeliveryBody = "RP00",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -298,7 +304,7 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
+                    DeliveryBody = "RP00",
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
                     Value = 100,

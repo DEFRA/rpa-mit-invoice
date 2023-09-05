@@ -6,14 +6,14 @@ namespace Invoices.Api.Models;
 
 public class BulkInvoiceValidator : AbstractValidator<BulkInvoices>
 {
-    public BulkInvoiceValidator(IReferenceDataApi referenceDataApi)
+    public BulkInvoiceValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         var _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.Reference).NotEmpty();
         RuleFor(x => x.SchemeType).NotEmpty();
 
-        RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new InvoiceValidator(_referenceDataApi));
+        RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new InvoiceValidator(_referenceDataApi, cachedReferenceDataApi));
         RuleFor(model => model)
             .Must(HaveNoDuplicatedPaymentRequestIds)
             .WithMessage("Payment Request Id is duplicated in this batch");
