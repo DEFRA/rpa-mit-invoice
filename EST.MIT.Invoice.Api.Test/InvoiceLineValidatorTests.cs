@@ -12,7 +12,9 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly InvoiceLineValidator _invoiceLineValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock =
-     Substitute.For<IReferenceDataApi>();
+            Substitute.For<IReferenceDataApi>();
+        private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+            Substitute.For<ICachedReferenceDataApi>();
 
         private readonly FieldsRoute route = new()
         {
@@ -30,9 +32,8 @@ namespace EST.MIT.Invoice.Api.Test
             var fundCodesErrors = new Dictionary<string, List<string>>();
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
 
-            var mainAccountErrors = new Dictionary<string, List<string>>();
-            var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
-
+            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -52,14 +53,22 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
-            var mainAccounts = new List<MainAccount>()
+            var combinationsForRoute = new List<CombinationForRoute>()
             {
-                new MainAccount()
+                new CombinationForRoute()
                 {
-                    Code = "AccountA"
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP00",
+                    SchemeCode = "SchemeCodeValue",
+                },
+                new CombinationForRoute()
+                {
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP01",
+                    SchemeCode = "SchemeCodeValue",
                 }
             };
-            mainAccountResponse.Data = mainAccounts;
+            combinationsForRouteResponse.Data = combinationsForRoute;
 
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -69,11 +78,10 @@ namespace EST.MIT.Invoice.Api.Test
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
-            _referenceDataApiMock
-            .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(mainAccountResponse));
+            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route);
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
         }
 
         [Fact]
@@ -86,7 +94,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -107,7 +115,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 234.8M,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -128,7 +136,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 Value = 234.8M,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -150,7 +158,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -182,7 +190,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -209,7 +217,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -244,7 +252,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = value,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -273,7 +281,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = value,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -299,7 +307,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 0,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -325,7 +333,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -367,7 +375,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -389,7 +397,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTKK",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -410,7 +418,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountA"
+                MainAccount = "AccountCodeValue"
             };
 
             //Act

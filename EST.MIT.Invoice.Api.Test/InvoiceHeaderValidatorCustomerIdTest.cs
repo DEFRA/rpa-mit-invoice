@@ -31,12 +31,12 @@ namespace EST.MIT.Invoice.Api.Test
             var fundCodeErrors = new Dictionary<string, List<string>>();
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
             var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
-            var mainAccountErrors = new Dictionary<string, List<string>>();
+
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
             var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
             var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
-            var mainAccountResponse = new ApiResponse<IEnumerable<MainAccount>>(HttpStatusCode.OK, mainAccountErrors);
+
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -73,15 +73,6 @@ namespace EST.MIT.Invoice.Api.Test
             };
             combinationsForRouteResponse.Data = combinationsForRoute;
 
-            var mainAccounts = new List<MainAccount>()
-            {
-                new MainAccount()
-                {
-                    Code = "AccountA"
-                }
-            };
-            mainAccountResponse.Data = mainAccounts;
-
             _referenceDataApiMock
                 .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(schemeCodeResponse));
@@ -94,11 +85,7 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _referenceDataApiMock
-                .GetMainAccountsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(mainAccountResponse));
-
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, route);
+            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
 
         [Fact]
@@ -123,7 +110,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountA"
+                        MainAccount = "AccountCodeValue"
                     }
                 },
                 MarketingYear = 2022,
@@ -181,7 +168,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountA"
+                        MainAccount = "AccountCodeValue"
 
                     }
                 },
@@ -240,7 +227,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountA"
+                        MainAccount = "AccountCodeValue"
                     }
                 },
                 MarketingYear = 2022,
@@ -296,7 +283,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountA"
+                        MainAccount = "AccountCodeValue"
                     }
                 },
                 MarketingYear = 2022,
@@ -352,7 +339,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountA"
+                        MainAccount = "AccountCodeValue"
                     }
                 },
                 MarketingYear = 2022,

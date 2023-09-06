@@ -12,9 +12,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
     private readonly string[] _validCurrencyTypes = { "GBP", "EUR" };
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly FieldsRoute _route;
-    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
+    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _route = route;
+        this._cachedReferenceDataApi = cachedReferenceDataApi;
         _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.SchemeCode).NotEmpty();
@@ -78,14 +80,15 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidMainAccount(string mainAccount)
     {
-        var mainAccounts = await _referenceDataApi.GetMainAccountsAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
+    _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
 
-        if (!mainAccounts.IsSuccess || !mainAccounts.Data.Any())
+        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
         {
             return false;
         }
 
-        return mainAccounts.Data.Any(x => x.Code.ToLower() == mainAccount.ToLower());
+        return combinationsForRoute.Data.Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
     }
 }
 
