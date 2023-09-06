@@ -89,23 +89,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
         }
 
         return response;
-    }
-
-    //public async Task<HttpResponseMessage> GetMainAccountsListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
-    //{
-    //    var client = _clientFactory.CreateClient("ReferenceApi.MainAccounts");
-
-    //    var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-    //        ? await client.GetAsync($"/accounts")
-    //        : await client.GetAsync($"/accounts?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
-
-    //    if (!response.IsSuccessStatusCode)
-    //    {
-    //        response.Content = new StringContent(await response.Content.ReadAsStringAsync());
-    //    }
-
-    //    return response;
-    //}
+    } 
 
     public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
