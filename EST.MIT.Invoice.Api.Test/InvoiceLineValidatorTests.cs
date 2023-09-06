@@ -149,7 +149,7 @@ namespace EST.MIT.Invoice.Api.Test
 
         [Fact]
         public async Task Given_InvoiceLine_When_SchemeCode_Is_Not_Valid_And_SchemeCode_Model_Is_Empty()
-        {        
+        {
             //Arrange
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
@@ -163,7 +163,7 @@ namespace EST.MIT.Invoice.Api.Test
              .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(schemeCodeResponse));
 
-   
+
             InvoiceLine invoiceLine = new InvoiceLine()
             {
                 Currency = "GBP",
