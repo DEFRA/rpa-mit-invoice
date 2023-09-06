@@ -89,7 +89,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
         }
 
         return response;
-    } 
+    }
 
     public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
     {
