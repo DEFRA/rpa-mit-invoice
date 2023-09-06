@@ -148,6 +148,42 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
+        public async Task Given_InvoiceLine_When_SchemeCode_Is_Not_Valid_And_SchemeCode_Model_Is_Empty()
+        {        
+            //Arrange
+            var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+            var schemeCodes = new List<SchemeCode>()
+            {
+
+            };
+            schemeCodeResponse.Data = schemeCodes;
+
+            _referenceDataApiMock
+             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+             .Returns(Task.FromResult(schemeCodeResponse));
+
+   
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
+            response.Errors.Count.Equals(1);
+
+        }
+
+        [Fact]
         public async Task Given_InvoiceLine_When_No_Field_Is_Empty_Then_InvoiceLine_Pass()
         {
             //Arrange
