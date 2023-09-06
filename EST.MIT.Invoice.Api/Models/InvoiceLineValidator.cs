@@ -20,7 +20,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.SchemeCode).NotEmpty();
-        RuleFor(model => model)
+        RuleFor(x => x.SchemeCode)/*.NotEmpty()*/
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))
             .WithMessage("SchemeCode is invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.SchemeCode));
@@ -49,13 +49,8 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 
-    private async Task<bool> BeAValidSchemeCodes(InvoiceLine invoice)
+    private async Task<bool> BeAValidSchemeCodes(string schemeCode)
     {
-        if (string.IsNullOrWhiteSpace(invoice.SchemeCode))
-        {
-            return false;
-        }
-
         var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!schemeCodes.IsSuccess || !schemeCodes.Data.Any())
@@ -63,7 +58,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return false;
         }
 
-        return schemeCodes.Data.Any(x => x.Code.ToLower() == invoice.SchemeCode.ToLower());
+        return schemeCodes.Data.Any(x => x.Code.ToLower() == schemeCode.ToLower());
     }
 
     private async Task<bool> BeAValidFundCode(string fundCode)
