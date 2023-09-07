@@ -180,7 +180,6 @@ namespace EST.MIT.Invoice.Api.Test
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
             response.Errors.Count.Equals(1);
-
         }
 
         [Fact]
@@ -477,6 +476,39 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "DR5678",
                 Value = 30,
                 MainAccount = "AccountB"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_Not_Valid_And_CombinationForRoute_Model_Is_Empty()
+        {
+            //Arrange
+            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+
+            var combinationsForRoute = new List<CombinationForRoute>()
+            {
+
+            };
+            combinationsForRouteResponse.Data = combinationsForRoute;
+
+            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(combinationsForRouteResponse));
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act

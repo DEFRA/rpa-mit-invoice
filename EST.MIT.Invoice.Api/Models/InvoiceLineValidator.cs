@@ -20,7 +20,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.SchemeCode).NotEmpty();
-        RuleFor(x => x.SchemeCode)/*.NotEmpty()*/
+        RuleFor(x => x.SchemeCode)
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))
             .WithMessage("SchemeCode is invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.SchemeCode));
