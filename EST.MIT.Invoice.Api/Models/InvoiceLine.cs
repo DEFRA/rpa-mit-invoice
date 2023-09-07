@@ -20,4 +20,6 @@ public class InvoiceLine
     public string FundCode { get; init; } = default!;
     [JsonProperty("mainAccount")]
     public string MainAccount { get; init; } = default!;
+    [JsonProperty("deliveryBody")]
+    public string DeliveryBody { get; init; } = default!;
 }

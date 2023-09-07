@@ -143,7 +143,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     PaymentRequestNumber = 123456789,
                     AgreementNumber = "123456789",
                     ContractNumber = "123456789",
@@ -158,7 +157,8 @@ public class InvoiceValidatiorTests
                             Description = "Test Description",
                             Value = 100,
                             SchemeCode = "123456789",
-                            FundCode = "123456789"
+                            FundCode = "123456789",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -193,7 +193,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "RP00",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -207,7 +206,8 @@ public class InvoiceValidatiorTests
                             Currency = "GBP",
                             Value = 100,
                             SchemeCode = "123456789",
-                            FundCode = "123456789"
+                            FundCode = "123456789",
+                            DeliveryBody = "RP00",
                         }
                     },
                     FirmReferenceNumber = 9999999999,
@@ -250,7 +250,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -266,7 +265,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -332,7 +332,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -348,7 +347,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -416,7 +416,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -432,7 +431,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -467,7 +467,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -483,7 +482,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -528,7 +528,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -544,7 +543,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -595,7 +595,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -611,7 +610,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -666,7 +666,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -682,7 +681,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -727,7 +727,6 @@ public class InvoiceValidatiorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "Test Org",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -743,7 +742,8 @@ public class InvoiceValidatiorTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }

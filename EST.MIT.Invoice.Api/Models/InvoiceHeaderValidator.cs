@@ -21,10 +21,6 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         RuleFor(x => x.InvoiceLines).NotEmpty();
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.ContractNumber).NotEmpty();
-        RuleFor(x => x.DeliveryBody)
-            .NotEmpty()
-            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
-            .WithMessage("Delivery Body is invalid for this Route");
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.PaymentRequestId).NotEmpty()
@@ -109,24 +105,6 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             return false;
         }
         return true;
-    }
-
-    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
-    {
-        if (string.IsNullOrWhiteSpace(deliveryBody))
-        {
-            return false;
-        }
-
-        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
-            _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
-
-        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
-        {
-            return false;
-        }
-
-        return combinationsForRoute.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 
     private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)

@@ -42,6 +42,10 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .MustAsync((x, cancellation) => BeAValidMainAccount(x))
             .WithMessage("Account is Invalid for this route")
             .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
+        RuleFor(x => x.DeliveryBody)
+            .NotEmpty()
+            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
+            .WithMessage("Delivery Body is invalid for this route");
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
@@ -84,6 +88,24 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
 
         return combinationsForRoute.Data.Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
+    }
+
+    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
+    {
+        if (string.IsNullOrWhiteSpace(deliveryBody))
+        {
+            return false;
+        }
+
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
+            _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
+
+        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
+        {
+            return false;
+        }
+
+        return combinationsForRoute.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 }
 
