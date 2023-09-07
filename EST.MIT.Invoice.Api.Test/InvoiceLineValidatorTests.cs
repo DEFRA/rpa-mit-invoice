@@ -578,22 +578,23 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Theory]
-        [InlineData("", "Organisation", "PaymentType", "SchemeType")]
-        [InlineData("InvoiceType", "", "PaymentType", "SchemeType")]
-        [InlineData("InvoiceType", "Organisation", "", "SchemeType")]
-        [InlineData("InvoiceType", "Organisation", "PaymentType", "")]
-        [InlineData("", "", "PaymentType", "SchemeType")]
-        [InlineData("", "Organisation", "", "SchemeType")]
-        [InlineData("", "Organisation", "PaymentType", "")]
-        [InlineData("InvoiceType", "", "", "SchemeType")]
-        [InlineData("InvoiceType", "", "PaymentType", "")]
-        [InlineData("InvoiceType", "Organisation", "", "")]
-        [InlineData("", "", "", "SchemeType")]
-        [InlineData("", "", "PaymentType", "")]
-        [InlineData("", "Organisation", "", "")]
-        [InlineData("InvoiceType", "", "", "")]
         [InlineData("", "", "", "")]
-        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string invoiceType, string organisation, string paymentType, string schemeType)
+        [InlineData(null, null, null, null)]
+        [InlineData("InvoiceType", "", "", "")]
+        [InlineData("InvoiceType", "Organisation", "", "")]
+        [InlineData("InvoiceType", "Organisation", "PaymentType", "")]
+        [InlineData("", "Organisation", "", "")]
+        [InlineData("", "Organisation", "PaymentType", "")]
+        [InlineData("", "Organisation", "PaymentType", "SchemeType")]
+        [InlineData("", "", "PaymentType", "")]
+        [InlineData("", "", "PaymentType", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "SchemeType")]
+        [InlineData("", "", "", "SchemeType")]
+        [InlineData("InvoiceType", "", "", "SchemeType")]
+        [InlineData("InvoiceType", "Organisation", "", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "")]
+        [InlineData("", "Organisation", "", "SchemeType")]
+        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
