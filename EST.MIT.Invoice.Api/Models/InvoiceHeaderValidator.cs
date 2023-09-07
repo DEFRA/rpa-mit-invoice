@@ -9,12 +9,8 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
-    private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
-    private readonly FieldsRoute _route;
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
     {
-        _cachedReferenceDataApi = cachedReferenceDataApi;
-        _route = route;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.FRN).NotEmpty();
@@ -39,7 +35,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
-        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, _cachedReferenceDataApi));
+        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, cachedReferenceDataApi));
 
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
