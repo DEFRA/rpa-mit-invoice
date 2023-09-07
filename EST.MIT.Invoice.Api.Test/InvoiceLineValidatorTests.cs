@@ -16,7 +16,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
             Substitute.For<ICachedReferenceDataApi>();
 
-        private readonly FieldsRoute route = new()
+        private readonly FieldsRoute _route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
@@ -81,7 +81,7 @@ namespace EST.MIT.Invoice.Api.Test
             _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, _route, _cachedReferenceDataApiMock);
         }
 
         [Fact]
@@ -509,7 +509,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountB"
+                MainAccount = "AccountB",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -541,8 +542,6 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.True(response.Errors[0].ErrorMessage.Equals("Delivery Body is invalid for this route"));
         }
 
-
-
         [Fact]
         public async Task Given_InvoiceLine_When_CombinationForRoute_Model_Is_Empty()
         {
@@ -572,6 +571,54 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Act
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+        }
+
+        [Theory]
+        [InlineData("", "Organisation", "PaymentType", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "SchemeType")]
+        [InlineData("InvoiceType", "Organisation", "", "SchemeType")]
+        [InlineData("InvoiceType", "Organisation", "PaymentType", "")]
+        [InlineData("", "", "PaymentType", "SchemeType")]
+        [InlineData("", "Organisation", "", "SchemeType")]
+        [InlineData("", "Organisation", "PaymentType", "")]
+        [InlineData("InvoiceType", "", "", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "")]
+        [InlineData("InvoiceType", "Organisation", "", "")]
+        [InlineData("", "", "", "SchemeType")]
+        [InlineData("", "", "PaymentType", "")]
+        [InlineData("", "Organisation", "", "")]
+        [InlineData("InvoiceType", "", "", "")]
+        [InlineData("", "", "", "")]
+        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string invoiceType, string organisation, string paymentType, string schemeType)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
+            };
+
+            var route = new FieldsRoute()
+            {
+                InvoiceType = invoiceType,
+                Organisation = organisation,
+                PaymentType = paymentType,
+                SchemeType = schemeType
+            };
+            var validator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+
+            //Act
+
+            var response = await validator.TestValidateAsync(invoiceLine);
 
             //Assert
             Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
