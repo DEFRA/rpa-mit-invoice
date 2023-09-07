@@ -443,6 +443,40 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
+        public async Task Given_InvoiceLine_When_Fundcode_Is_InValid_And_Fund_Model_Is_Empty()
+        {
+            //Arrange
+            var fundCodesErrors = new Dictionary<string, List<string>>();
+            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
+
+            var fundCodes = new List<FundCode>()
+            {
+
+            };
+            fundCodeResponse.Data = fundCodes;
+
+            _referenceDataApiMock
+                .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(fundCodeResponse));
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTKK",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
+        }
+
+        [Fact]
         public async Task Given_InvoiceLine_When_MainAccount_Is_Valid_Then_InvoiceLine_Pass()
         {
             //Arrange
