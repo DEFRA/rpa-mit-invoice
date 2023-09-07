@@ -308,7 +308,7 @@ public class ReferenceDataApi : IReferenceDataApi
         var error = new Dictionary<string, List<string>>();
         var response = await _referenceDataRepository.GetFundCodesListAsync(invoiceType, organisation, paymentType, schemeType);
 
-        _logger.LogInformation($"Calling Reference Data API for Scheme Codes");
+        _logger.LogInformation($"Calling Reference Data API for Fund Codes");
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
@@ -331,13 +331,13 @@ public class ReferenceDataApi : IReferenceDataApi
                 }
 
                 await responseDataTask;
-                var schemeCodes = responseDataTask.Result.ToList();
+                var fundCodes = responseDataTask.Result.ToList();
 
-                if (schemeCodes.Any())
+                if (fundCodes.Any())
                 {
                     return new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK)
                     {
-                        Data = schemeCodes
+                        Data = fundCodes
                     };
                 }
 
@@ -372,6 +372,5 @@ public class ReferenceDataApi : IReferenceDataApi
         _logger.LogError("Unknown response from API");
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
         return new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.InternalServerError, error);
-
     }
 }

@@ -47,6 +47,7 @@ public class InvoicePostEndpointTests
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
+
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()
@@ -199,7 +200,8 @@ public class InvoicePostEndpointTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }
@@ -251,7 +253,8 @@ public class InvoicePostEndpointTests
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }
@@ -300,7 +303,8 @@ public class InvoicePostEndpointTests
                             Currency = "GBP",
                             Value = 100,
                             FundCode = "123456789",
-                            Description = "Description"
+                            Description = "Description",
+                            MainAccount = "AccountA"
                         }
                     }
                 }

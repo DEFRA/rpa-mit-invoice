@@ -12,13 +12,15 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
     private readonly string[] _validCurrencyTypes = { "GBP", "EUR" };
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly FieldsRoute _route;
-    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route)
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
+    public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _route = route;
+        this._cachedReferenceDataApi = cachedReferenceDataApi;
         _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.SchemeCode).NotEmpty();
-        RuleFor(model => model)
+        RuleFor(x => x.SchemeCode)
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))
             .WithMessage("SchemeCode is invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.SchemeCode));
@@ -28,15 +30,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice line value cannot be more than 2dp");
         RuleFor(x => x.Description).NotEmpty();
-        RuleFor(x => x.FundCode).NotEmpty();
-        RuleFor(model => model)
-           .MustAsync((x, cancellation) => BeAValidFundCodes(x))
+        RuleFor(x => x.FundCode).NotEmpty()
+           .MustAsync((x, cancellation) => BeAValidFundCode(x))
            .WithMessage("Fund Code is invalid for this route")
            .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
         RuleFor(x => x.Currency)
             .NotEmpty()
             .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
             .WithMessage("Currency must be GBP or EUR");
+        RuleFor(x => x.MainAccount).NotEmpty()
+            .MustAsync((x, cancellation) => BeAValidMainAccount(x))
+            .WithMessage("Account is Invalid for this route")
+            .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
@@ -44,13 +49,8 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
 
-    private async Task<bool> BeAValidSchemeCodes(InvoiceLine invoice)
+    private async Task<bool> BeAValidSchemeCodes(string schemeCode)
     {
-        if (string.IsNullOrWhiteSpace(invoice.SchemeCode))
-        {
-            return false;
-        }
-
         var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!schemeCodes.IsSuccess || !schemeCodes.Data.Any())
@@ -58,15 +58,11 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return false;
         }
 
-        return schemeCodes.Data.Any(x => x.Code.ToLower() == invoice.SchemeCode.ToLower());
+        return schemeCodes.Data.Any(x => x.Code.ToLower() == schemeCode.ToLower());
     }
 
-    private async Task<bool> BeAValidFundCodes(InvoiceLine invoice)
+    private async Task<bool> BeAValidFundCode(string fundCode)
     {
-        if (string.IsNullOrWhiteSpace(invoice.FundCode))
-        {
-            return false;
-        }
         var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
@@ -74,7 +70,20 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return false;
         }
 
-        return fundCodes.Data.Any(x => x.Code.ToLower() == invoice.FundCode.ToLower());
+        return fundCodes.Data.Any(x => x.Code.ToLower() == fundCode.ToLower());
+    }
+
+    private async Task<bool> BeAValidMainAccount(string mainAccount)
+    {
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
+    _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
+
+        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
+        {
+            return false;
+        }
+
+        return combinationsForRoute.Data.Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
     }
 }
 

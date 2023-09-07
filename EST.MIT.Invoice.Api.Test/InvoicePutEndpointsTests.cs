@@ -49,6 +49,7 @@ public class InvoicePutEndpointTests
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
+
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()

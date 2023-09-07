@@ -12,10 +12,12 @@ public class InvoiceLine
     public string Currency { get; set; } = null!;
     [JsonProperty("schemeCode")]
     [Required(ErrorMessage = "SchemeCode must be specified")]
-    public string SchemeCode { get; set; } = null!;
+    public string SchemeCode { get; init; } = default!;
     [JsonProperty("description")]
     [Required(ErrorMessage = "Description must be stated")]
     public string Description { get; set; } = null!;
     [JsonProperty("fundCode")]
-    public string FundCode { get; set; } = null!;
+    public string FundCode { get; init; } = default!;
+    [JsonProperty("mainAccount")]
+    public string MainAccount { get; init; } = default!;
 }

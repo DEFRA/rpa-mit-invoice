@@ -12,7 +12,9 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly InvoiceLineValidator _invoiceLineValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock =
-     Substitute.For<IReferenceDataApi>();
+            Substitute.For<IReferenceDataApi>();
+        private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+            Substitute.For<ICachedReferenceDataApi>();
 
         private readonly FieldsRoute route = new()
         {
@@ -30,6 +32,8 @@ namespace EST.MIT.Invoice.Api.Test
             var fundCodesErrors = new Dictionary<string, List<string>>();
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
 
+            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -49,6 +53,23 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
+            var combinationsForRoute = new List<CombinationForRoute>()
+            {
+                new CombinationForRoute()
+                {
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP00",
+                    SchemeCode = "SchemeCodeValue",
+                },
+                new CombinationForRoute()
+                {
+                    AccountCode = "AccountCodeValue",
+                    DeliveryBodyCode = "RP01",
+                    SchemeCode = "SchemeCodeValue",
+                }
+            };
+            combinationsForRouteResponse.Data = combinationsForRoute;
+
             _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
@@ -57,7 +78,10 @@ namespace EST.MIT.Invoice.Api.Test
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route);
+            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
+
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
         }
 
         [Fact]
@@ -69,7 +93,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678"
+                SchemeCode = "DR5678",
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -89,7 +114,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 234.8M
+                Value = 234.8M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -109,7 +135,43 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                Value = 234.8M
+                Value = 234.8M,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
+            response.Errors.Count.Equals(1);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_SchemeCode_Is_Not_Valid_And_SchemeCode_Model_Is_Empty()
+        {
+            //Arrange
+            var schemeCodeErrors = new Dictionary<string, List<string>>();
+            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+            var schemeCodes = new List<SchemeCode>()
+            {
+
+            };
+            schemeCodeResponse.Data = schemeCodes;
+
+            _referenceDataApiMock
+             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+             .Returns(Task.FromResult(schemeCodeResponse));
+
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -130,7 +192,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -161,7 +224,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -187,7 +251,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -221,7 +286,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = value
+                Value = value,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -249,7 +315,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = value
+                Value = value,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -274,7 +341,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 0
+                Value = 0,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -299,7 +367,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -340,7 +409,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -361,7 +431,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTKK",
                 SchemeCode = "DR5678",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountCodeValue"
             };
 
             //Act
@@ -369,6 +440,116 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_Fundcode_Is_InValid_And_Fund_Model_Is_Empty()
+        {
+            //Arrange
+            var fundCodesErrors = new Dictionary<string, List<string>>();
+            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
+
+            var fundCodes = new List<FundCode>()
+            {
+
+            };
+            fundCodeResponse.Data = fundCodes;
+
+            _referenceDataApiMock
+                .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(fundCodeResponse));
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTKK",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_Valid_Then_InvoiceLine_Pass()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_InValid_Then_InvoiceLine_Throws_Error_Account_Is_InValid_For_This_Route()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountB"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_MainAccount_Is_Not_Valid_And_CombinationForRoute_Model_Is_Empty()
+        {
+            //Arrange
+            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+
+            var combinationsForRoute = new List<CombinationForRoute>()
+            {
+
+            };
+            combinationsForRouteResponse.Data = combinationsForRoute;
+
+            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(combinationsForRouteResponse));
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
         }
     }
 }

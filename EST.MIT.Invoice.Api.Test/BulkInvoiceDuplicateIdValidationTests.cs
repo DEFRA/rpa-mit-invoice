@@ -33,6 +33,7 @@ public class BulkInvoiceDuplicateIdValidationTests
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
+
         var paymentSchemes = new List<PaymentScheme>()
         {
             new PaymentScheme()
@@ -123,7 +124,7 @@ public class BulkInvoiceDuplicateIdValidationTests
     }
 
     [Fact]
-    public async Task Given_BulkInvoice_When_Nested_Class_Invoice_PaymentRequests_Property_PaymentRequestId_Is_Duplicated_Then_Failure_Message_PaymentRequestId__Is_Duplicated_In_This_Batch()
+    public async Task Given_BulkInvoice_When_Nested_Class_Invoice_PaymentRequests_Property_PaymentRequestId_Is_Duplicated_Then_Failure_Message_PaymentRequestId_Is_Duplicated_In_This_Batch()
     {
         //Arrange
         BulkInvoices bulkInvoices = new BulkInvoices()
@@ -165,6 +166,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     Value = 100,
                                     SchemeCode = "123456789",
                                     FundCode = "123456789",
+                                    MainAccount = "AccountCodeValue"
                                 }
                             },
                             FirmReferenceNumber = 1000000000,
@@ -204,6 +206,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     Value = 100,
                                     SchemeCode = "123456789",
                                     FundCode = "123456789",
+                                    MainAccount = "AccountCodeValue"
                                 }
                             },
                             FirmReferenceNumber = 1000000000,
