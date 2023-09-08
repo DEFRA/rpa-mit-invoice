@@ -184,7 +184,6 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "RP00",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -201,7 +200,8 @@ public class InvoicePostEndpointTests
                             SchemeCode = "123456789",
                             FundCode = "123456789",
                             Description = "Description",
-                            MainAccount = "AccountA"
+                            MainAccount = "AccountA",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -237,7 +237,6 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "RP00",
                     FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
@@ -254,7 +253,8 @@ public class InvoicePostEndpointTests
                             SchemeCode = "123456789",
                             FundCode = "123456789",
                             Description = "Description",
-                            MainAccount = "AccountA"
+                            MainAccount = "AccountA",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }
@@ -289,7 +289,6 @@ public class InvoicePostEndpointTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "RP00",
                     PaymentRequestNumber = 123456789,
                     ContractNumber = "123456789",
                     Value = 100,
@@ -304,7 +303,8 @@ public class InvoicePostEndpointTests
                             Value = 100,
                             FundCode = "123456789",
                             Description = "Description",
-                            MainAccount = "AccountA"
+                            MainAccount = "AccountA",
+                            DeliveryBody = "RP00",
                         }
                     }
                 }

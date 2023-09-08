@@ -9,22 +9,14 @@ namespace Invoices.Api.Models;
 
 public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
 {
-    private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
-    private readonly FieldsRoute _route;
     public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
     {
-        _cachedReferenceDataApi = cachedReferenceDataApi;
-        _route = route;
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.FRN).NotEmpty();
         RuleFor(x => x.InvoiceLines).NotEmpty();
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.ContractNumber).NotEmpty();
-        RuleFor(x => x.DeliveryBody)
-            .NotEmpty()
-            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
-            .WithMessage("Delivery Body is invalid for this Route");
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.PaymentRequestId).NotEmpty()
@@ -43,7 +35,7 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
-        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, _cachedReferenceDataApi));
+        RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, cachedReferenceDataApi));
 
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
@@ -109,24 +101,6 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
             return false;
         }
         return true;
-    }
-
-    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
-    {
-        if (string.IsNullOrWhiteSpace(deliveryBody))
-        {
-            return false;
-        }
-
-        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
-            _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
-
-        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
-        {
-            return false;
-        }
-
-        return combinationsForRoute.Data.Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 
     private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)

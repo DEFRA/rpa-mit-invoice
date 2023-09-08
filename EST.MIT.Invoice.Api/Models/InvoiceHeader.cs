@@ -15,8 +15,6 @@ public class InvoiceHeader
     [JsonProperty("marketingYear")]
     [Range(2021, 2099, ErrorMessage = "Marketing Year must be between 2021 and 2099 ")]
     public int MarketingYear { get; init; }
-    [JsonProperty("deliveryBody")]
-    public string DeliveryBody { get; init; } = default!;
     [JsonProperty("paymentRequestNumber")]
     public int PaymentRequestNumber { get; init; }
     [JsonProperty("agreementNumber")]

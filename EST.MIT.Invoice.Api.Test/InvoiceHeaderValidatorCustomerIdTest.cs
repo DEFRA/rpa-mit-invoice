@@ -97,7 +97,6 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -110,7 +109,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountCodeValue"
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 2022,
@@ -132,7 +132,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
             response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
@@ -155,7 +154,6 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -168,8 +166,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountCodeValue"
-
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 2022,
@@ -193,7 +191,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
             response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
@@ -214,7 +211,6 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -227,7 +223,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountCodeValue"
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 2022,
@@ -249,7 +246,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
             response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
@@ -270,7 +266,6 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -283,7 +278,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountCodeValue"
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 2022,
@@ -305,7 +301,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
             response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
@@ -326,7 +321,6 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "RP00",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
@@ -339,7 +333,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "WE4567",
-                        MainAccount = "AccountCodeValue"
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 2022,
@@ -361,7 +356,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
             response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);

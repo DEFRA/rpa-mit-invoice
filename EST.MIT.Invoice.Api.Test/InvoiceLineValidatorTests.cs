@@ -16,7 +16,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
             Substitute.For<ICachedReferenceDataApi>();
 
-        private readonly FieldsRoute route = new()
+        private readonly FieldsRoute _route = new()
         {
             PaymentType = "AP",
             InvoiceType = "AP",
@@ -81,7 +81,7 @@ namespace EST.MIT.Invoice.Api.Test
             _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, _route, _cachedReferenceDataApiMock);
         }
 
         [Fact]
@@ -94,7 +94,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -115,7 +116,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 234.8M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -136,7 +138,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 Value = 234.8M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -171,7 +174,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -193,7 +197,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -205,6 +210,8 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             Assert.Empty(response.Errors);
         }
 
@@ -225,7 +232,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -236,6 +244,8 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Currency must be GBP or EUR")) == 1);
         }
 
@@ -252,7 +262,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -264,6 +275,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             Assert.Empty(response.Errors);
         }
 
@@ -287,7 +299,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = value,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -299,6 +312,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
             Assert.Empty(response.Errors);
         }
 
@@ -316,7 +330,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = value,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -342,7 +357,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 0,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -368,7 +384,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -389,7 +406,9 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5699",
-                Value = 30
+                Value = 30,
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -410,7 +429,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -432,7 +452,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTKK",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -466,7 +487,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTKK",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -474,28 +496,6 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert           
             Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
-        }
-
-        [Fact]
-        public async Task Given_InvoiceLine_When_MainAccount_Is_Valid_Then_InvoiceLine_Pass()
-        {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
-                Value = 30,
-                MainAccount = "AccountCodeValue"
-            };
-
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
-
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
-            Assert.Empty(response.Errors);
         }
 
         [Fact]
@@ -509,7 +509,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 30,
-                MainAccount = "AccountB"
+                MainAccount = "AccountB",
+                DeliveryBody = "RP00"
             };
 
             //Act
@@ -520,7 +521,29 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public async Task Given_InvoiceLine_When_MainAccount_Is_Not_Valid_And_CombinationForRoute_Model_Is_Empty()
+        public async Task Given_InvoiceLine_When_DeliveryBody_Is_InValid_Then_InvoiceLine_Throws_Error_DeliveryBody_Is_InValid_For_This_Route()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 30,
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "INVALIDDELIVERYBODY"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert           
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_When_CombinationForRoute_Model_Is_Empty()
         {
             //Arrange
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
@@ -542,14 +565,65 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
                 Value = 4567.89M,
-                MainAccount = "AccountCodeValue"
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
             };
 
             //Act
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert           
+            //Assert
             Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+        }
+
+        [Theory]
+        [InlineData("", "", "", "")]
+        [InlineData(null, null, null, null)]
+        [InlineData("InvoiceType", "", "", "")]
+        [InlineData("InvoiceType", "Organisation", "", "")]
+        [InlineData("InvoiceType", "Organisation", "PaymentType", "")]
+        [InlineData("", "Organisation", "", "")]
+        [InlineData("", "Organisation", "PaymentType", "")]
+        [InlineData("", "Organisation", "PaymentType", "SchemeType")]
+        [InlineData("", "", "PaymentType", "")]
+        [InlineData("", "", "PaymentType", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "SchemeType")]
+        [InlineData("", "", "", "SchemeType")]
+        [InlineData("InvoiceType", "", "", "SchemeType")]
+        [InlineData("InvoiceType", "Organisation", "", "SchemeType")]
+        [InlineData("InvoiceType", "", "PaymentType", "")]
+        [InlineData("", "Organisation", "", "SchemeType")]
+        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "DR5678",
+                Value = 4567.89M,
+                MainAccount = "AccountCodeValue",
+                DeliveryBody = "RP00"
+            };
+
+            var route = new FieldsRoute()
+            {
+                InvoiceType = invoiceType,
+                Organisation = organisation,
+                PaymentType = paymentType,
+                SchemeType = schemeType
+            };
+            var validator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+
+            //Act
+
+            var response = await validator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
         }
     }
 }

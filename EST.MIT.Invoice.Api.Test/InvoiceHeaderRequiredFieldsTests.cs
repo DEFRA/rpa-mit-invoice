@@ -21,7 +21,6 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1,
                 InvoiceLines = new List<InvoiceLine>()
@@ -32,7 +31,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "£",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567"
+                        SchemeCode = "WE4567",
+                        DeliveryBody = "XYZ",
                     }
                 },
                 MarketingYear = 2022,
@@ -59,7 +59,6 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -70,7 +69,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "£",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567"
+                        SchemeCode = "WE4567",
+                        DeliveryBody = "RP00",
                     }
                 },
                 MarketingYear = 1996,
@@ -95,7 +95,6 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -106,7 +105,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "£",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567"
+                        SchemeCode = "WE4567",
+                        DeliveryBody = "XYZ",
                     }
                 },
                 MarketingYear = 2021,
@@ -131,7 +131,6 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
-                DeliveryBody = "XYZ",
                 DueDate = DateTime.Now.ToString(),
                 FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
@@ -142,7 +141,8 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "£",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567"
+                        SchemeCode = "WE4567",
+                        DeliveryBody = "XYZ",
                     }
                 },
                 MarketingYear = 2022,

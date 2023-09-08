@@ -23,7 +23,6 @@ public static class InvoiceTestData
                     FRN = 123456789,
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    DeliveryBody = "RP00",
                     PaymentRequestNumber = 123456789,
                     AgreementNumber = "123456789",
                     ContractNumber = "123456789",
@@ -39,7 +38,8 @@ public static class InvoiceTestData
                             Value = 100,
                             SchemeCode = "123456789",
                             FundCode = "123456789",
-                            MainAccount = "AccountCodeValue"
+                            MainAccount = "AccountCodeValue",
+                            DeliveryBody = "RP00",
                         }
                     },
                     FirmReferenceNumber = 1000000000,

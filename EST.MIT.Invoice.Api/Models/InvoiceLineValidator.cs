@@ -42,6 +42,10 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .MustAsync((x, cancellation) => BeAValidMainAccount(x))
             .WithMessage("Account is Invalid for this route")
             .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
+        RuleFor(x => x.DeliveryBody)
+            .NotEmpty()
+            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
+            .WithMessage("Delivery Body is invalid for this route");
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
@@ -73,17 +77,37 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         return fundCodes.Data.Any(x => x.Code.ToLower() == fundCode.ToLower());
     }
 
-    private async Task<bool> BeAValidMainAccount(string mainAccount)
+    private async Task<IEnumerable<CombinationForRoute>> GetCombinationsListForRouteAsync()
     {
-        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(_route.InvoiceType ?? "",
-    _route.Organisation ?? "", _route.PaymentType ?? "", _route.SchemeType ?? "");
+        var invoiceType = _route.InvoiceType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(invoiceType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return new List<CombinationForRoute>();
+        }
+
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(invoiceType, organisation, paymentType, schemeType);
 
         if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
         {
-            return false;
+            return new List<CombinationForRoute>();
         }
 
-        return combinationsForRoute.Data.Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
+        return combinationsForRoute.Data;
+    }
+
+    private async Task<bool> BeAValidMainAccount(string mainAccount)
+    {
+        return (await GetCombinationsListForRouteAsync()).Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
+    }
+
+    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
+    {
+        return (await GetCombinationsListForRouteAsync()).Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
     }
 }
 
