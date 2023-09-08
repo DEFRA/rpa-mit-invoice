@@ -49,7 +49,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         RuleFor(model => model)
             .MustAsync((model, cancellationToken) => BeAllowedCombination(model))
             .WithMessage("Account / Scheme / Delivery Body combination is invalid")
-            .When(x => !string.IsNullOrWhiteSpace(x.DeliveryBody) && !string.IsNullOrWhiteSpace(x.SchemeCode) && !string.IsNullOrWhiteSpace(x.MainAccount));           
+            .When(x => !string.IsNullOrWhiteSpace(x.DeliveryBody) && !string.IsNullOrWhiteSpace(x.SchemeCode) && !string.IsNullOrWhiteSpace(x.MainAccount));
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
@@ -116,7 +116,8 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAllowedCombination(InvoiceLine invoiceLine)
     {
-        return true;
+        return (await GetCombinationsListForRouteAsync()).Any(x => x.DeliveryBodyCode.ToLower() == invoiceLine.DeliveryBody &&
+         x.SchemeCode.ToLower() == invoiceLine.SchemeCode && x.AccountCode.ToLower() == invoiceLine.MainAccount);
     }
 }
 
