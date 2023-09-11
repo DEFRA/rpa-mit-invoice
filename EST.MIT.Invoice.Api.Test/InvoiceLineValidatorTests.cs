@@ -665,7 +665,6 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
         }
 
-
         [Fact]
         public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_FieldsRoute_Model_Is_Invalid_Then_InvoiceLine_Fail()
         {
