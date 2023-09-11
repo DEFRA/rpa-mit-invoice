@@ -27,17 +27,17 @@ EXPOSE ${PORT}
 CMD dotnet watch --project ./EST.MIT.Invoice.Api run --urls "http://*:${PORT}"
 
 # # Production
-# FROM defradigital/dotnetcore:$PARENT_VERSION AS production
+FROM defradigital/dotnetcore:$PARENT_VERSION AS production
 
-# ARG PARENT_VERSION
-# ARG PARENT_REGISTRY
+ARG PARENT_VERSION
+ARG PARENT_REGISTRY
 
-# LABEL uk.gov.defra.parent-image=defra-dotnetcore-development:${PARENT_VERSION}
+LABEL uk.gov.defra.parent-image=defra-dotnetcore-development:${PARENT_VERSION}
 
-# ARG PORT=3000
-# ENV ASPNETCORE_URLS=http://*:${PORT}
-# EXPOSE ${PORT}
+ARG PORT=3000
+ENV ASPNETCORE_URLS=http://*:${PORT}
+EXPOSE ${PORT}
 
-# COPY --from=development /home/dotnet/out/ ./
+COPY --from=development /home/dotnet/out/ ./
  
-# CMD dotnet EST.MIT.Invoice.Api.dll
+CMD dotnet EST.MIT.Invoice.Api.dll
