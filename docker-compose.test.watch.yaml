@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  service-name:
+    build:
+      target: development
+    container_name: rpa-mit-invoice-test
+    entrypoint: dotnet watch --project ./EST.MIT.Invoice.Api.Test test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./test-output/'
