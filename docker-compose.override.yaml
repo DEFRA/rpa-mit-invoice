@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  rpa-mit-invoice:
+    build:
+      target: development
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - ./EST.MIT.Invoice.Api:/home/dotnet/EST.MIT.Invoice.Api
+    #   - ./EST.MIT.Invoice.Api.Tests:/home/dotnet/EST.MIT.Invoice.Api.Tests
