@@ -116,8 +116,9 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAllowedCombination(InvoiceLine invoiceLine)
     {
-        return (await GetCombinationsListForRouteAsync()).Any(x => x.DeliveryBodyCode.ToLower() == invoiceLine.DeliveryBody &&
+        var result = (await GetCombinationsListForRouteAsync()).Any(x => x.DeliveryBodyCode.ToLower() == invoiceLine.DeliveryBody &&
          x.SchemeCode.ToLower() == invoiceLine.SchemeCode && x.AccountCode.ToLower() == invoiceLine.MainAccount);
+        return result;
     }
 }
 
