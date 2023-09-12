@@ -42,7 +42,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 new SchemeCode()
                 {
-                    Code = "WE4567"
+                    Code = "SchemeCodeValue"
                 }
             };
             schemeCodeResponse.Data = schemeCodes;
@@ -108,7 +108,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
+                        SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
                     }
@@ -165,7 +165,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
+                        SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
                     }
@@ -222,7 +222,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
+                        SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
                     }
@@ -277,7 +277,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
+                        SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
                     }
@@ -332,7 +332,7 @@ namespace EST.MIT.Invoice.Api.Test
                         Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
+                        SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
                     }

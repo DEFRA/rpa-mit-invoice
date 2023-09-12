@@ -36,7 +36,7 @@ public static class InvoiceTestData
                             Currency = "GBP",
                             Description = "Test Description",
                             Value = 100,
-                            SchemeCode = "123456789",
+                            SchemeCode = "SchemeCodeValue",
                             FundCode = "123456789",
                             MainAccount = "AccountCodeValue",
                             DeliveryBody = "RP00",

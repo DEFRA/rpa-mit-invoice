@@ -65,7 +65,7 @@ public class BulkInvoiceDuplicateIdValidationTests
         {
             new SchemeCode()
             {
-                Code = "123456789"
+                Code = "SchemeCodeValue"
             }
         };
         schemeCodeResponse.Data = schemeCodes;
@@ -163,7 +163,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     Currency = "GBP",
                                     Description = "Test Description",
                                     Value = 100,
-                                    SchemeCode = "123456789",
+                                    SchemeCode = "SchemeCodeValue",
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",
@@ -203,7 +203,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     Currency = "GBP",
                                     Description = "Test Description",
                                     Value = 100,
-                                    SchemeCode = "123456789",
+                                    SchemeCode = "SchemeCodeValue",
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",

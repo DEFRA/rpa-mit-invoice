@@ -73,7 +73,7 @@ public class InvoicePutEndpointTests
         {
             new SchemeCode()
             {
-                Code = "123456789"
+                Code = "SchemeCodeValue"
             }
         };
         schemeCodeResponse.Data = schemeCodes;
