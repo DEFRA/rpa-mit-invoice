@@ -1,0 +1,7 @@
+{{- define "rpa-mit-invoice.container" -}}
+ports:
+- containerPort: {{ .Values.container.port }}
+volumeMounts:
+- mountPath: {{ .Values.volumeMounts.mountPath }}
+  name: {{ .Values.volumeMounts.name }}
+{{- end -}}

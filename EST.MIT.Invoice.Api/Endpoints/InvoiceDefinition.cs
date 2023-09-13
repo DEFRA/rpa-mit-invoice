@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using Azure.Storage.Queues;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
 using Invoices.Api.Models;
-using Invoices.Api.Services;
 
 namespace Invoices.Api.Endpoints;
 
@@ -17,8 +13,20 @@ public static class InvoiceDefinition
     {
         services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
         services.AddScoped<IValidator<BulkInvoices>, BulkInvoiceValidator>();
-        services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>();
-        services.AddScoped<IValidator<InvoiceLine>, InvoiceLineValidator>();
+
+        services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>(
+            serviceProvider => new InvoiceHeaderValidator(
+                referenceDataApi: serviceProvider.GetRequiredService<IReferenceDataApi>(),
+                cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>(),
+                new FieldsRoute())
+        );
+
+        services.AddScoped<IValidator<InvoiceLine>, InvoiceLineValidator>(
+            serviceProvider => new InvoiceLineValidator(
+                referenceDataApi: serviceProvider.GetRequiredService<IReferenceDataApi>(),
+                new FieldsRoute(),
+                cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>())
+        );
         return services;
     }
 }

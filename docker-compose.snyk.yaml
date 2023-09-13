@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  rpa-mit-invoice:
+    build:
+      context: .
+      target: development
+    image: rpa-mit-invoice-snyk
+    command: extract-project-assets.sh
+    entrypoint: /bin/sh
+    volumes:
+      - ./scripts/extract-project-assets.sh:/home/dotnet/extract-project-assets.sh
+      - ./EST.MIT.Invoice.Api/obj:/home/dotnet/snyk
