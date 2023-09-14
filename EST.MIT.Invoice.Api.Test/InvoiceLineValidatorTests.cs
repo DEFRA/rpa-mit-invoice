@@ -39,7 +39,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 new SchemeCode()
                 {
-                    Code = "DR5678"
+                    Code = "schemecodevalue"
                 }
             };
             schemeCodeResponse.Data = schemeCodes;
@@ -93,7 +93,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
             };
@@ -114,7 +114,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 Currency = "GBP",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 234.8M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -172,7 +172,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -195,7 +195,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -230,7 +230,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = currency ?? "",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -260,7 +260,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = currency,
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -297,7 +297,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = value,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -328,7 +328,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = value,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -355,7 +355,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 0,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -382,7 +382,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -427,7 +427,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -450,7 +450,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTKK",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -485,7 +485,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTKK",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -507,7 +507,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountB",
                 DeliveryBody = "RP00"
@@ -529,7 +529,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "INVALIDDELIVERYBODY"
@@ -563,7 +563,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
@@ -575,6 +575,125 @@ namespace EST.MIT.Invoice.Api.Test
             //Assert
             Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
             Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_DeliveryBody_Are_Valid_Then_InvoiceLine_Pass()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "schemecodevalue",
+                Value = 4567.89M,
+                MainAccount = "accountcodevalue",
+                DeliveryBody = "rp01"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_Are_Valid_And_DeliveryBody_Is_Invalid_Then_InvoiceLine_Fails()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "schemecodevalue",
+                Value = 4567.89M,
+                MainAccount = "accountcodevalue",
+                DeliveryBody = "DELIVERYBODYINVALID"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_SchemeCode_Are_Valid_And_MainAccount_Is_Invalid_Then_InvoiceLine_Fails()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "schemecodevalue",
+                Value = 4567.89M,
+                MainAccount = "MAINACCOUNTINVALID",
+                DeliveryBody = "rp01"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_MainAccount_Are_Valid_And_SchemeCode_Is_Invalid_Then_InvoiceLine_Fails()
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "SCHEMECODEINVALID",
+                Value = 4567.89M,
+                MainAccount = "accountcodevalue",
+                DeliveryBody = "rp01"
+            };
+
+            //Act
+            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+        }
+
+        [Fact]
+        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_FieldsRoute_Model_Is_Invalid_Then_InvoiceLine_Fail()
+        {
+            //Arrange
+            FieldsRoute _inValidRoute = new()
+            {
+                InvoiceType = "AP",
+                Organisation = "Test Org",
+                SchemeType = "bps"
+            };
+
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "GBP",
+                Description = "Description",
+                FundCode = "34ERTY6",
+                SchemeCode = "schemecodevalue",
+                Value = 4567.89M,
+                MainAccount = "accountcodevalue",
+                DeliveryBody = "rp01"
+            };
+
+            var validator = new InvoiceLineValidator(_referenceDataApiMock, _inValidRoute, _cachedReferenceDataApiMock);
+
+            //Act
+            var response = await validator.TestValidateAsync(invoiceLine);
+
+            //Assert
+            Assert.True(response.Errors[2].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
         }
 
         [Theory]
@@ -602,7 +721,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "GBP",
                 Description = "Description",
                 FundCode = "34ERTY6",
-                SchemeCode = "DR5678",
+                SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
                 DeliveryBody = "RP00"
