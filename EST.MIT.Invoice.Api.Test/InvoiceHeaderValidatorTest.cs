@@ -374,7 +374,6 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
-            //Assert.Single(response.Errors);
         }
 
         [Theory]
