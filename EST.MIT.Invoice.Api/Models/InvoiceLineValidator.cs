@@ -26,9 +26,9 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .When(model => !string.IsNullOrWhiteSpace(model.SchemeCode));
         RuleFor(x => x.Value)
             .NotEqual(0)
-            .WithMessage("Invoice line value must be non-zero")
+            .WithMessage("PaymentRequestsBatch line value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
-            .WithMessage("Invoice line value cannot be more than 2dp");
+            .WithMessage("PaymentRequestsBatch line value cannot be more than 2dp");
         RuleFor(x => x.Description).NotEmpty();
         RuleFor(x => x.FundCode).NotEmpty()
            .MustAsync((x, cancellation) => BeAValidFundCode(x))

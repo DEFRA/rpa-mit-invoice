@@ -23,7 +23,7 @@ public class InvoiceBulkPostEndpointsTest
     private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
         Substitute.For<ICachedReferenceDataApi>();
     private readonly IValidator<BulkInvoices> _validator;
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
     public InvoiceBulkPostEndpointsTest()
     {
@@ -138,9 +138,9 @@ public class InvoiceBulkPostEndpointsTest
         {
             SchemeType = "Scheme1",
             Reference = "Reference1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
@@ -158,9 +158,9 @@ public class InvoiceBulkPostEndpointsTest
         var bulkInvoices = new BulkInvoices
         {
             SchemeType = "Scheme1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
@@ -179,14 +179,14 @@ public class InvoiceBulkPostEndpointsTest
         {
             SchemeType = "Scheme1",
             Reference = "Reference1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
         _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
-        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-paymentRequestsBatch-creation-falied", "Bulk paymentRequestsBatch creation failed").Returns(Task.CompletedTask);
 
         var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
 

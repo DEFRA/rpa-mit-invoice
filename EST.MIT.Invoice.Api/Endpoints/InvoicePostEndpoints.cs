@@ -11,8 +11,8 @@ public static class InvoicePostEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoicePostEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/invoice", CreateInvoice)
-            .Produces<Invoice>(StatusCodes.Status201Created)
+        app.MapPost("/paymentRequestsBatch", CreateInvoice)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateInvoice");
 
@@ -24,27 +24,27 @@ public static class InvoicePostEndpoints
         return app;
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateInvoice(PaymentRequestsBatch paymentRequestsBatch, IValidator<PaymentRequestsBatch> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
     {
-        var validationResult = await validator.ValidateAsync(invoice);
+        var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
         if (!validationResult.IsValid)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-validation-failed", "PaymentRequestsBatch validation failed", paymentRequestsBatch);
             return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
-        var invoiceCreated = await cosmosService.Create(invoice);
+        var invoiceCreated = await cosmosService.Create(paymentRequestsBatch);
 
         if (invoiceCreated is null)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-falied", "Invoice creation failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-create-falied", "PaymentRequestsBatch creation failed", paymentRequestsBatch);
             return Results.BadRequest();
         }
 
-        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created", invoice);
+        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-created", "PaymentRequestsBatch created", paymentRequestsBatch);
 
-        return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
+        return Results.Created($"/paymentRequestsBatch/{paymentRequestsBatch.SchemeType}/{paymentRequestsBatch.Id}", paymentRequestsBatch);
     }
 
     public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
@@ -54,7 +54,7 @@ public static class InvoicePostEndpoints
 
         if (!validationResult.IsValid)
         {
-            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-falied", "Bulk invoice validation failed");
+            await eventQueueService.CreateMessage(reference, "invalid", "bulk-paymentRequestsBatch-validation-falied", "Bulk paymentRequestsBatch validation failed");
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
@@ -62,7 +62,7 @@ public static class InvoicePostEndpoints
 
         if (bulkInvoiceCreated is null)
         {
-            await eventQueueService.CreateMessage(reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed");
+            await eventQueueService.CreateMessage(reference, "failed", "bulk-paymentRequestsBatch-creation-falied", "Bulk paymentRequestsBatch creation failed");
             return Results.BadRequest();
         }
 

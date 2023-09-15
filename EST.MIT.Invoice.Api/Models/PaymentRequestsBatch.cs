@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Invoices.Api.Models;
 
-public class Invoice
+public class PaymentRequestsBatch
 {
     [JsonProperty("id")]
     public string Id { get; init; } = default!;

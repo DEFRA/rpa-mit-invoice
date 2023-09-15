@@ -11,7 +11,7 @@ public static class InvoicePutEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoicePutEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapPut("/invoice/{invoiceId}", UpdateInvoice)
+        app.MapPut("/paymentRequestsBatch/{invoiceId}", UpdateInvoice)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateInvoice");
@@ -19,32 +19,32 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, ICosmosService cosmosService, IQueueService queueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
     {
-        var validationResult = await validator.ValidateAsync(invoice);
+        var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await cosmosService.Update(invoice);
+        var invoiceUpdated = await cosmosService.Update(paymentRequestsBatch);
 
         if (invoiceUpdated is null)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update-falied", "Invoice update failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-update-falied", "PaymentRequestsBatch update failed", paymentRequestsBatch);
             return Results.BadRequest();
         }
 
-        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update", "Invoice updated", invoice);
+        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-update", "PaymentRequestsBatch updated", paymentRequestsBatch);
 
-        if (invoice.Status == InvoiceStatuses.Approved)
+        if (paymentRequestsBatch.Status == InvoiceStatuses.Approved)
         {
-            var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
+            var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = paymentRequestsBatch.Id, Scheme = paymentRequestsBatch.SchemeType });
             await queueService.CreateMessage(message);
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-payment-request-sent", "Invoice payment request sent");
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-payment-request-sent", "PaymentRequestsBatch payment request sent");
         }
 
-        return Results.Ok(invoice);
+        return Results.Ok(paymentRequestsBatch);
     }
 }

@@ -6,29 +6,29 @@ namespace Invoices.Api.Util;
 
 public static class InvoiceMapper
 {
-    public static InvoiceEntity MapToInvoiceEntity(Invoice invoice)
+    public static InvoiceEntity MapToInvoiceEntity(PaymentRequestsBatch paymentRequestsBatch)
     {
         return new InvoiceEntity()
         {
-            SchemeType = invoice.SchemeType,
-            Id = invoice.Id,
-            Data = JsonConvert.SerializeObject(invoice),
-            Value = invoice.PaymentRequests.Sum(x => x.Value),
-            Status = invoice.Status,
-            CreatedBy = invoice.CreatedBy,
-            UpdatedBy = invoice.UpdatedBy,
-            Created = invoice.Created.ToLongDateString(),
-            Updated = invoice.Updated?.ToLongDateString() ?? string.Empty
+            SchemeType = paymentRequestsBatch.SchemeType,
+            Id = paymentRequestsBatch.Id,
+            Data = JsonConvert.SerializeObject(paymentRequestsBatch),
+            Value = paymentRequestsBatch.PaymentRequests.Sum(x => x.Value),
+            Status = paymentRequestsBatch.Status,
+            CreatedBy = paymentRequestsBatch.CreatedBy,
+            UpdatedBy = paymentRequestsBatch.UpdatedBy,
+            Created = paymentRequestsBatch.Created.ToLongDateString(),
+            Updated = paymentRequestsBatch.Updated?.ToLongDateString() ?? string.Empty
         };
     }
 
-    public static List<Invoice> MapToInvoice(List<InvoiceEntity> invoiceEntites)
+    public static List<PaymentRequestsBatch> MapToInvoice(List<InvoiceEntity> invoiceEntites)
     {
-        var invoices = new List<Invoice>();
+        var invoices = new List<PaymentRequestsBatch>();
 
         foreach (var invoiceData in invoiceEntites.Select(x => x.Data))
         {
-            var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceData);
+            var invoice = JsonConvert.DeserializeObject<PaymentRequestsBatch>(invoiceData);
             invoices.Add(invoice!);
         }
 

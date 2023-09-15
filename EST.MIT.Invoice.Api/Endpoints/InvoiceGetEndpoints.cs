@@ -12,7 +12,7 @@ public static class InvoiceGetEndpoints
     public static IEndpointRouteBuilder MapInvoiceGetEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
-            .Produces<Invoice>(StatusCodes.Status200OK)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoice");
 

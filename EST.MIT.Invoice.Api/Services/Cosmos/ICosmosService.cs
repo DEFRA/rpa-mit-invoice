@@ -4,9 +4,9 @@ namespace Invoices.Api.Services;
 
 public interface ICosmosService
 {
-    Task<List<Invoice>> Get(string sqlCosmosQuery);
-    Task<Invoice> Create(Invoice invoice);
+    Task<List<PaymentRequestsBatch>> Get(string sqlCosmosQuery);
+    Task<PaymentRequestsBatch> Create(PaymentRequestsBatch paymentRequestsBatch);
     Task<BulkInvoices?> CreateBulk(BulkInvoices invoices);
-    Task<Invoice> Update(Invoice invoice);
+    Task<PaymentRequestsBatch> Update(PaymentRequestsBatch paymentRequestsBatch);
     Task<string> Delete(string id, string scheme);
 }

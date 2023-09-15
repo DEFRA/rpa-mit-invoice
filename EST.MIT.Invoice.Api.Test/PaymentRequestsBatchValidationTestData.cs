@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Invoices.Api.Test;
 
-public class InvoiceValidationTestData : IEnumerable<object[]>
+public class PaymentRequestsBatchValidationTestData : IEnumerable<object[]>
 {
     public IEnumerator<object[]> GetEnumerator()
     {

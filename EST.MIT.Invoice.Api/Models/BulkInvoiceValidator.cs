@@ -13,7 +13,7 @@ public class BulkInvoiceValidator : AbstractValidator<BulkInvoices>
         RuleFor(x => x.Reference).NotEmpty();
         RuleFor(x => x.SchemeType).NotEmpty();
 
-        RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new InvoiceValidator(_referenceDataApi, cachedReferenceDataApi));
+        RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new PaymentRequestsBatchValidator(_referenceDataApi, cachedReferenceDataApi));
         RuleFor(model => model)
             .Must(HaveNoDuplicatedPaymentRequestIds)
             .WithMessage("Payment Request Id is duplicated in this batch");
