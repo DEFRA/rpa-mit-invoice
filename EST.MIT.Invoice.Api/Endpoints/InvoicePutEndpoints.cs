@@ -11,7 +11,7 @@ public static class InvoicePutEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoicePutEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapPut("/paymentRequestsBatch/{invoiceId}", UpdateInvoice)
+        app.MapPut("/invoice/{invoiceId}", UpdateInvoice)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("UpdateInvoice");
@@ -32,17 +32,17 @@ public static class InvoicePutEndpoints
 
         if (invoiceUpdated is null)
         {
-            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-update-falied", "PaymentRequestsBatch update failed", paymentRequestsBatch);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update-failed", "Invoice update failed", paymentRequestsBatch);
             return Results.BadRequest();
         }
 
-        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-update", "PaymentRequestsBatch updated", paymentRequestsBatch);
+        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update", "Invoice updated", paymentRequestsBatch);
 
         if (paymentRequestsBatch.Status == InvoiceStatuses.Approved)
         {
             var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = paymentRequestsBatch.Id, Scheme = paymentRequestsBatch.SchemeType });
             await queueService.CreateMessage(message);
-            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "paymentRequestsBatch-payment-request-sent", "PaymentRequestsBatch payment request sent");
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-payment-request-sent", "Invoice payment request sent");
         }
 
         return Results.Ok(paymentRequestsBatch);

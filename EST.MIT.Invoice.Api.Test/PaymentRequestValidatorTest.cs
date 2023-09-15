@@ -490,8 +490,8 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Equal(2, response.Errors.Count);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch value cannot be more than 2dp")) == 1);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch line value cannot be more than 2dp")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice value cannot be more than 2dp")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
         }
 
         [Fact]
@@ -543,8 +543,8 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             Assert.Equal(2, response.Errors.Count);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch value must be non-zero")) == 1);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch line value must be non-zero")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice value must be non-zero")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
         }
 
         [Theory]
@@ -612,7 +612,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains($"PaymentRequestsBatch Value ({invoiceValue}) does not equal the sum of Line Values ({invoiceLine1Value + invoiceLine2Value}")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains($"Invoice Value ({invoiceValue}) does not equal the sum of Line Values ({invoiceLine1Value + invoiceLine2Value}")) == 1);
         }
 
         [Theory]

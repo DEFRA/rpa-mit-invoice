@@ -21,7 +21,7 @@ public static class InvoiceDeleteEndpoints
     public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService, IEventQueueService eventQueueService)
     {
         await cosmosService.Delete(id, scheme);
-        await eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "PaymentRequestsBatch updated");
+        await eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice updated");
         return Results.Ok();
     }
 }

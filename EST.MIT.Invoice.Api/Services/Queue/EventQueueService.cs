@@ -20,12 +20,12 @@ public class EventQueueService : IEventQueueService
     {
         var eventRequest = new Event()
         {
-            Name = "PaymentRequestsBatch",
+            Name = "Invoice",
             Properties = new EventProperties()
             {
                 Id = id,
                 Status = status,
-                Checkpoint = "PaymentRequestsBatch Api",
+                Checkpoint = "Invoice Api",
                 Action = new EventAction()
                 {
                     Type = action,
