@@ -167,6 +167,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",
+                                    MarketingYear = 2023,
                                 }
                             },
                             FirmReferenceNumber = 1000000000,
@@ -207,6 +208,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",
+                                    MarketingYear = 2023,
                                 }
                             },
                             FirmReferenceNumber = 1000000000,

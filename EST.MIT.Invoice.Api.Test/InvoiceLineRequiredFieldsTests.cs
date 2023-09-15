@@ -28,7 +28,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Description = "Description",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = -4567.89M
+                Value = -4567.89M,
+                MarketingYear = 2023,
             };
 
             //Act
@@ -47,7 +48,8 @@ namespace EST.MIT.Invoice.Api.Test
                 Currency = "£",
                 FundCode = "34ERTY6",
                 SchemeCode = "DR5678",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MarketingYear = 2023,
             };
 
             //Act
@@ -65,7 +67,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 Currency = "£",
                 FundCode = "34ERTY6",
-                Value = 4567.89M
+                Value = 4567.89M,
+                MarketingYear = 2023,
             };
 
             //Act
@@ -73,6 +76,29 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             Assert.True(error.Count(x => x.ErrorMessage.Contains("SchemeCode must be specified")) == 1);
+        }
+
+        [Theory]
+        [InlineData(2020)]
+        [InlineData(3000)]
+        public void Test_Marketing_Year_For_Value_Not_In_Range(int marketingYear)
+        {
+            //Arrange
+            InvoiceLine invoiceLine = new InvoiceLine()
+            {
+                Currency = "£",
+                FundCode = "34ERTY6",
+                Value = 4567.89M,
+                SchemeCode = "4RT567",
+                Description = "Description",
+                MarketingYear = marketingYear,
+            };
+
+            //Act
+            var error = ValidateModel(invoiceLine);
+
+            //Assert
+            Assert.True(error.Count(x => x.ErrorMessage.Contains("Marketing Year must be between 2021 and 2099")) == 1);
         }
 
         [Fact]
@@ -85,7 +111,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FundCode = "34ERTY6",
                 Value = 4567.89M,
                 SchemeCode = "4RT567",
-                Description = "Description"
+                Description = "Description",
+                MarketingYear = 2023,
             };
 
             //Act

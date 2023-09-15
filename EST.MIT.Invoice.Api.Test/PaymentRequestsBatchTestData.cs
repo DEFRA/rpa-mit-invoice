@@ -40,6 +40,7 @@ public static class PaymentRequestsBatchTestData
                             FundCode = "123456789",
                             MainAccount = "AccountCodeValue",
                             DeliveryBody = "RP00",
+                            MarketingYear = 2023,
                         }
                     },
                     FirmReferenceNumber = 1000000000,
