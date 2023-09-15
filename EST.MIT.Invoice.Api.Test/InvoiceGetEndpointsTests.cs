@@ -13,7 +13,7 @@ public class InvoiceGetEndpointTests
     private readonly ICosmosService _cosmosService =
         Substitute.For<ICosmosService>();
 
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
     [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
@@ -21,15 +21,15 @@ public class InvoiceGetEndpointTests
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
 
         var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
         _cosmosService.Get(sqlCosmosQuery)
-            .Returns(new List<Invoice> { invoice });
+            .Returns(new List<PaymentRequestsBatch> { invoice });
 
         var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
 
-        result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
     }
 

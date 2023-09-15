@@ -20,7 +20,7 @@ public class CosmosServiceTests
     private readonly Mock<CosmosClient> _mockCosmosClient;
     private readonly Mock<Container> _mockContainer;
     private readonly CosmosService _cosmosService;
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
     public CosmosServiceTests()
     {
@@ -37,7 +37,7 @@ public class CosmosServiceTests
     public async Task Get_ReturnsInvoices()
     {
         const string sqlCosmosQuery = "SELECT * FROM c";
-        var data = JsonConvert.SerializeObject(invoiceTestData);
+        var data = JsonConvert.SerializeObject(_paymentRequestsBatchTestData);
         var invoiceEntities = new List<InvoiceEntity>
         {
             new InvoiceEntity { Id = "1", SchemeType = "Scheme1", Value = 100, Status = "awaiting", Data = data },
@@ -72,7 +72,7 @@ public class CosmosServiceTests
     [Fact]
     public async Task Create_AddsInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
 
         _mockContainer.Setup(c => c.CreateItemAsync<InvoiceEntity>(It.IsAny<InvoiceEntity>(), It.IsAny<PartitionKey>(), null, It.IsAny<CancellationToken>()))
@@ -86,7 +86,7 @@ public class CosmosServiceTests
     [Fact]
     public async Task Update_UpdatesInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
 
         _mockContainer.Setup(c => c.CreateItemAsync<InvoiceEntity>(It.IsAny<InvoiceEntity>(), It.IsAny<PartitionKey>(), null, It.IsAny<CancellationToken>()))
@@ -100,7 +100,7 @@ public class CosmosServiceTests
     [Fact]
     public async Task Delete_DeletesInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
 
         _mockContainer.Setup(c => c.CreateItemAsync<InvoiceEntity>(It.IsAny<InvoiceEntity>(), It.IsAny<PartitionKey>(), null, It.IsAny<CancellationToken>()))

@@ -15,6 +15,6 @@ public static class SwaggerDefinition
     public static void AddSwaggerServices(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "ManualInvoiceTemplatesApi", Version = "v1", Description = "Invoice api for manual invoice templates" }));
+        services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "ManualInvoiceTemplatesApi", Version = "v1", Description = "PaymentRequestsBatch api for manual invoice templates" }));
     }
 }

@@ -2,11 +2,11 @@ using Invoices.Api.Models;
 
 namespace Invoices.Api.Test;
 
-public static class InvoiceTestData
+public static class PaymentRequestsBatchTestData
 {
-    public static Invoice CreateInvoice(string status = "awaiting")
+    public static PaymentRequestsBatch CreateInvoice(string status = "awaiting")
     {
-        return new Invoice
+        return new PaymentRequestsBatch
         {
             Id = "123456789",
             InvoiceType = "AP",

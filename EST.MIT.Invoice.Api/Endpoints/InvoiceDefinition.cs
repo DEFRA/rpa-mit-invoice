@@ -11,7 +11,7 @@ public static class InvoiceDefinition
 {
     public static IServiceCollection AddInvoiceServices(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
+        services.AddScoped<IValidator<PaymentRequestsBatch>, PaymentRequestsBatchValidator>();
         services.AddScoped<IValidator<BulkInvoices>, BulkInvoiceValidator>();
 
         services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>(

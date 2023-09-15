@@ -19,8 +19,8 @@ public class EventQueueServiceTests
         var id = Guid.NewGuid().ToString();
         const string status = "new";
         const string action = "create";
-        const string message = "Invoice created successfully";
-        var invoice = new Invoice { Id = "123456789", Status = "new" };
+        const string message = "PaymentRequestsBatch created successfully";
+        var invoice = new PaymentRequestsBatch { Id = "123456789", Status = "new" };
 
         await eventQueueService.CreateMessage(id, status, action, message, invoice);
 

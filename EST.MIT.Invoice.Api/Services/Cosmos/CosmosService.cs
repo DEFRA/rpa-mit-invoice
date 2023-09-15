@@ -14,7 +14,7 @@ public class CosmosService : ICosmosService
         _container = cosmosClient.GetContainer(databaseName, containerName);
     }
 
-    public async Task<List<Invoice>> Get(string sqlCosmosQuery)
+    public async Task<List<PaymentRequestsBatch>> Get(string sqlCosmosQuery)
     {
         var query = _container.GetItemQueryIterator<InvoiceEntity>(new QueryDefinition(sqlCosmosQuery));
 
@@ -28,11 +28,11 @@ public class CosmosService : ICosmosService
         return InvoiceMapper.MapToInvoice(result);
     }
 
-    public async Task<Invoice> Create(Invoice invoice)
+    public async Task<PaymentRequestsBatch> Create(PaymentRequestsBatch paymentRequestsBatch)
     {
-        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(paymentRequestsBatch);
         await _container.CreateItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoiceEntity.SchemeType));
-        return invoice;
+        return paymentRequestsBatch;
     }
 
     [ExcludeFromCodeCoverageAttribute]
@@ -58,11 +58,11 @@ public class CosmosService : ICosmosService
         return null;
     }
 
-    public async Task<Invoice> Update(Invoice invoice)
+    public async Task<PaymentRequestsBatch> Update(PaymentRequestsBatch paymentRequestsBatch)
     {
-        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
-        await _container.UpsertItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(invoice.SchemeType));
-        return invoice;
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(paymentRequestsBatch);
+        await _container.UpsertItemAsync<InvoiceEntity>(invoiceEntity, new PartitionKey(paymentRequestsBatch.SchemeType));
+        return paymentRequestsBatch;
     }
 
     public async Task<string> Delete(string id, string scheme)

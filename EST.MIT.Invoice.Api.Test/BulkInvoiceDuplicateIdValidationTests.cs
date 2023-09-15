@@ -132,9 +132,9 @@ public class BulkInvoiceDuplicateIdValidationTests
             Reference = "erty",
             SchemeType = "AP",
 
-            Invoices = new List<Invoice> {
+            Invoices = new List<PaymentRequestsBatch> {
 
-                new Invoice {
+                new PaymentRequestsBatch {
                     Id = "SDEF",
                     InvoiceType = "AP",
                     AccountType = "AP",
@@ -174,7 +174,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                     }
                 },
 
-                new Invoice {
+                new PaymentRequestsBatch {
                     Id = "SDEF",
                     InvoiceType = "AP",
                     AccountType = "AP",
