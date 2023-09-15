@@ -208,6 +208,7 @@ public class PaymentRequestsValidatorTests
                             SchemeCode = "123456789",
                             FundCode = "123456789",
                             DeliveryBody = "RP00",
+                            MarketingYear = 2023,
                         }
                     },
                     FirmReferenceNumber = 9999999999,

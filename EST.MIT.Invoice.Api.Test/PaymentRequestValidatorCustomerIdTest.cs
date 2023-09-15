@@ -111,6 +111,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -168,6 +169,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -225,6 +227,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -280,6 +283,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -335,6 +339,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
