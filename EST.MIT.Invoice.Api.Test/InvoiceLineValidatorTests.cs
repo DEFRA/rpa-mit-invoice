@@ -353,7 +353,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch line value cannot be more than 2dp")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
         }
 
         [Fact]
@@ -382,7 +382,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch line value must be non-zero")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
         }
 
         [Fact]

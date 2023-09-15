@@ -30,9 +30,9 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
             .NotEqual(0)
-            .WithMessage("PaymentRequestsBatch value must be non-zero")
+            .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
-            .WithMessage("PaymentRequestsBatch value cannot be more than 2dp")
+            .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, cachedReferenceDataApi));
@@ -41,10 +41,10 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
-            .WithMessage((invoiceHeader) => $"PaymentRequestsBatch Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
+            .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
             .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber, invoiceHeader.VendorID))
-            .WithMessage("PaymentRequestsBatch must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID");
+            .WithMessage("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID");
 
         RuleFor(invoiceHeader => invoiceHeader.FirmReferenceNumber)
             .InclusiveBetween(1000000000, 9999999999)

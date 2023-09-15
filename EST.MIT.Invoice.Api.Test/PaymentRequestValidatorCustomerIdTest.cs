@@ -199,7 +199,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestsBatch must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID")) == 1);
         }
 
         [Theory]

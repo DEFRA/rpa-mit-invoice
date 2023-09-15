@@ -145,7 +145,7 @@ public class InvoicePutEndpointTests
         var invoice = _paymentRequestsBatchTestData;
 
         _cosmosService.Update(invoice).Returns(invoice);
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "paymentRequestsBatch-updated", "PaymentRequestsBatch updated").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
         var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
 
@@ -161,7 +161,7 @@ public class InvoicePutEndpointTests
         var invoice = _paymentRequestsBatchTestData;
 
         _cosmosService.Update(invoice).ReturnsNull();
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "paymentRequestsBatch-updated", "PaymentRequestsBatch updated").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
         var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
 
@@ -174,7 +174,7 @@ public class InvoicePutEndpointTests
         var invoice = PaymentRequestsBatchTestData.CreateInvoice("approved");
 
         _cosmosService.Update(invoice).Returns(invoice);
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "paymentRequestsBatch-updated", "PaymentRequestsBatch updated").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
         var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
 
@@ -198,7 +198,7 @@ public class InvoicePutEndpointTests
             AccountType = "ap",
         };
 
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "paymentRequestsBatch-validation-failed", "PaymentRequestsBatch validation failed").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);
         var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();

@@ -22,11 +22,11 @@ public static class InvoiceMapper
         };
     }
 
-    public static List<PaymentRequestsBatch> MapToInvoice(List<InvoiceEntity> invoiceEntites)
+    public static List<PaymentRequestsBatch> MapToInvoice(List<InvoiceEntity> invoiceEntities)
     {
         var invoices = new List<PaymentRequestsBatch>();
 
-        foreach (var invoiceData in invoiceEntites.Select(x => x.Data))
+        foreach (var invoiceData in invoiceEntities.Select(x => x.Data))
         {
             var invoice = JsonConvert.DeserializeObject<PaymentRequestsBatch>(invoiceData);
             invoices.Add(invoice!);

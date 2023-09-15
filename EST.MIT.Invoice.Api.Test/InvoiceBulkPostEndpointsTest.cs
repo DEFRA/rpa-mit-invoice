@@ -186,7 +186,7 @@ public class InvoiceBulkPostEndpointsTest
         };
 
         _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
-        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-paymentRequestsBatch-creation-falied", "Bulk paymentRequestsBatch creation failed").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-failed", "Bulk Invoice creation failed").Returns(Task.CompletedTask);
 
         var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
 
