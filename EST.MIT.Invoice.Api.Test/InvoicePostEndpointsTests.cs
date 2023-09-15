@@ -179,8 +179,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -232,8 +232,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -284,8 +284,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -332,7 +332,7 @@ public class InvoicePostEndpointTests
             Status = status,
             InvoiceType = "ap",
             AccountType = "ap",
-            PaymentRequests = new List<InvoiceHeader>
+            PaymentRequests = new List<PaymentRequest>
             {
                 new()
                 {

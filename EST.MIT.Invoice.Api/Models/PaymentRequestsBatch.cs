@@ -17,7 +17,7 @@ public class PaymentRequestsBatch
     [JsonProperty("schemeType")]
     public string SchemeType { get; init; } = default!;
     [JsonProperty("paymentRequests")]
-    public List<InvoiceHeader> PaymentRequests { get; init; } = default!;
+    public List<PaymentRequest> PaymentRequests { get; init; } = default!;
     [JsonProperty("status")]
     public string Status { get; init; } = default!;
     [JsonProperty("reference")]

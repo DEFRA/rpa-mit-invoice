@@ -17,8 +17,8 @@ public static class PaymentRequestsBatchTestData
             PaymentType = "DOM",
             Status = status,
             CreatedBy = "Test User",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     FRN = 123456789,
                     SourceSystem = "Manual",

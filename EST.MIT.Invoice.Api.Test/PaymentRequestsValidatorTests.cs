@@ -138,8 +138,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -188,8 +188,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -245,8 +245,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "EU",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -327,8 +327,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -411,8 +411,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -462,8 +462,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -523,8 +523,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -590,8 +590,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -661,8 +661,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -722,8 +722,8 @@ public class PaymentRequestsValidatorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
