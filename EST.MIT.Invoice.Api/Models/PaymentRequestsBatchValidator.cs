@@ -34,7 +34,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleFor(x => x.PaymentRequests)
             .NotEmpty();
-        RuleForEach(x => x.PaymentRequests).SetValidator(x => new InvoiceHeaderValidator(_referenceDataApi, _cachedReferenceDataApi, _route)).When(x => x.PaymentRequests != null);
+        RuleForEach(x => x.PaymentRequests).SetValidator(x => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, _route)).When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))

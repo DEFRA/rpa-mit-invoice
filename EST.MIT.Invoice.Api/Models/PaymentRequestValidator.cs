@@ -7,9 +7,9 @@ using Invoices.Api.Util;
 
 namespace Invoices.Api.Models;
 
-public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
+public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 {
-    public InvoiceHeaderValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
+    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
@@ -67,10 +67,10 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
                 ApplyConditionTo.CurrentValidator);
     }
 
-    private bool HaveSameCurrencyTypes(InvoiceHeader invoiceHeader)
+    private bool HaveSameCurrencyTypes(PaymentRequest paymentRequest)
     {
         // get all the currency types from the invoice lines
-        var allCurrencyTypes = invoiceHeader.InvoiceLines.Select(x => x.Currency).Distinct();
+        var allCurrencyTypes = paymentRequest.InvoiceLines.Select(x => x.Currency).Distinct();
 
         // check that all invoice lines have the same currency
         return allCurrencyTypes.Count() <= 1;
@@ -86,10 +86,10 @@ public class InvoiceHeaderValidator : AbstractValidator<InvoiceHeader>
         return Math.Abs(value) <= absoluteValue;
     }
 
-    private bool HaveAValueEqualToTheSumOfLinesValue(InvoiceHeader invoiceHeader)
+    private bool HaveAValueEqualToTheSumOfLinesValue(PaymentRequest paymentRequest)
     {
-        var invoiceValue = invoiceHeader.Value;
-        var sumOfLinesValue = invoiceHeader.InvoiceLines.Sum(x => x.Value);
+        var invoiceValue = paymentRequest.Value;
+        var sumOfLinesValue = paymentRequest.InvoiceLines.Sum(x => x.Value);
 
         return invoiceValue == sumOfLinesValue;
     }

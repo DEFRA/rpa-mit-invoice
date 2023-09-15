@@ -14,8 +14,8 @@ public static class InvoiceDefinition
         services.AddScoped<IValidator<PaymentRequestsBatch>, PaymentRequestsBatchValidator>();
         services.AddScoped<IValidator<BulkInvoices>, BulkInvoiceValidator>();
 
-        services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>(
-            serviceProvider => new InvoiceHeaderValidator(
+        services.AddScoped<IValidator<PaymentRequest>, PaymentRequestValidator>(
+            serviceProvider => new PaymentRequestValidator(
                 referenceDataApi: serviceProvider.GetRequiredService<IReferenceDataApi>(),
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>(),
                 new FieldsRoute())
