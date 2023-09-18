@@ -231,7 +231,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             PaymentRequest paymentRequest = new PaymentRequest()
             {
-                VendorID = "1",
+                Vendor = "1",
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",

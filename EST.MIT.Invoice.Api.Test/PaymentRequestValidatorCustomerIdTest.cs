@@ -140,7 +140,7 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(100000000, 1000000000, "")]
         [InlineData(0, 0, "")]
         [InlineData(0, 0, null)]
-        public async Task Given_InvoiceHeader_When_SBI_FRN_And_VendorId_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendorId)
+        public async Task Given_InvoiceHeader_When_SBI_FRN_And_Vendor_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendor)
         {
             //Arrange
             PaymentRequest paymentRequest = new PaymentRequest()
@@ -169,7 +169,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Value = 10M,
                 FRN = frn,
                 SBI = sbi,
-                VendorID = vendorId,
+                Vendor = vendor,
             };
 
             //Act
@@ -188,7 +188,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have SBI, FRN or Vendor ID")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have SBI, FRN or Vendor")) == 1);
         }
 
         [Theory]
@@ -298,7 +298,7 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("10000")]
         [InlineData("1000000")]
-        public async Task Given_InvoiceHeader_When_VendorID_Is_Invalid_Then_InvoiceHeader_Fails(string vendorID)
+        public async Task Given_InvoiceHeader_When_Vendor_Is_Invalid_Then_InvoiceHeader_Fails(string vendor)
         {
             //Arrange
             PaymentRequest paymentRequest = new PaymentRequest()
@@ -325,7 +325,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                VendorID = vendorID,
+                Vendor = vendor,
             };
 
             //Act
@@ -344,7 +344,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("VendorID must be 6 characters")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Vendor must be 6 characters")) == 1);
         }
     }
 }

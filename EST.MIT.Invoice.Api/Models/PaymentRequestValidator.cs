@@ -41,27 +41,27 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
-            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SBI, invoiceHeader.FRN, invoiceHeader.VendorID))
-            .WithMessage("Invoice must only have SBI, FRN or Vendor ID");
+            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendor(invoiceHeader.SBI, invoiceHeader.FRN, invoiceHeader.Vendor))
+            .WithMessage("Invoice must only have SBI, FRN or Vendor");
 
         RuleFor(invoiceHeader => invoiceHeader.FRN)
             .InclusiveBetween(1000000000, 9999999999)
             .WithMessage("FRN is not in valid range (1000000000 .. 9999999999)")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.SBI == 0
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader.SBI == 0
                     && invoiceHeader.FRN != 0,
                 ApplyConditionTo.CurrentValidator);
 
         RuleFor(invoiceHeader => invoiceHeader.SBI)
             .InclusiveBetween(105000000, 999999999)
             .WithMessage("SBI is not in valid range (105000000 .. 999999999)")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.FRN == 0
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader.FRN == 0
                     && invoiceHeader.SBI != 0,
                 ApplyConditionTo.CurrentValidator);
 
-        RuleFor(invoiceHeader => invoiceHeader.VendorID)
+        RuleFor(invoiceHeader => invoiceHeader.Vendor)
             .Length(6)
-            .WithMessage("VendorID must be 6 characters")
-            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader is { SBI: 0, FRN: 0 },
+            .WithMessage("Vendor must be 6 characters")
+            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader is { SBI: 0, FRN: 0 },
                 ApplyConditionTo.CurrentValidator);
     }
 
@@ -101,11 +101,11 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         return true;
     }
 
-    private static bool HaveOnlySBIOrFRNOrVendorId(int sbi, long frn, string vendorId)
+    private static bool HaveOnlySBIOrFRNOrVendor(int sbi, long frn, string vendor)
     {
         // return true if only one of the three values is populated
-        return (sbi != 0 && frn == 0 && string.IsNullOrWhiteSpace(vendorId))
-            || (sbi == 0 && frn != 0 && string.IsNullOrWhiteSpace(vendorId))
-            || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendorId));
+        return (sbi != 0 && frn == 0 && string.IsNullOrWhiteSpace(vendor))
+            || (sbi == 0 && frn != 0 && string.IsNullOrWhiteSpace(vendor))
+            || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
     }
 }
