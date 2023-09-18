@@ -1,4 +1,5 @@
 using Invoices.Api.Models;
+using Invoices.Api.Repositories.Entities;
 using Invoices.Api.Services.Models;
 using Newtonsoft.Json;
 
@@ -15,14 +16,15 @@ public static class InvoiceMapper
             Data = JsonConvert.SerializeObject(invoice),
             Value = invoice.PaymentRequests.Sum(x => x.Value),
             Status = invoice.Status,
+            Reference = invoice.Reference,
             CreatedBy = invoice.CreatedBy,
             UpdatedBy = invoice.UpdatedBy,
-            Created = invoice.Created.ToLongDateString(),
-            Updated = invoice.Updated?.ToLongDateString() ?? string.Empty
+            Created = invoice.Created,
+            Updated = invoice.Updated
         };
     }
 
-    public static List<Invoice> MapToInvoice(List<InvoiceEntity> invoiceEntites)
+    public static List<Invoice> MapToInvoice(IEnumerable<InvoiceEntity> invoiceEntites)
     {
         var invoices = new List<Invoice>();
 
@@ -33,5 +35,18 @@ public static class InvoiceMapper
         }
 
         return invoices;
+    }
+
+    public static List<InvoiceEntity> BulkMapToInvoiceEntity(IEnumerable<Invoice> invoices)
+    {
+        var invoiceEntities = new List<InvoiceEntity>();
+
+        foreach (var invoice in invoices)
+        {
+            var invoiceEntity = MapToInvoiceEntity(invoice);
+            invoiceEntities.Add(invoiceEntity);
+        }
+
+        return invoiceEntities;
     }
 }

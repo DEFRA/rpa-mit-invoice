@@ -24,7 +24,7 @@ public static class InvoicePostEndpoints
         return app;
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, IInvoiceService invoiceService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -34,7 +34,7 @@ public static class InvoicePostEndpoints
             return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
-        var invoiceCreated = await cosmosService.Create(invoice);
+        var invoiceCreated = await invoiceService.CreateAsync(invoice);
 
         if (invoiceCreated is null)
         {
@@ -47,7 +47,7 @@ public static class InvoicePostEndpoints
         return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
     }
 
-    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IInvoiceService invoiceService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoices);
         var reference = invoices.Reference;
@@ -58,7 +58,7 @@ public static class InvoicePostEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var bulkInvoiceCreated = await cosmosService.CreateBulk(invoices);
+        var bulkInvoiceCreated = await invoiceService.CreateBulkAsync(invoices);
 
         if (bulkInvoiceCreated is null)
         {

@@ -1,17 +1,16 @@
 using Invoices.Api.Services;
 using Invoices.Api.Endpoints;
-using NSubstitute;
 using FluentAssertions;
-using Invoices.Api.Services.Models;
-using NSubstitute.ReturnsExtensions;
 using Invoices.Api.Models;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 
 namespace Invoices.Api.Test;
 
 public class InvoiceGetEndpointTests
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IInvoiceService _invoiceService =
+        Substitute.For<IInvoiceService>();
 
     private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
 
@@ -23,11 +22,9 @@ public class InvoiceGetEndpointTests
 
         var invoice = invoiceTestData;
 
-        var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
-        _cosmosService.Get(sqlCosmosQuery)
-            .Returns(new List<Invoice> { invoice });
+        _invoiceService.GetBySchemeAndIdAsync(scheme, invoiceId).Returns(new List<Invoice> { invoice });
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _invoiceService);
 
         result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -39,10 +36,10 @@ public class InvoiceGetEndpointTests
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
-        _cosmosService.Get(sqlCosmosQuery).ReturnsNull();
+        _invoiceService.GetBySchemeAndIdAsync(scheme, invoiceId)
+            .ReturnsNull();
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _invoiceService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }

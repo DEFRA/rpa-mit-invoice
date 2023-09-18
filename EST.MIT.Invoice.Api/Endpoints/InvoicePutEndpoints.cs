@@ -19,7 +19,7 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, ICosmosService cosmosService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, IInvoiceService invoiceService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoice);
 
@@ -28,7 +28,7 @@ public static class InvoicePutEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await cosmosService.Update(invoice);
+        var invoiceUpdated = await invoiceService.UpdateAsync(invoice);
 
         if (invoiceUpdated is null)
         {

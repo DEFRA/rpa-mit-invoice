@@ -18,10 +18,10 @@ public static class InvoiceDeleteEndpoints
         return app;
     }
 
-    public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> DeleteInvoice(string invoiceId, string scheme, IInvoiceService invoiceService, IEventQueueService eventQueueService)
     {
-        await cosmosService.Delete(id, scheme);
-        await eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice updated");
+        await invoiceService.DeleteBySchemeAndIdAsync(scheme, invoiceId);
+        await eventQueueService.CreateMessage(invoiceId, "deleted", "invoice-deleted", "Invoice updated");
         return Results.Ok();
     }
 }

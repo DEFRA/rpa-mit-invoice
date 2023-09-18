@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Storage.Queues;
 using Invoices.Api.Services;
-using Microsoft.Azure.Cosmos;
 
 namespace Invoices.Api.Endpoints;
 

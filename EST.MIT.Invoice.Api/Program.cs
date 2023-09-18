@@ -1,15 +1,15 @@
 using Invoices.Api.Endpoints;
+using Invoices.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var storageConnection = builder.Configuration["Storage:ConnectionString"];
 var eventQueueName = builder.Configuration["Storage:EventQueueName"];
 var paymentQueueName = builder.Configuration["Storage:PaymentQueueName"];
-var cosmosUrl = builder.Configuration["AzureCosmosDbSettings:Url"];
-var cosmosPrimaryKey = builder.Configuration["AzureCosmosDbSettings:PrimaryKey"];
-var cosmosDatabaseName = builder.Configuration["AzureCosmosDbSettings:DatabaseName"];
-var cosmosContainerName = builder.Configuration["AzureCosmosDbSettings:ContainerName"];
 
-builder.Services.AddCosmosServices(cosmosUrl, cosmosPrimaryKey, cosmosDatabaseName, cosmosContainerName);
+// Postgres DB
+builder.Services.Configure<PgDbSettings>(builder.Configuration.GetSection("PostgresDbSettings"));
+builder.Services.AddSingleton<PgDbContext>();
+
 builder.Services.AddQueueServices(storageConnection, eventQueueName, paymentQueueName);
 builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
@@ -23,6 +23,13 @@ builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
 });
 
 var app = builder.Build();
+
+// ensure database and tables exist
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<PgDbContext>();
+    await context.Init();
+}
 
 app.SwaggerEndpoints();
 app.MapInvoiceGetEndpoints();

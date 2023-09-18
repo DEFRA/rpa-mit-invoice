@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
@@ -19,9 +18,9 @@ public static class InvoiceGetEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ICosmosService cosmosService)
+    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, IInvoiceService invoiceService)
     {
-        var invoiceResponse = await cosmosService.Get($"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'");
+        var invoiceResponse = await invoiceService.GetBySchemeAndIdAsync(scheme, invoiceId);
 
         if (invoiceResponse is null)
         {

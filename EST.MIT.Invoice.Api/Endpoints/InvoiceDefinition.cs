@@ -3,6 +3,7 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
 using Invoices.Api.Models;
+using Invoices.Api.Services;
 
 namespace Invoices.Api.Endpoints;
 
@@ -27,6 +28,9 @@ public static class InvoiceDefinition
                 new FieldsRoute(),
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>())
         );
+
+        services.AddScoped<IInvoiceService, InvoiceService>();
+
         return services;
     }
 }

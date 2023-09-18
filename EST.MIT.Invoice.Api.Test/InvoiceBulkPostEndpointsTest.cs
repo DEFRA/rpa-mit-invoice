@@ -14,8 +14,8 @@ namespace Invoices.Api.Test;
 
 public class InvoiceBulkPostEndpointsTest
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IInvoiceService _invoiceService =
+        Substitute.For<IInvoiceService>();
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
     private readonly IReferenceDataApi _referenceDataApiMock =
@@ -144,10 +144,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).Returns(bulkInvoices);
+        _invoiceService.CreateBulkAsync(bulkInvoices).Returns(bulkInvoices);
 
         // Act
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
@@ -164,9 +164,9 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
+        _invoiceService.CreateBulkAsync(bulkInvoices).ReturnsNull();
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey("Reference");
@@ -185,10 +185,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
+        _invoiceService.CreateBulkAsync(bulkInvoices).ReturnsNull();
         _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
