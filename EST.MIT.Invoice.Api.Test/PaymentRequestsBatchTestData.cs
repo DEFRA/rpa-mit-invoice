@@ -20,12 +20,10 @@ public static class PaymentRequestsBatchTestData
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {
                     PaymentRequestId = "123456789",
-                    FRN = 123456789,
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
                     PaymentRequestNumber = 123456789,
                     AgreementNumber = "123456789",
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AppendixReferences = new AppendixReferences {
@@ -43,7 +41,7 @@ public static class PaymentRequestsBatchTestData
                             MarketingYear = 2023,
                         }
                     },
-                    FirmReferenceNumber = 1000000000,
+                    FRN = 9999999999,
                 }
             }
         };

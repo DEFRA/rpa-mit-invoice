@@ -27,13 +27,10 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
-            var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
 
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
             var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
-            var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
-
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -92,9 +89,7 @@ namespace EST.MIT.Invoice.Api.Test
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -124,44 +119,6 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Fact]
-        public async Task Given_InvoiceHeader_When_FRN_Is_Empty_Then_InvoiceHeader_Fails()
-        {
-            //Arrange
-            PaymentRequest paymentRequest = new PaymentRequest()
-            {
-                AgreementNumber = "ERT456",
-                AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
-                DueDate = DateTime.Now.ToString(),
-                InvoiceLines = new List<InvoiceLine>()
-                {
-                    new InvoiceLine()
-                    {
-                        Value = 23456,
-                        Currency = "GBP",
-                        Description = "ABD",
-                        FundCode = "FUNDCODE",
-                        SchemeCode = "WE4567",
-                        MainAccount = "AccountA",
-                        DeliveryBody = "XYZ",
-                    }
-                },
-                MarketingYear = 2022,
-                PaymentRequestId = "1234",
-                PaymentRequestNumber = 123456,
-                SourceSystem = "SOURCE SYSTEM",
-                Value = 2345678.65M
-            };
-
-            //Act
-            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
-
-            //Assert
-            response.ShouldHaveValidationErrorFor(x => x.FRN);
-            response.Errors.Count.Equals(1);
-        }
-
-        [Fact]
         public async Task Given_InvoiceHeader_When_SourceSystem_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
@@ -169,9 +126,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -207,9 +162,7 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -244,8 +197,6 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -283,10 +234,8 @@ namespace EST.MIT.Invoice.Api.Test
                 VendorID = "1",
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -317,9 +266,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             response.Errors.Count.Equals(0);
@@ -335,10 +282,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -366,7 +311,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 2345678.65M,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -393,10 +338,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -415,7 +358,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = value,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -429,9 +372,6 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
-            response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             Assert.Empty(response.Errors);
@@ -448,10 +388,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -470,7 +408,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = value,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -483,9 +421,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
@@ -502,10 +438,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -524,7 +458,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 0,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -537,9 +471,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             Assert.Equal(2, response.Errors.Count);
@@ -559,10 +491,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -592,7 +522,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = invoiceValue,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -605,9 +535,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
@@ -626,10 +554,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -659,7 +585,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = invoiceValue,
-                FirmReferenceNumber = 1000000000,
+                FRN = 1000000000,
             };
 
             //Act
@@ -672,9 +598,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
@@ -693,10 +617,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2023,
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
-                ContractNumber = "123456789",
                 Value = 100,
                 DueDate = "2023-01-01",
-                FRN = 1000000000,
                 AppendixReferences = new AppendixReferences
                 {
                     ClaimReferenceNumber = "123456789"
@@ -736,10 +658,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2023,
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
-                ContractNumber = "123456789",
                 Value = 100,
                 DueDate = "2023-01-01",
-                FRN = 1000000000,
                 AppendixReferences = new AppendixReferences
                 {
                     ClaimReferenceNumber = "123456789"
@@ -778,10 +698,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2023,
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
-                ContractNumber = "123456789",
                 Value = 100,
                 DueDate = "2023-01-01",
-                FRN = 1000000000,
                 AppendixReferences = new AppendixReferences
                 {
                     ClaimReferenceNumber = "123456789"
@@ -819,10 +737,8 @@ namespace EST.MIT.Invoice.Api.Test
                 MarketingYear = 2023,
                 PaymentRequestNumber = 123456789,
                 AgreementNumber = "123456789",
-                ContractNumber = "123456789",
                 Value = 100,
                 DueDate = "2023-01-01",
-                FRN = 1000000000,
                 AppendixReferences = new AppendixReferences
                 {
                     ClaimReferenceNumber = "123456789"
