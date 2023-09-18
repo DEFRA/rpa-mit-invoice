@@ -29,10 +29,10 @@ public class PaymentRequest
     public string OriginalInvoiceNumber { get; init; } = default!;
 
     [JsonProperty("originalSettlementDate")]
-    public string OriginalSettlementDate { get; init; } = default!;
+    public DateTime OriginalSettlementDate { get; init; } = default!;
 
     [JsonProperty("recoveryDate")]
-    public string RecoveryDate { get; init; } = default!;
+    public DateTime RecoveryDate { get; init; } = default!;
 
     [JsonProperty("invoiceCorrectionReference")]
     public string InvoiceCorrectionReference { get; init; } = default!;
@@ -59,6 +59,6 @@ public class PaymentRequest
     [JsonProperty("sbi")]
     public int SBI { get; init; } = default!;
 
-    [JsonProperty("vendorId")]
-    public string VendorID { get; init; } = default!;
+    [JsonProperty("vendor")]
+    public string Vendor { get; init; } = default!;
 }
