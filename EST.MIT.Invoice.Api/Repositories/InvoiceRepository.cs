@@ -1,10 +1,14 @@
-﻿using Dapper;
+﻿using System.Diagnostics.CodeAnalysis;
+using Dapper;
 using Invoices.Api.Repositories.Entities;
 using Invoices.Api.Repositories.Interfaces;
 
 namespace Invoices.Api.Repositories
 {
-	public class InvoiceRepository : IInvoiceRepository
+    // Not really worth doing a series of unit tests for these methods since we could only really test that the correct SQL was being passed,
+    // but considerable effort would be needed to mock the DB interfaces
+    [ExcludeFromCodeCoverage]
+    public class InvoiceRepository : IInvoiceRepository
 	{
 		private readonly PgDbContext _dbContext;
 
