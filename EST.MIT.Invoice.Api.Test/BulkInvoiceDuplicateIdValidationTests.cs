@@ -132,9 +132,9 @@ public class BulkInvoiceDuplicateIdValidationTests
             Reference = "erty",
             SchemeType = "AP",
 
-            Invoices = new List<Invoice> {
+            Invoices = new List<PaymentRequestsBatch> {
 
-                new Invoice {
+                new PaymentRequestsBatch {
                     Id = "SDEF",
                     InvoiceType = "AP",
                     AccountType = "AP",
@@ -144,8 +144,8 @@ public class BulkInvoiceDuplicateIdValidationTests
                     PaymentType = "AP",
                     CreatedBy = "Test User",
                     Status = "status",
-                    PaymentRequests = new List<InvoiceHeader> {
-                        new InvoiceHeader {
+                    PaymentRequests = new List<PaymentRequest> {
+                        new PaymentRequest {
                             PaymentRequestId = "123456789",
                             SourceSystem = "Manual",
                             MarketingYear = 2023,
@@ -167,6 +167,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",
+                                    MarketingYear = 2023,
                                 }
                             },
                             FirmReferenceNumber = 1000000000,
@@ -174,7 +175,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                     }
                 },
 
-                new Invoice {
+                new PaymentRequestsBatch {
                     Id = "SDEF",
                     InvoiceType = "AP",
                     AccountType = "AP",
@@ -184,8 +185,8 @@ public class BulkInvoiceDuplicateIdValidationTests
                     PaymentType = "AP",
                     CreatedBy = "Test User",
                     Status = "status",
-                    PaymentRequests = new List<InvoiceHeader> {
-                        new InvoiceHeader {
+                    PaymentRequests = new List<PaymentRequest> {
+                        new PaymentRequest {
                             PaymentRequestId = "123456789",
                             SourceSystem = "Manual",
                             MarketingYear = 2023,
@@ -207,6 +208,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                                     FundCode = "123456789",
                                     MainAccount = "AccountCodeValue",
                                     DeliveryBody = "RP00",
+                                    MarketingYear = 2023,
                                 }
                             },
                             FirmReferenceNumber = 1000000000,

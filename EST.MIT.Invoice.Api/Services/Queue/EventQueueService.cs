@@ -16,7 +16,7 @@ public class EventQueueService : IEventQueueService
         _queueClient = queueClient;
     }
 
-    public async Task CreateMessage(string id, string status, string action, string message, Invoice? invoice = null)
+    public async Task CreateMessage(string id, string status, string action, string message, PaymentRequestsBatch? invoice = null)
     {
         var eventRequest = new Event()
         {

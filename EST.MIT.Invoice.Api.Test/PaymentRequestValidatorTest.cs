@@ -7,9 +7,9 @@ using FluentValidation.TestHelper;
 
 namespace EST.MIT.Invoice.Api.Test
 {
-    public class InvoiceHeaderValidatorTest
+    public class PaymentRequestValidatorTest
     {
-        private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
+        private readonly PaymentRequestValidator _paymentRequestValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock = Substitute.For<IReferenceDataApi>();
         private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock = Substitute.For<ICachedReferenceDataApi>();
@@ -22,7 +22,7 @@ namespace EST.MIT.Invoice.Api.Test
             SchemeType = "bps"
         };
 
-        public InvoiceHeaderValidatorTest()
+        public PaymentRequestValidatorTest()
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
@@ -82,14 +82,14 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
 
         [Fact]
         public async Task Given_InvoiceHeader_When_AgreementNumber_Is_Null_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
@@ -116,7 +116,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.AgreementNumber);
@@ -127,7 +127,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_FRN_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ERT456",
                 AppendixReferences = new AppendixReferences(),
@@ -154,7 +154,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.FRN);
@@ -165,7 +165,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_SourceSystem_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -192,7 +192,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.SourceSystem);
@@ -203,7 +203,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_PaymentRequestNumber_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -229,7 +229,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.PaymentRequestNumber);
@@ -240,7 +240,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_DueDate_Is_Empty_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -267,7 +267,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.DueDate);
@@ -278,7 +278,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_No_Field_Is_Empty_Then_InvoiceHeader_Pass()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 VendorID = "1",
                 AgreementNumber = "ER456G",
@@ -307,7 +307,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -331,7 +331,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Currencies_Are_Different_Then_InvoiceHeader_Fails(string currencyOne, string currencyTwo)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -370,7 +370,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
@@ -389,7 +389,7 @@ namespace EST.MIT.Invoice.Api.Test
             // counted unless they are followed by a non-zero value
 
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -408,6 +408,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -418,7 +419,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -443,7 +444,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Has_More_Than_2DP_Then_InvoiceHeader_Fails(decimal value)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -462,6 +463,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -472,7 +474,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -496,7 +498,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Is_Equal_To_Zero_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -515,6 +517,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -525,7 +528,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -552,7 +555,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Does_Not_Equal_Sum_Of_InvoiceLines_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -571,6 +574,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     },
                     new InvoiceLine()
                     {
@@ -581,6 +585,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -591,7 +596,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -617,7 +622,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Absolute_Value_Is_Not_Less_Than_1_Billion_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -636,6 +641,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     },
                     new InvoiceLine()
                     {
@@ -646,6 +652,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -656,7 +663,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -679,7 +686,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_PaymentRequestId_Is_Null_Or_Empty_Then_Failure_Message_PaymentRequestId_Is_Missing_Is_Thrown()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 PaymentRequestId = string.Empty,
                 SourceSystem = "Manual",
@@ -711,7 +718,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId is missing")) == 1);
@@ -722,7 +729,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_PaymentRequestId_Characters_Are_Greater_Than_Twenty_Then_Failure_Message_PaymentRequestId_Must_Not_Be_More_Than_Twenty_Is_Thrown()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 PaymentRequestId = "123456789ABCDEFGHIJKLMNOP",
                 SourceSystem = "Manual",
@@ -753,7 +760,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId must not be more than 20 characters")) == 1);
@@ -764,7 +771,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_PaymentRequestId_Contain_No_Characters_Then_Fialure_Message_PaymentRequestId_Must_Be_Atleast_One_Character_Is_Thrown()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 PaymentRequestId = "",
                 SourceSystem = "Manual",
@@ -795,7 +802,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert            
             Assert.True(response.Errors[1].ErrorMessage == "PaymentRequestId must contain at least one character");
@@ -805,7 +812,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_PaymentRequestId_Contain_Spaces_Then_Failure_Message_PaymentRequestIsId_Cannot_Contain_Spaces_Is_Thrown()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 PaymentRequestId = " S DEF ",
                 SourceSystem = "Manual",
@@ -836,7 +843,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("PaymentRequestId cannot contain spaces")) == 1);

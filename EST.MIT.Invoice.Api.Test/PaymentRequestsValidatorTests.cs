@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Invoices.Api.Test;
 
-public class InvoiceValidatiorTests
+public class PaymentRequestsValidatorTests
 {
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
@@ -15,9 +15,9 @@ public class InvoiceValidatiorTests
     private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
         Substitute.For<ICachedReferenceDataApi>();
 
-    private InvoiceValidator _invoiceValidator;
+    private PaymentRequestsBatchValidator _paymentRequestsBatchValidator;
 
-    public InvoiceValidatiorTests()
+    public PaymentRequestsValidatorTests()
     {
         var paymentSchemeErrors = new Dictionary<string, List<string>>();
         var orgnisationErrors = new Dictionary<string, List<string>>();
@@ -120,14 +120,14 @@ public class InvoiceValidatiorTests
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
+        _paymentRequestsBatchValidator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
     [Fact]
     public async Task Given_Invoice_When_InvoiceHeader_FRN_Is_Empty_Then_Invoice_Fails()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -138,8 +138,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -167,7 +167,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("'FRN' must not be empty")) == 1);
@@ -177,7 +177,7 @@ public class InvoiceValidatiorTests
     public async Task Given_Invoice_When_InvoiceHeader_AgreementNumber_Is_Empty_And_InvoiceLine_Description_Is_Empty_Then_Invoice_Fails()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -188,8 +188,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -208,6 +208,7 @@ public class InvoiceValidatiorTests
                             SchemeCode = "123456789",
                             FundCode = "123456789",
                             DeliveryBody = "RP00",
+                            MarketingYear = 2023,
                         }
                     },
                     FirmReferenceNumber = 9999999999,
@@ -216,7 +217,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert       
         Assert.True(response.Errors[0].ErrorMessage.Equals("'Agreement Number' must not be empty."));
@@ -234,7 +235,7 @@ public class InvoiceValidatiorTests
     public async Task Given_Invoice_When_AccountType_Is_Invalid_Then_Invoice_Fails(string? accountType)
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -245,8 +246,8 @@ public class InvoiceValidatiorTests
             PaymentType = "EU",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -274,7 +275,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account Type is invalid. Should be AP or AR")) == 1);
@@ -314,9 +315,9 @@ public class InvoiceValidatiorTests
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(apiResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
+        _paymentRequestsBatchValidator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -327,8 +328,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -356,7 +357,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
@@ -397,10 +398,10 @@ public class InvoiceValidatiorTests
             .GetSchemeTypesAsync(Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(apiResponse));
 
-        _invoiceValidator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
+        _paymentRequestsBatchValidator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
 
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -411,8 +412,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -440,7 +441,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert 
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Organisation is Invalid")) == 1);
@@ -451,7 +452,7 @@ public class InvoiceValidatiorTests
     public async Task Given_Invoice_When_Parent_And_Child_Data_Are_Valid_Then_Invoice_Pass()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -462,8 +463,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -491,7 +492,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert
         response.Errors.Count.Equals(0);
@@ -512,7 +513,7 @@ public class InvoiceValidatiorTests
             .Returns(Task.FromResult(paymentSchemesResponse));
 
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -523,8 +524,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -552,7 +553,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
@@ -579,7 +580,7 @@ public class InvoiceValidatiorTests
             .Returns(Task.FromResult(paymentSchemesResponse));
 
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -590,8 +591,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -619,7 +620,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Scheme Type is invalid")) == 1);
@@ -650,7 +651,7 @@ public class InvoiceValidatiorTests
             .Returns(Task.FromResult(paymentTypesResponse));
 
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -661,8 +662,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -690,7 +691,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Payment Type is invalid")) == 1);
@@ -711,7 +712,7 @@ public class InvoiceValidatiorTests
             .Returns(Task.FromResult(paymentTypesResponse));
 
 
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -722,8 +723,8 @@ public class InvoiceValidatiorTests
             PaymentType = "DOM",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -751,7 +752,7 @@ public class InvoiceValidatiorTests
         };
 
         //Act
-        var response = await _invoiceValidator.TestValidateAsync(invoice);
+        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
 
         //Assert         
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Payment Type is invalid")) == 1);

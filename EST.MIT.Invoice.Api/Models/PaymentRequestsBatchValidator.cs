@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Invoices.Api.Models;
 
-public class InvoiceValidator : AbstractValidator<Invoice>
+public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBatch>
 {
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
@@ -12,7 +12,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
 
     private readonly FieldsRoute _route;
 
-    public InvoiceValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi)
+    public PaymentRequestsBatchValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _referenceDataApi = referenceDataApi;
         _cachedReferenceDataApi = cachedReferenceDataApi;
@@ -34,7 +34,7 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleFor(x => x.PaymentRequests)
             .NotEmpty();
-        RuleForEach(x => x.PaymentRequests).SetValidator(x => new InvoiceHeaderValidator(_referenceDataApi, _cachedReferenceDataApi, _route)).When(x => x.PaymentRequests != null);
+        RuleForEach(x => x.PaymentRequests).SetValidator(x => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, _route)).When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))
@@ -52,49 +52,49 @@ public class InvoiceValidator : AbstractValidator<Invoice>
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
     }
 
-    private async Task<bool> BeAValidSchemeType(Invoice invoice)
+    private async Task<bool> BeAValidSchemeType(PaymentRequestsBatch paymentRequestsBatch)
     {
-        if (string.IsNullOrWhiteSpace(invoice.SchemeType))
+        if (string.IsNullOrWhiteSpace(paymentRequestsBatch.SchemeType))
         {
             return false;
         }
 
-        var schemeTypes = await _referenceDataApi.GetSchemeTypesAsync(invoice.InvoiceType, invoice.Organisation);
+        var schemeTypes = await _referenceDataApi.GetSchemeTypesAsync(paymentRequestsBatch.InvoiceType, paymentRequestsBatch.Organisation);
 
         if (!schemeTypes.IsSuccess || !schemeTypes.Data.Any())
         {
             return false;
         }
 
-        return schemeTypes.Data.Any(x => x.Code.ToLower() == invoice.SchemeType.ToLower());
+        return schemeTypes.Data.Any(x => x.Code.ToLower() == paymentRequestsBatch.SchemeType.ToLower());
     }
 
-    private async Task<bool> BeAValidPaymentType(Invoice invoice)
+    private async Task<bool> BeAValidPaymentType(PaymentRequestsBatch paymentRequestsBatch)
     {
-        if (string.IsNullOrWhiteSpace(invoice.PaymentType))
+        if (string.IsNullOrWhiteSpace(paymentRequestsBatch.PaymentType))
         {
             return false;
         }
 
-        var paymentTypes = await _referenceDataApi.GetPaymentTypesAsync(invoice.InvoiceType, invoice.Organisation, invoice.SchemeType);
+        var paymentTypes = await _referenceDataApi.GetPaymentTypesAsync(paymentRequestsBatch.InvoiceType, paymentRequestsBatch.Organisation, paymentRequestsBatch.SchemeType);
 
         if (!paymentTypes.IsSuccess || !paymentTypes.Data.Any())
         {
             return false;
         }
 
-        return paymentTypes.Data.Any(x => x.Code.ToLower() == invoice.PaymentType.ToLower());
+        return paymentTypes.Data.Any(x => x.Code.ToLower() == paymentRequestsBatch.PaymentType.ToLower());
     }
 
-    private async Task<bool> BeAValidOrganisationCode(Invoice invoice)
+    private async Task<bool> BeAValidOrganisationCode(PaymentRequestsBatch paymentRequestsBatch)
     {
-        var organisationCodes = await _referenceDataApi.GetOrganisationsAsync(invoice.InvoiceType);
+        var organisationCodes = await _referenceDataApi.GetOrganisationsAsync(paymentRequestsBatch.InvoiceType);
 
         if (!organisationCodes.IsSuccess || !organisationCodes.Data.Any())
         {
             return false;
         }
 
-        return organisationCodes.Data.Any(x => x.Code.ToLower() == invoice.Organisation.ToLower());
+        return organisationCodes.Data.Any(x => x.Code.ToLower() == paymentRequestsBatch.Organisation.ToLower());
     }
 }

@@ -11,13 +11,14 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NSubstitute.ReturnsExtensions;
+using Invoices.Api.Services.PaymentsBatch;
 
 namespace Invoices.Api.Test;
 
 public class InvoicePostEndpointTests
 {
-    private readonly IInvoiceService _invoiceService =
-        Substitute.For<IInvoiceService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
@@ -28,9 +29,9 @@ public class InvoicePostEndpointTests
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
-    private readonly IValidator<Invoice> _validator;
+    private readonly IValidator<PaymentRequestsBatch> _validator;
 
     public InvoicePostEndpointTests()
     {
@@ -135,32 +136,32 @@ public class InvoicePostEndpointTests
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-        _validator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
+        _validator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
 
-        _invoiceService.CreateAsync(invoice).Returns(invoice);
+        _paymentRequestsBatchService.CreateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(201);
-        result.GetCreatedResultValue<Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetCreatedResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
     }
 
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenCreateReturnsNull()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
 
-        _invoiceService.CreateAsync(invoice).ReturnsNull();
+        _paymentRequestsBatchService.CreateAsync(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -169,7 +170,7 @@ public class InvoicePostEndpointTests
     public async Task PostInvoice_When_SchemeType_Is_Missing_Should_Return_Status_Code_400()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -179,8 +180,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -208,11 +209,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _invoiceService.CreateAsync(invoice).Returns(invoice);
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -222,7 +223,7 @@ public class InvoicePostEndpointTests
     public async Task PostInvoice_When_PaymentType_Is_Missing_Should_Return_Status_Code_400()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -232,8 +233,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -261,11 +262,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _invoiceService.CreateAsync(invoice).Returns(invoice);
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -275,7 +276,7 @@ public class InvoicePostEndpointTests
     public async Task PostInvoice_When_InvoiceType_Is_Missing_InvoiceHeader_FRN_IsMissing_InvoiceLine_SchemeCode_Is_Missing_Should_Return_Status_Code_400()
     {
         //Arrange
-        Invoice invoice = new Invoice()
+        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
             SchemeType = "XP",
@@ -284,8 +285,8 @@ public class InvoicePostEndpointTests
             Reference = "123456789",
             CreatedBy = "Test User",
             Status = "status",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
@@ -311,28 +312,28 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _invoiceService.CreateAsync(invoice).Returns(invoice);
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
     }
 
     [Theory]
-    [ClassData(typeof(InvoiceValidationTestData))]
+    [ClassData(typeof(PaymentRequestsBatchValidationTestData))]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
     {
-        var invoice = new Invoice
+        var invoice = new PaymentRequestsBatch
         {
             Id = id,
             SchemeType = scheme,
             Status = status,
             InvoiceType = "ap",
             AccountType = "ap",
-            PaymentRequests = new List<InvoiceHeader>
+            PaymentRequests = new List<PaymentRequest>
             {
                 new()
                 {
@@ -343,7 +344,7 @@ public class InvoicePostEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

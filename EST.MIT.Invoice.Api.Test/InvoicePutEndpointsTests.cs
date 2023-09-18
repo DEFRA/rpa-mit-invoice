@@ -10,13 +10,14 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
+using Invoices.Api.Services.PaymentsBatch;
 
 namespace Invoices.Api.Test;
 
 public class InvoicePutEndpointTests
 {
-    private readonly IInvoiceService _invoiceService =
-        Substitute.For<IInvoiceService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
@@ -30,9 +31,9 @@ public class InvoicePutEndpointTests
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
-    private readonly IValidator<Invoice> _validator;
+    private readonly IValidator<PaymentRequestsBatch> _validator;
 
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
     public InvoicePutEndpointTests()
     {
@@ -136,21 +137,21 @@ public class InvoicePutEndpointTests
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-        _validator = new InvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
+        _validator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
 
-        _invoiceService.UpdateAsync(invoice).Returns(invoice);
+        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _invoiceService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
-        result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
 
         await _queueService.DidNotReceive().CreateMessage("");
     }
@@ -158,12 +159,12 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenCreateReturnsNull()
     {
-        var invoice = invoiceTestData;
+        var invoice = _paymentRequestsBatchTestData;
 
-        _invoiceService.UpdateAsync(invoice).ReturnsNull();
+        _paymentRequestsBatchService.UpdateAsync(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _invoiceService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -171,25 +172,25 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenApproved()
     {
-        var invoice = InvoiceTestData.CreateInvoice("approved");
+        var invoice = PaymentRequestsBatchTestData.CreateInvoice("approved");
 
-        _invoiceService.UpdateAsync(invoice).Returns(invoice);
+        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _invoiceService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
-        result.GetOkObjectResultValue<Invoice>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
 
         var expectedMessage = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
         await _queueService.Received().CreateMessage(expectedMessage);
     }
 
     [Theory]
-    [ClassData(typeof(InvoiceValidationTestData))]
+    [ClassData(typeof(PaymentRequestsBatchValidationTestData))]
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceMissingInvoiceProperties(string id, string scheme, string status, string errorKey)
     {
-        var invoice = new Invoice
+        var invoice = new PaymentRequestsBatch
         {
             Id = id,
             SchemeType = scheme,
@@ -199,7 +200,7 @@ public class InvoicePutEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _invoiceService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

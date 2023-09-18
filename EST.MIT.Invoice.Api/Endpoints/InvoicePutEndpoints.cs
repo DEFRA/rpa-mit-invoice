@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Invoices.Api.Services.PaymentsBatch;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
@@ -19,32 +20,32 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, Invoice invoice, IInvoiceService invoiceService, IQueueService queueService, IValidator<Invoice> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IQueueService queueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
     {
-        var validationResult = await validator.ValidateAsync(invoice);
+        var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await invoiceService.UpdateAsync(invoice);
+        var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch);
 
         if (invoiceUpdated is null)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update-falied", "Invoice update failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update-failed", "Invoice update failed", paymentRequestsBatch);
             return Results.BadRequest();
         }
 
-        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-update", "Invoice updated", invoice);
+        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update", "Invoice updated", paymentRequestsBatch);
 
-        if (invoice.Status == InvoiceStatuses.Approved)
+        if (paymentRequestsBatch.Status == InvoiceStatuses.Approved)
         {
-            var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
+            var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = paymentRequestsBatch.Id, Scheme = paymentRequestsBatch.SchemeType });
             await queueService.CreateMessage(message);
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-payment-request-sent", "Invoice payment request sent");
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-payment-request-sent", "Invoice payment request sent");
         }
 
-        return Results.Ok(invoice);
+        return Results.Ok(paymentRequestsBatch);
     }
 }

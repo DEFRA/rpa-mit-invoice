@@ -12,7 +12,7 @@ public static class RepositoryDefinition
     public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
     {
         services.AddSingleton<IReferenceDataRepository, ReferenceDataRepository>();
-        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IPaymentRequestsBatchRepository, PaymentRequestsBatchRepository>();
         return services;
     }
 }

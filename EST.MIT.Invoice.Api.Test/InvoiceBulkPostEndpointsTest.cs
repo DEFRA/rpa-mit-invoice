@@ -6,6 +6,7 @@ using FluentValidation;
 using Invoices.Api.Endpoints;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
+using Invoices.Api.Services.PaymentsBatch;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -14,8 +15,8 @@ namespace Invoices.Api.Test;
 
 public class InvoiceBulkPostEndpointsTest
 {
-    private readonly IInvoiceService _invoiceService =
-        Substitute.For<IInvoiceService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
     private readonly IReferenceDataApi _referenceDataApiMock =
@@ -23,7 +24,7 @@ public class InvoiceBulkPostEndpointsTest
     private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
         Substitute.For<ICachedReferenceDataApi>();
     private readonly IValidator<BulkInvoices> _validator;
-    private readonly Invoice invoiceTestData = InvoiceTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
     public InvoiceBulkPostEndpointsTest()
     {
@@ -138,16 +139,16 @@ public class InvoiceBulkPostEndpointsTest
         {
             SchemeType = "Scheme1",
             Reference = "Reference1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
-        _invoiceService.CreateBulkAsync(bulkInvoices).Returns(bulkInvoices);
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).Returns(bulkInvoices);
 
         // Act
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
@@ -158,15 +159,15 @@ public class InvoiceBulkPostEndpointsTest
         var bulkInvoices = new BulkInvoices
         {
             SchemeType = "Scheme1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
-        _invoiceService.CreateBulkAsync(bulkInvoices).ReturnsNull();
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey("Reference");
@@ -179,16 +180,16 @@ public class InvoiceBulkPostEndpointsTest
         {
             SchemeType = "Scheme1",
             Reference = "Reference1",
-            Invoices = new List<Invoice>
+            Invoices = new List<PaymentRequestsBatch>
             {
-                invoiceTestData
+                _paymentRequestsBatchTestData
             }
         };
 
-        _invoiceService.CreateBulkAsync(bulkInvoices).ReturnsNull();
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
         _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _invoiceService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }

@@ -2,11 +2,11 @@ using Invoices.Api.Models;
 
 namespace Invoices.Api.Test;
 
-public static class InvoiceTestData
+public static class PaymentRequestsBatchTestData
 {
-    public static Invoice CreateInvoice(string status = "awaiting")
+    public static PaymentRequestsBatch CreateInvoice(string status = "awaiting")
     {
-        return new Invoice
+        return new PaymentRequestsBatch
         {
             Id = "123456789",
             InvoiceType = "AP",
@@ -17,8 +17,8 @@ public static class InvoiceTestData
             PaymentType = "DOM",
             Status = status,
             CreatedBy = "Test User",
-            PaymentRequests = new List<InvoiceHeader> {
-                new InvoiceHeader {
+            PaymentRequests = new List<PaymentRequest> {
+                new PaymentRequest {
                     PaymentRequestId = "123456789",
                     FRN = 123456789,
                     SourceSystem = "Manual",
@@ -40,6 +40,7 @@ public static class InvoiceTestData
                             FundCode = "123456789",
                             MainAccount = "AccountCodeValue",
                             DeliveryBody = "RP00",
+                            MarketingYear = 2023,
                         }
                     },
                     FirmReferenceNumber = 1000000000,

@@ -8,11 +8,11 @@ namespace Invoices.Api.Repositories
     // Not really worth doing a series of unit tests for these methods since we could only really test that the correct SQL was being passed,
     // but considerable effort would be needed to mock the DB interfaces
     [ExcludeFromCodeCoverage]
-    public class InvoiceRepository : IInvoiceRepository
-	{
+    public class PaymentRequestsBatchRepository : IPaymentRequestsBatchRepository
+    {
 		private readonly PgDbContext _dbContext;
 
-		public InvoiceRepository(PgDbContext dbContext)
+		public PaymentRequestsBatchRepository(PgDbContext dbContext)
 		{
 			_dbContext = dbContext;
 		}

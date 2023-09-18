@@ -4,6 +4,7 @@ using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
+using Invoices.Api.Services.PaymentsBatch;
 
 namespace Invoices.Api.Endpoints;
 
@@ -12,11 +13,11 @@ public static class InvoiceDefinition
 {
     public static IServiceCollection AddInvoiceServices(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<Invoice>, InvoiceValidator>();
+        services.AddScoped<IValidator<PaymentRequestsBatch>, PaymentRequestsBatchValidator>();
         services.AddScoped<IValidator<BulkInvoices>, BulkInvoiceValidator>();
 
-        services.AddScoped<IValidator<InvoiceHeader>, InvoiceHeaderValidator>(
-            serviceProvider => new InvoiceHeaderValidator(
+        services.AddScoped<IValidator<PaymentRequest>, PaymentRequestValidator>(
+            serviceProvider => new PaymentRequestValidator(
                 referenceDataApi: serviceProvider.GetRequiredService<IReferenceDataApi>(),
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>(),
                 new FieldsRoute())
@@ -29,7 +30,7 @@ public static class InvoiceDefinition
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>())
         );
 
-        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IPaymentRequestsBatchService, PaymentRequestsBatchService>();
 
         return services;
     }

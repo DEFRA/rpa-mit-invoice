@@ -7,43 +7,43 @@ namespace Invoices.Api.Util;
 
 public static class InvoiceMapper
 {
-    public static InvoiceEntity MapToInvoiceEntity(Invoice invoice)
+    public static InvoiceEntity MapToInvoiceEntity(PaymentRequestsBatch paymentRequestsBatch)
     {
         return new InvoiceEntity()
         {
-            SchemeType = invoice.SchemeType,
-            Id = invoice.Id,
-            Data = JsonConvert.SerializeObject(invoice),
-            Value = invoice.PaymentRequests.Sum(x => x.Value),
-            Status = invoice.Status,
-            Reference = invoice.Reference,
-            CreatedBy = invoice.CreatedBy,
-            UpdatedBy = invoice.UpdatedBy,
-            Created = invoice.Created,
-            Updated = invoice.Updated
+            SchemeType = paymentRequestsBatch.SchemeType,
+            Id = paymentRequestsBatch.Id,
+            Data = JsonConvert.SerializeObject(paymentRequestsBatch),
+            Value = paymentRequestsBatch.PaymentRequests.Sum(x => x.Value),
+            Status = paymentRequestsBatch.Status,
+            Reference = paymentRequestsBatch.Reference,
+            CreatedBy = paymentRequestsBatch.CreatedBy,
+            UpdatedBy = paymentRequestsBatch.UpdatedBy,
+            Created = paymentRequestsBatch.Created,
+            Updated = paymentRequestsBatch.Updated
         };
     }
 
-    public static List<Invoice> MapToInvoice(IEnumerable<InvoiceEntity> invoiceEntites)
+    public static List<PaymentRequestsBatch> MapToInvoice(IEnumerable<InvoiceEntity> invoiceEntities)
     {
-        var invoices = new List<Invoice>();
+        var invoices = new List<PaymentRequestsBatch>();
 
-        foreach (var invoiceData in invoiceEntites.Select(x => x.Data))
+        foreach (var invoiceData in invoiceEntities.Select(x => x.Data))
         {
-            var invoice = JsonConvert.DeserializeObject<Invoice>(invoiceData);
+            var invoice = JsonConvert.DeserializeObject<PaymentRequestsBatch>(invoiceData);
             invoices.Add(invoice!);
         }
 
         return invoices;
     }
 
-    public static List<InvoiceEntity> BulkMapToInvoiceEntity(IEnumerable<Invoice> invoices)
+    public static List<InvoiceEntity> BulkMapToInvoiceEntity(IEnumerable<PaymentRequestsBatch> batches)
     {
         var invoiceEntities = new List<InvoiceEntity>();
 
-        foreach (var invoice in invoices)
+        foreach (var batch in batches)
         {
-            var invoiceEntity = MapToInvoiceEntity(invoice);
+            var invoiceEntity = MapToInvoiceEntity(batch);
             invoiceEntities.Add(invoiceEntity);
         }
 

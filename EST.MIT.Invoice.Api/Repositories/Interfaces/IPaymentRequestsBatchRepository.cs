@@ -4,7 +4,7 @@ using Invoices.Api.Repositories.Entities;
 
 namespace Invoices.Api.Repositories.Interfaces
 {
-	public interface IInvoiceRepository
+	public interface IPaymentRequestsBatchRepository
 	{
         Task<IEnumerable<InvoiceEntity>> GetBySchemeAndIdAsync(string scheme, string id);
         Task<InvoiceEntity> CreateAsync(InvoiceEntity invoice);

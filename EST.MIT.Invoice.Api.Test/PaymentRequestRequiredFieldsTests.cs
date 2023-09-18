@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EST.MIT.Invoice.Api.Test
 {
-    public class InvoiceHeaderRequiredFieldsTests
+    public class PaymentRequestRequiredFieldsTests
     {
         private IList<ValidationResult> ValidateModel(object model)
         {
@@ -17,7 +17,7 @@ namespace EST.MIT.Invoice.Api.Test
         public void Test_FRN_For_Value_Not_In_Range()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
@@ -44,7 +44,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var error = ValidateModel(invoiceHeader);
+            var error = ValidateModel(paymentRequest);
 
             //Assert
             Assert.Single(error);
@@ -55,7 +55,7 @@ namespace EST.MIT.Invoice.Api.Test
         public void Test_Marketing_Year_For_Value_Not_In_Range()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
@@ -81,7 +81,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var error = ValidateModel(invoiceHeader);
+            var error = ValidateModel(paymentRequest);
 
             //Assert
             Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("Marketing Year must be between 2021 and 2099 ")) == 1);
@@ -91,7 +91,7 @@ namespace EST.MIT.Invoice.Api.Test
         public void Test_Value_Field_For_Value_Not_In_Range()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
@@ -117,7 +117,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var error = ValidateModel(invoiceHeader);
+            var error = ValidateModel(paymentRequest);
 
             //Assert
             Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("Value must be between 0 and 999999999999.99")) == 1);
@@ -127,7 +127,7 @@ namespace EST.MIT.Invoice.Api.Test
         public void Test_InvoiceHeader_For_Good_Data()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AppendixReferences = new AppendixReferences(),
                 ContractNumber = "ED34566",
@@ -154,7 +154,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var error = ValidateModel(invoiceHeader);
+            var error = ValidateModel(paymentRequest);
 
             //Assert
             Assert.True(error.Count == 0);

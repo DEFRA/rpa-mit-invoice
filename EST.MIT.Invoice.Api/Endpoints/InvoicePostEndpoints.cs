@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using Invoices.Api.Services.PaymentsBatch;
 using FluentValidation;
 using Invoices.Api.Models;
 using Invoices.Api.Services;
@@ -12,7 +12,7 @@ public static class InvoicePostEndpoints
     public static IEndpointRouteBuilder MapInvoicePostEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/invoice", CreateInvoice)
-            .Produces<Invoice>(StatusCodes.Status201Created)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("CreateInvoice");
 
@@ -24,45 +24,45 @@ public static class InvoicePostEndpoints
         return app;
     }
 
-    public static async Task<IResult> CreateInvoice(Invoice invoice, IValidator<Invoice> validator, IInvoiceService invoiceService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateInvoice(PaymentRequestsBatch paymentRequestsBatch, IValidator<PaymentRequestsBatch> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService)
     {
-        var validationResult = await validator.ValidateAsync(invoice);
+        var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
         if (!validationResult.IsValid)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
             return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
-        var invoiceCreated = await invoiceService.CreateAsync(invoice);
+        var invoiceCreated = await paymentRequestsBatchService.CreateAsync(paymentRequestsBatch);
 
         if (invoiceCreated is null)
         {
-            await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-falied", "Invoice creation failed", invoice);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-create-failed", "Invoice creation failed", paymentRequestsBatch);
             return Results.BadRequest();
         }
 
-        await eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created", invoice);
+        await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created", paymentRequestsBatch);
 
-        return Results.Created($"/invoice/{invoice.SchemeType}/{invoice.Id}", invoice);
+        return Results.Created($"/invoice/{paymentRequestsBatch.SchemeType}/{paymentRequestsBatch.Id}", paymentRequestsBatch);
     }
 
-    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IInvoiceService invoiceService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoices);
         var reference = invoices.Reference;
 
         if (!validationResult.IsValid)
         {
-            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-falied", "Bulk invoice validation failed");
+            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var bulkInvoiceCreated = await invoiceService.CreateBulkAsync(invoices);
+        var bulkInvoiceCreated = await paymentRequestsBatchService.CreateBulkAsync(invoices);
 
         if (bulkInvoiceCreated is null)
         {
-            await eventQueueService.CreateMessage(reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed");
+            await eventQueueService.CreateMessage(reference, "failed", "bulk-invoice-creation-failed", "Bulk Invoice creation failed");
             return Results.BadRequest();
         }
 

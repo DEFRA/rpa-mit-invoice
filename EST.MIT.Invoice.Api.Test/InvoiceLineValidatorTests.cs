@@ -198,7 +198,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -212,6 +213,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
             response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Empty(response.Errors);
         }
 
@@ -233,7 +235,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -246,6 +249,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
             response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Currency must be GBP or EUR")) == 1);
         }
 
@@ -263,7 +267,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -276,6 +281,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Empty(response.Errors);
         }
 
@@ -300,7 +306,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = value,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -313,6 +320,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
             response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Empty(response.Errors);
         }
 
@@ -331,7 +339,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = value,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -342,6 +351,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Single(response.Errors);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
         }
@@ -358,7 +368,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 0,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -369,6 +380,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Description);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
             Assert.Single(response.Errors);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
         }
@@ -385,7 +397,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -408,7 +421,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "DR5699",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -430,7 +444,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -453,7 +468,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -488,7 +504,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -510,7 +527,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountB",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -532,7 +550,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 30,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "INVALIDDELIVERYBODY"
+                DeliveryBody = "INVALIDDELIVERYBODY",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -566,7 +585,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -589,7 +609,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01"
+                DeliveryBody = "rp01",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -611,7 +632,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "accountcodevalue",
-                DeliveryBody = "DELIVERYBODYINVALID"
+                DeliveryBody = "DELIVERYBODYINVALID",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -633,7 +655,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "MAINACCOUNTINVALID",
-                DeliveryBody = "rp01"
+                DeliveryBody = "rp01",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -655,7 +678,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "SCHEMECODEINVALID",
                 Value = 4567.89M,
                 MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01"
+                DeliveryBody = "rp01",
+                MarketingYear = 2023,
             };
 
             //Act
@@ -684,7 +708,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01"
+                DeliveryBody = "rp01",
+                MarketingYear = 2023,
             };
 
             var validator = new InvoiceLineValidator(_referenceDataApiMock, _inValidRoute, _cachedReferenceDataApiMock);
@@ -724,7 +749,8 @@ namespace EST.MIT.Invoice.Api.Test
                 SchemeCode = "schemecodevalue",
                 Value = 4567.89M,
                 MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
+                DeliveryBody = "RP00",
+                MarketingYear = 2023,
             };
 
             var route = new FieldsRoute()

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Invoices.Api.Models;
 
-public class InvoiceHeader
+public class PaymentRequest
 {
     [JsonProperty("paymentRequestId")]
     public string PaymentRequestId { get; init; } = default!;

@@ -19,6 +19,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         this._cachedReferenceDataApi = cachedReferenceDataApi;
         _referenceDataApi = referenceDataApi;
 
+        RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.SchemeCode).NotEmpty();
         RuleFor(x => x.SchemeCode)
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))

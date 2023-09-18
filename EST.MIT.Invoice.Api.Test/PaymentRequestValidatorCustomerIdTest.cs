@@ -7,9 +7,9 @@ using NSubstitute;
 
 namespace EST.MIT.Invoice.Api.Test
 {
-    public class InvoiceHeaderValidatorCustomerIdTest
+    public class PaymentRequestValidatorCustomerIdTest
     {
-        private readonly InvoiceHeaderValidator _invoiceHeaderValidator;
+        private readonly PaymentRequestValidator _paymentRequestValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock =
             Substitute.For<IReferenceDataApi>();
@@ -25,7 +25,7 @@ namespace EST.MIT.Invoice.Api.Test
             SchemeType = "bps"
         };
 
-        public InvoiceHeaderValidatorCustomerIdTest()
+        public PaymentRequestValidatorCustomerIdTest()
         {
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
@@ -85,14 +85,14 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceHeaderValidator = new InvoiceHeaderValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
         }
 
         [Fact]
         public async Task Given_InvoiceHeader_When_All_Is_Ok_Then_InvoiceHeader_Passes()
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -111,6 +111,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -121,7 +122,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -149,7 +150,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_SBI_FRN_And_VendorId_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendorId)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -168,6 +169,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -180,7 +182,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -206,7 +208,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_SBI_Is_Invalid_Then_InvoiceHeader_Fails(int sbi)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -225,6 +227,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -235,7 +238,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -261,7 +264,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_FRN_Is_Invalid_Then_InvoiceHeader_Fails(long frn)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -280,6 +283,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -290,7 +294,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
@@ -316,7 +320,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_VendorID_Is_Invalid_Then_InvoiceHeader_Fails(string vendorID)
         {
             //Arrange
-            InvoiceHeader invoiceHeader = new InvoiceHeader()
+            PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
@@ -335,6 +339,7 @@ namespace EST.MIT.Invoice.Api.Test
                         SchemeCode = "SchemeCodeValue",
                         MainAccount = "AccountCodeValue",
                         DeliveryBody = "RP00",
+                        MarketingYear = 2023,
                     }
                 },
                 MarketingYear = 2022,
@@ -345,7 +350,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            var response = await _invoiceHeaderValidator.TestValidateAsync(invoiceHeader);
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
