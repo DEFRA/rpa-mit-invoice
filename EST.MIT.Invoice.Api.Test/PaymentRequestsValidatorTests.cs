@@ -124,56 +124,6 @@ public class PaymentRequestsValidatorTests
     }
 
     [Fact]
-    public async Task Given_Invoice_When_InvoiceHeader_FRN_Is_Empty_Then_Invoice_Fails()
-    {
-        //Arrange
-        PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
-        {
-            Id = "123456789",
-            InvoiceType = "AP",
-            AccountType = "AP",
-            Organisation = "Test Org",
-            Reference = "123456789",
-            SchemeType = "bps",
-            PaymentType = "DOM",
-            CreatedBy = "Test User",
-            Status = "status",
-            PaymentRequests = new List<PaymentRequest> {
-                new PaymentRequest {
-                    PaymentRequestId = "123456789",
-                    SourceSystem = "Manual",
-                    MarketingYear = 2023,
-                    PaymentRequestNumber = 123456789,
-                    AgreementNumber = "123456789",
-                    ContractNumber = "123456789",
-                    Value = 100,
-                    DueDate = "2023-01-01",
-                    AppendixReferences = new AppendixReferences {
-                        ClaimReferenceNumber = "123456789"
-                    },
-                    InvoiceLines = new List<InvoiceLine> {
-                        new InvoiceLine {
-                            Currency = "GBP",
-                            Description = "Test Description",
-                            Value = 100,
-                            SchemeCode = "123456789",
-                            FundCode = "123456789",
-                            DeliveryBody = "RP00",
-                        }
-                    }
-                }
-
-            }
-        };
-
-        //Act
-        var response = await _paymentRequestsBatchValidator.TestValidateAsync(paymentRequestsBatch);
-
-        //Assert         
-        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("'FRN' must not be empty")) == 1);
-    }
-
-    [Fact]
     public async Task Given_Invoice_When_InvoiceHeader_AgreementNumber_Is_Empty_And_InvoiceLine_Description_Is_Empty_Then_Invoice_Fails()
     {
         //Arrange
@@ -193,9 +143,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AppendixReferences = new AppendixReferences {
@@ -211,7 +159,7 @@ public class PaymentRequestsValidatorTests
                             MarketingYear = 2023,
                         }
                     },
-                    FirmReferenceNumber = 9999999999,
+                    FRN = 9999999999,
                 }
             }
         };
@@ -251,9 +199,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -333,9 +279,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -417,9 +361,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -468,9 +410,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -529,9 +469,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -596,9 +534,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -667,9 +603,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
@@ -728,9 +662,7 @@ public class PaymentRequestsValidatorTests
                     PaymentRequestId = "123456789",
                     SourceSystem = "Manual",
                     MarketingYear = 2023,
-                    FRN = 1000000000,
                     PaymentRequestNumber = 123456789,
-                    ContractNumber = "123456789",
                     Value = 100,
                     DueDate = "2023-01-01",
                     AgreementNumber = "DE4567",
