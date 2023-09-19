@@ -13,10 +13,8 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
-        RuleFor(x => x.FRN).NotEmpty();
         RuleFor(x => x.InvoiceLines).NotEmpty();
         RuleFor(x => x.SourceSystem).NotEmpty();
-        RuleFor(x => x.ContractNumber).NotEmpty();
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.PaymentRequestId).NotEmpty()
@@ -43,27 +41,27 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
-            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendorId(invoiceHeader.SingleBusinessIdentifier, invoiceHeader.FirmReferenceNumber, invoiceHeader.VendorID))
-            .WithMessage("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID");
+            .Must(invoiceHeader => HaveOnlySBIOrFRNOrVendor(invoiceHeader.SBI, invoiceHeader.FRN, invoiceHeader.Vendor))
+            .WithMessage("Invoice must only have SBI, FRN or Vendor");
 
-        RuleFor(invoiceHeader => invoiceHeader.FirmReferenceNumber)
+        RuleFor(invoiceHeader => invoiceHeader.FRN)
             .InclusiveBetween(1000000000, 9999999999)
             .WithMessage("FRN is not in valid range (1000000000 .. 9999999999)")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.SingleBusinessIdentifier == 0
-                    && invoiceHeader.FirmReferenceNumber != 0,
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader.SBI == 0
+                    && invoiceHeader.FRN != 0,
                 ApplyConditionTo.CurrentValidator);
 
-        RuleFor(invoiceHeader => invoiceHeader.SingleBusinessIdentifier)
+        RuleFor(invoiceHeader => invoiceHeader.SBI)
             .InclusiveBetween(105000000, 999999999)
             .WithMessage("SBI is not in valid range (105000000 .. 999999999)")
-            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader.FirmReferenceNumber == 0
-                    && invoiceHeader.SingleBusinessIdentifier != 0,
+            .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader.FRN == 0
+                    && invoiceHeader.SBI != 0,
                 ApplyConditionTo.CurrentValidator);
 
-        RuleFor(invoiceHeader => invoiceHeader.VendorID)
+        RuleFor(invoiceHeader => invoiceHeader.Vendor)
             .Length(6)
-            .WithMessage("VendorID must be 6 characters")
-            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.VendorID) && invoiceHeader is { SingleBusinessIdentifier: 0, FirmReferenceNumber: 0 },
+            .WithMessage("Vendor must be 6 characters")
+            .When(invoiceHeader => !string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader is { SBI: 0, FRN: 0 },
                 ApplyConditionTo.CurrentValidator);
     }
 
@@ -103,11 +101,11 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         return true;
     }
 
-    private static bool HaveOnlySBIOrFRNOrVendorId(int singleBusinessIdentifier, long firmReferenceNumber, string vendorId)
+    private static bool HaveOnlySBIOrFRNOrVendor(int sbi, long frn, string vendor)
     {
         // return true if only one of the three values is populated
-        return (singleBusinessIdentifier != 0 && firmReferenceNumber == 0 && string.IsNullOrWhiteSpace(vendorId))
-            || (singleBusinessIdentifier == 0 && firmReferenceNumber != 0 && string.IsNullOrWhiteSpace(vendorId))
-            || (singleBusinessIdentifier == 0 && firmReferenceNumber == 0 && !string.IsNullOrWhiteSpace(vendorId));
+        return (sbi != 0 && frn == 0 && string.IsNullOrWhiteSpace(vendor))
+            || (sbi == 0 && frn != 0 && string.IsNullOrWhiteSpace(vendor))
+            || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
     }
 }

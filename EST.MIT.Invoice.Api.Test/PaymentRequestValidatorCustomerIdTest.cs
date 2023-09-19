@@ -30,13 +30,10 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
-            var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
 
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
             var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
-            var deliveryBodyCodesResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
-
 
             var schemeCodes = new List<SchemeCode>()
             {
@@ -96,10 +93,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -118,7 +113,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                FirmReferenceNumber = 9999999999,
+                FRN = 9999999999,
             };
 
             //Act
@@ -132,9 +127,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
             Assert.Empty(response.Errors);
@@ -147,17 +140,15 @@ namespace EST.MIT.Invoice.Api.Test
         [InlineData(100000000, 1000000000, "")]
         [InlineData(0, 0, "")]
         [InlineData(0, 0, null)]
-        public async Task Given_InvoiceHeader_When_SBI_FRN_And_VendorId_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendorId)
+        public async Task Given_InvoiceHeader_When_SBI_FRN_And_Vendor_Supplied_Then_InvoiceHeader_Fails(int sbi, long frn, string vendor)
         {
             //Arrange
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -176,9 +167,9 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                FirmReferenceNumber = frn,
-                SingleBusinessIdentifier = sbi,
-                VendorID = vendorId,
+                FRN = frn,
+                SBI = sbi,
+                Vendor = vendor,
             };
 
             //Act
@@ -192,14 +183,12 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have Single Business Identifier (SBI), Firm Reference Number (FRN) or Vendor ID")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice must only have SBI, FRN or Vendor")) == 1);
         }
 
         [Theory]
@@ -212,10 +201,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -234,7 +221,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                SingleBusinessIdentifier = sbi,
+                SBI = sbi,
             };
 
             //Act
@@ -248,9 +235,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
@@ -268,10 +253,8 @@ namespace EST.MIT.Invoice.Api.Test
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -290,7 +273,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                FirmReferenceNumber = frn,
+                FRN = frn,
             };
 
             //Act
@@ -304,9 +287,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
@@ -317,17 +298,15 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("10000")]
         [InlineData("1000000")]
-        public async Task Given_InvoiceHeader_When_VendorID_Is_Invalid_Then_InvoiceHeader_Fails(string vendorID)
+        public async Task Given_InvoiceHeader_When_Vendor_Is_Invalid_Then_InvoiceHeader_Fails(string vendor)
         {
             //Arrange
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
-                ContractNumber = "ED34566",
                 SourceSystem = "4ADTRT",
                 DueDate = DateTime.Now.ToString(),
-                FRN = 1000000000,
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
@@ -346,7 +325,7 @@ namespace EST.MIT.Invoice.Api.Test
                 PaymentRequestId = "1234",
                 PaymentRequestNumber = 123456,
                 Value = 10M,
-                VendorID = vendorID,
+                Vendor = vendor,
             };
 
             //Act
@@ -360,14 +339,12 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldNotHaveValidationErrorFor(x => x.Value);
             response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
-            response.ShouldNotHaveValidationErrorFor(x => x.ContractNumber);
             response.ShouldNotHaveValidationErrorFor(x => x.DueDate);
-            response.ShouldNotHaveValidationErrorFor(x => x.FRN);
             response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
             response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
 
             Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("VendorID must be 6 characters")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Vendor must be 6 characters")) == 1);
         }
     }
 }
