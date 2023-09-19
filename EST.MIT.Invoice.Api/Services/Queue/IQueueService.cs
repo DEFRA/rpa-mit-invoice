@@ -1,4 +1,4 @@
-namespace Invoices.Api.Services;
+namespace EST.MIT.Invoice.Api.Services;
 
 public interface IQueueService
 {

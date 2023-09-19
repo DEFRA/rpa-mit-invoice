@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class PaymentRequestsBatchValidationTestData : IEnumerable<object[]>
 {

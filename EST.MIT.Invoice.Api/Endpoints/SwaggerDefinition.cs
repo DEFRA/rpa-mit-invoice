@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.OpenApi.Models;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 [ExcludeFromCodeCoverage]
 public static class SwaggerDefinition

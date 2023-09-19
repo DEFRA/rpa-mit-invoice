@@ -1,4 +1,4 @@
-﻿using Invoices.Api.Models;
+﻿using EST.MIT.Invoice.Api.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -36,7 +36,7 @@ namespace EST.MIT.Invoice.Api.Test
             var error = ValidateModel(invoiceLine);
 
             //Assert
-            Assert.True(error.Count(x => x.ErrorMessage.Contains("Value must be between 0 and 999999999999.99")) == 1);
+            Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("Value must be between 0 and 999999999999.99")) == 1);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace EST.MIT.Invoice.Api.Test
             var error = ValidateModel(invoiceLine);
 
             //Assert
-            Assert.True(error.Count(x => x.ErrorMessage.Contains("Description must be stated")) == 1);
+            Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("Description must be stated")) == 1);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace EST.MIT.Invoice.Api.Test
             var error = ValidateModel(invoiceLine);
 
             //Assert
-            Assert.True(error.Count(x => x.ErrorMessage.Contains("SchemeCode must be specified")) == 1);
+            Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("SchemeCode must be specified")) == 1);
         }
 
         [Theory]
@@ -98,7 +98,7 @@ namespace EST.MIT.Invoice.Api.Test
             var error = ValidateModel(invoiceLine);
 
             //Assert
-            Assert.True(error.Count(x => x.ErrorMessage.Contains("Marketing Year must be between 2021 and 2099")) == 1);
+            Assert.True(error.Count(x => x.ErrorMessage != null && x.ErrorMessage.Contains("Marketing Year must be between 2021 and 2099")) == 1);
         }
 
         [Fact]

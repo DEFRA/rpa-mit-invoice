@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 public static class InvoicePostEndpoints
 {
@@ -24,7 +24,7 @@ public static class InvoicePostEndpoints
         return app;
     }
 
-    public static async Task<IResult> CreateInvoice(PaymentRequestsBatch paymentRequestsBatch, IValidator<PaymentRequestsBatch> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateInvoice(PaymentRequestsBatch paymentRequestsBatch, IValidator<PaymentRequestsBatch> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
@@ -34,7 +34,7 @@ public static class InvoicePostEndpoints
             return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
-        var invoiceCreated = await cosmosService.Create(paymentRequestsBatch);
+        var invoiceCreated = await paymentRequestsBatchService.CreateAsync(paymentRequestsBatch);
 
         if (invoiceCreated is null)
         {
@@ -47,7 +47,7 @@ public static class InvoicePostEndpoints
         return Results.Created($"/invoice/{paymentRequestsBatch.SchemeType}/{paymentRequestsBatch.Id}", paymentRequestsBatch);
     }
 
-    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(invoices);
         var reference = invoices.Reference;
@@ -58,7 +58,7 @@ public static class InvoicePostEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var bulkInvoiceCreated = await cosmosService.CreateBulk(invoices);
+        var bulkInvoiceCreated = await paymentRequestsBatchService.CreateBulkAsync(invoices);
 
         if (bulkInvoiceCreated is null)
         {

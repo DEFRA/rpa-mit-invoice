@@ -1,10 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 public static class InvoicePutEndpoints
 {
@@ -19,7 +20,7 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, ICosmosService cosmosService, IQueueService queueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IQueueService queueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
@@ -28,7 +29,7 @@ public static class InvoicePutEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await cosmosService.Update(paymentRequestsBatch);
+        var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch);
 
         if (invoiceUpdated is null)
         {

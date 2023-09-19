@@ -1,4 +1,4 @@
-namespace Invoices.Api.Models;
+namespace EST.MIT.Invoice.Api.Models;
 
 public static class InvoiceStatuses
 {

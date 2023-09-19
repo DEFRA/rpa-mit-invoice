@@ -1,8 +1,8 @@
-using Invoices.Api.Models;
-using Invoices.Api.Services.Models;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Models;
 using Newtonsoft.Json;
 
-namespace Invoices.Api.Util;
+namespace EST.MIT.Invoice.Api.Util;
 
 public static class RegexConstants
 {

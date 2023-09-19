@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Services;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 public static class InvoiceDeleteEndpoints
 {
@@ -18,10 +17,10 @@ public static class InvoiceDeleteEndpoints
         return app;
     }
 
-    public static async Task<IResult> DeleteInvoice(string id, string scheme, ICosmosService cosmosService, IEventQueueService eventQueueService)
+    public static async Task<IResult> DeleteInvoice(string invoiceId, string scheme, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService)
     {
-        await cosmosService.Delete(id, scheme);
-        await eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice updated");
+        await paymentRequestsBatchService.DeleteBySchemeAndIdAsync(scheme, invoiceId);
+        await eventQueueService.CreateMessage(invoiceId, "deleted", "invoice-deleted", "Invoice updated");
         return Results.Ok();
     }
 }

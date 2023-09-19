@@ -2,9 +2,11 @@ using System.Diagnostics.CodeAnalysis;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 [ExcludeFromCodeCoverage]
 public static class InvoiceDefinition
@@ -27,6 +29,9 @@ public static class InvoiceDefinition
                 new FieldsRoute(),
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>())
         );
+
+        services.AddScoped<IPaymentRequestsBatchService, PaymentRequestsBatchService>();
+
         return services;
     }
 }

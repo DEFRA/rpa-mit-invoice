@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace Invoices.Api.Models;
+namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLine
 {

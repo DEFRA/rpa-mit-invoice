@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public static class IResultExtensions
 {

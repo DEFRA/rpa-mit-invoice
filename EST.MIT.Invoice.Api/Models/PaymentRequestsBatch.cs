@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Invoices.Api.Models;
+namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestsBatch
 {

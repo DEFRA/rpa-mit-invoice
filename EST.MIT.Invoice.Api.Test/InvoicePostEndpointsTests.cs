@@ -2,22 +2,23 @@ using System.Net;
 using System.Net.WebSockets;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using NSubstitute;
 using FluentAssertions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NSubstitute.ReturnsExtensions;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoicePostEndpointTests
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
@@ -143,10 +144,10 @@ public class InvoicePostEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _cosmosService.Create(invoice).Returns(invoice);
+        _paymentRequestsBatchService.CreateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(201);
         result.GetCreatedResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -157,10 +158,10 @@ public class InvoicePostEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _cosmosService.Create(invoice).ReturnsNull();
+        _paymentRequestsBatchService.CreateAsync(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -205,11 +206,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _cosmosService.Create(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -255,11 +256,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _cosmosService.Create(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -304,11 +305,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _cosmosService.Create(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -335,7 +336,7 @@ public class InvoicePostEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

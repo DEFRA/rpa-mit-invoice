@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
-using Invoices.Api.Util;
+using EST.MIT.Invoice.Api.Util;
 
-namespace Invoices.Api.Models;
+namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 {

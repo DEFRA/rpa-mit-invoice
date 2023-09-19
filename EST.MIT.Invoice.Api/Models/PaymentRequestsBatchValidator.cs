@@ -2,7 +2,7 @@ using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
 
-namespace Invoices.Api.Models;
+namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBatch>
 {

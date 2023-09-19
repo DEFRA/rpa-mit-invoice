@@ -1,8 +1,9 @@
-using Invoices.Api.Models;
-using Invoices.Api.Services.Models;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Repositories.Entities;
+using EST.MIT.Invoice.Api.Services.Models;
 using Newtonsoft.Json;
 
-namespace Invoices.Api.Util;
+namespace EST.MIT.Invoice.Api.Util;
 
 public static class InvoiceMapper
 {
@@ -15,14 +16,15 @@ public static class InvoiceMapper
             Data = JsonConvert.SerializeObject(paymentRequestsBatch),
             Value = paymentRequestsBatch.PaymentRequests.Sum(x => x.Value),
             Status = paymentRequestsBatch.Status,
+            Reference = paymentRequestsBatch.Reference,
             CreatedBy = paymentRequestsBatch.CreatedBy,
             UpdatedBy = paymentRequestsBatch.UpdatedBy,
-            Created = paymentRequestsBatch.Created.ToLongDateString(),
-            Updated = paymentRequestsBatch.Updated?.ToLongDateString() ?? string.Empty
+            Created = paymentRequestsBatch.Created,
+            Updated = paymentRequestsBatch.Updated
         };
     }
 
-    public static List<PaymentRequestsBatch> MapToInvoice(List<InvoiceEntity> invoiceEntities)
+    public static List<PaymentRequestsBatch> MapToInvoice(IEnumerable<InvoiceEntity> invoiceEntities)
     {
         var invoices = new List<PaymentRequestsBatch>();
 
@@ -33,5 +35,18 @@ public static class InvoiceMapper
         }
 
         return invoices;
+    }
+
+    public static List<InvoiceEntity> BulkMapToInvoiceEntity(IEnumerable<PaymentRequestsBatch> batches)
+    {
+        var invoiceEntities = new List<InvoiceEntity>();
+
+        foreach (var batch in batches)
+        {
+            var invoiceEntity = MapToInvoiceEntity(batch);
+            invoiceEntities.Add(invoiceEntity);
+        }
+
+        return invoiceEntities;
     }
 }

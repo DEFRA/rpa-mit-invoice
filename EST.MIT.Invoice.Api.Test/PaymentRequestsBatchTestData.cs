@@ -1,6 +1,6 @@
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public static class PaymentRequestsBatchTestData
 {

@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Models;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 public static class InvoiceGetEndpoints
 {
@@ -19,11 +18,11 @@ public static class InvoiceGetEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, ICosmosService cosmosService)
+    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
     {
-        var invoiceResponse = await cosmosService.Get($"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'");
+        var invoiceResponse = await paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId);
 
-        if (invoiceResponse is null)
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
             return Results.NotFound();
         }

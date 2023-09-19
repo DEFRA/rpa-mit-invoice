@@ -1,17 +1,17 @@
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
-using NSubstitute;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using FluentAssertions;
-using Invoices.Api.Services.Models;
+using EST.MIT.Invoice.Api.Models;
+using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceGetEndpointTests
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
 
@@ -23,11 +23,9 @@ public class InvoiceGetEndpointTests
 
         var invoice = _paymentRequestsBatchTestData;
 
-        var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
-        _cosmosService.Get(sqlCosmosQuery)
-            .Returns(new List<PaymentRequestsBatch> { invoice });
+        _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId).Returns(new List<PaymentRequestsBatch> { invoice });
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -39,10 +37,10 @@ public class InvoiceGetEndpointTests
         const string scheme = "bps";
         const string invoiceId = "123456789";
 
-        var sqlCosmosQuery = $"SELECT * FROM c WHERE c.schemeType = '{scheme}' AND c.id = '{invoiceId}'";
-        _cosmosService.Get(sqlCosmosQuery).ReturnsNull();
+        _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId)
+            .ReturnsNull();
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _cosmosService);
+        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }

@@ -1,17 +1,15 @@
 using FluentAssertions;
-using Invoices.Api.Endpoints;
-using Invoices.Api.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Moq;
+using EST.MIT.Invoice.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using NSubstitute;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceDeleteEndpointTests
 {
-    private readonly ICosmosService _cosmosService =
-            Substitute.For<ICosmosService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+            Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
@@ -23,9 +21,9 @@ public class InvoiceDeleteEndpointTests
         const string id = "invoice-123";
         const string scheme = "invoices";
 
-        _cosmosService.Delete(id, scheme).Returns(id);
+        _paymentRequestsBatchService.DeleteBySchemeAndIdAsync(scheme, id).Returns(id);
         _eventQueueService.CreateMessage(id, "deleted", "invoice-deleted", "Invoice deleted").Returns(Task.CompletedTask);
-        var result = await InvoiceDeleteEndpoints.DeleteInvoice(id, scheme, _cosmosService, _eventQueueService);
+        var result = await InvoiceDeleteEndpoints.DeleteInvoice(id, scheme, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }

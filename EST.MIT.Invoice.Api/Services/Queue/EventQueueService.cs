@@ -2,10 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using Azure.Storage.Queues;
-using Invoices.Api.Models;
-using Invoices.Api.Services.Models;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Models;
 
-namespace Invoices.Api.Services;
+namespace EST.MIT.Invoice.Api.Services;
 
 public class EventQueueService : IEventQueueService
 {

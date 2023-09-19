@@ -1,8 +1,8 @@
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using NSubstitute;
 using FluentAssertions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
@@ -10,13 +10,14 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoicePutEndpointTests
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
 
     private readonly IReferenceDataApi _referenceDataApiMock =
         Substitute.For<IReferenceDataApi>();
@@ -144,10 +145,10 @@ public class InvoicePutEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _cosmosService.Update(invoice).Returns(invoice);
+        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -160,10 +161,10 @@ public class InvoicePutEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _cosmosService.Update(invoice).ReturnsNull();
+        _paymentRequestsBatchService.UpdateAsync(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -173,10 +174,10 @@ public class InvoicePutEndpointTests
     {
         var invoice = PaymentRequestsBatchTestData.CreateInvoice("approved");
 
-        _cosmosService.Update(invoice).Returns(invoice);
+        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -198,7 +199,7 @@ public class InvoicePutEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _cosmosService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

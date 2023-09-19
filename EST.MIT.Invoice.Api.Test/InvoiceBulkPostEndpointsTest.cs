@@ -3,19 +3,20 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentAssertions;
 using FluentValidation;
-using Invoices.Api.Endpoints;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceBulkPostEndpointsTest
 {
-    private readonly ICosmosService _cosmosService =
-        Substitute.For<ICosmosService>();
+    private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
+        Substitute.For<IPaymentRequestsBatchService>();
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
     private readonly IReferenceDataApi _referenceDataApiMock =
@@ -144,10 +145,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).Returns(bulkInvoices);
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).Returns(bulkInvoices);
 
         // Act
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
@@ -164,9 +165,9 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey("Reference");
@@ -185,10 +186,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _cosmosService.CreateBulk(bulkInvoices).ReturnsNull();
-        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-failed", "Bulk Invoice creation failed").Returns(Task.CompletedTask);
+        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
+        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-failed", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _cosmosService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
