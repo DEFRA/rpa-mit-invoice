@@ -9,7 +9,6 @@ public static class PaymentRequestsBatchTestData
         return new PaymentRequestsBatch
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",

@@ -24,7 +24,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
 
         private CachedReferenceDataApi _service;
 
-        private readonly string _invoiceType = "RPA";
+        private readonly string _accountType = "RPA";
         private readonly string _organisation = "EST";
         private readonly string _paymentType = "AP";
         private readonly string _schemeType = "BPS";
@@ -70,7 +70,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => combinationsForRoute);
 
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -81,7 +81,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         public async Task GetCombinationsListForRouteAsync_ReturnsDataFromApi_WhenNotInCache()
         {
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
@@ -101,7 +101,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
 
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -121,7 +121,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
 
             // Act
             _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockCacheService);
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.IsSuccess.Should().BeFalse();
@@ -138,7 +138,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)));
 
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -154,7 +154,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest)));
 
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -171,7 +171,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
                 .Returns(x => Task.FromResult(new HttpResponseMessage((HttpStatusCode)418)));
 
             // Act
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -200,7 +200,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             var service = new CachedReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer(), _mockCacheService);
 
             // Act
-            var result = await service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -238,7 +238,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
 
             // Act
             _service = new CachedReferenceDataApi(_mockReferenceDataRepository, _mockLogger, new HttpContentDeserializer(), _mockCacheService);
-            var result = await _service.GetCombinationsListForRouteAsync(this._invoiceType, this._organisation, this._paymentType, this._schemeType);
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories;
 public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 {
     private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
-    private string _invoiceType = "RPA";
+    private string _accountType = "RPA";
     private string _organisation = "EST";
 
     public ReferenceDataRepository_GetSchemeTypesListAsync_Tests()
@@ -33,7 +33,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemeTypesListAsync(_invoiceType, _organisation);
+        var response = repo.GetSchemeTypesListAsync(_accountType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -43,7 +43,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
     [InlineData("RPA", "")]
     [InlineData("", "EST")]
     [InlineData("RPA", "EST")]
-    public void GetSchemeTypesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Different_Combos(string invoiceType, string organisation)
+    public void GetSchemeTypesListAsync_Returns_200_When_AccountType_Or_Organisation_Different_Combos(string accountType, string organisation)
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -58,7 +58,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemeTypesListAsync(invoiceType, organisation);
+        var response = repo.GetSchemeTypesListAsync(accountType, organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -79,7 +79,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetSchemeTypesListAsync(_invoiceType, _organisation);
+        var response = repo.GetSchemeTypesListAsync(_accountType, _organisation);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
@@ -101,7 +101,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetOrganisationsListAsync(_invoiceType);
+        var response = repo.GetOrganisationsListAsync(_accountType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -109,7 +109,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
     [Theory]
     [InlineData("")]
     [InlineData("RPA")]
-    public void GetOrganisationListAsync_Returns_200_When_InvoiceType(string invoiceType)
+    public void GetOrganisationListAsync_Returns_200_When_AccountType(string accountType)
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -124,7 +124,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetOrganisationsListAsync(invoiceType);
+        var response = repo.GetOrganisationsListAsync(accountType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -145,7 +145,7 @@ public class ReferenceDataRepository_GetSchemeTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetOrganisationsListAsync(_invoiceType);
+        var response = repo.GetOrganisationsListAsync(_accountType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");

@@ -19,7 +19,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly FieldsRoute _route = new()
         {
             PaymentType = "AP",
-            InvoiceType = "AP",
+            AccountType = "AP",
             Organisation = "Test Org",
             SchemeType = "bps"
         };
@@ -695,7 +695,7 @@ namespace EST.MIT.Invoice.Api.Test
             //Arrange
             FieldsRoute _inValidRoute = new()
             {
-                InvoiceType = "AP",
+                AccountType = "AP",
                 Organisation = "Test Org",
                 SchemeType = "bps"
             };
@@ -724,21 +724,21 @@ namespace EST.MIT.Invoice.Api.Test
         [Theory]
         [InlineData("", "", "", "")]
         [InlineData(null, null, null, null)]
-        [InlineData("InvoiceType", "", "", "")]
-        [InlineData("InvoiceType", "Organisation", "", "")]
-        [InlineData("InvoiceType", "Organisation", "PaymentType", "")]
+        [InlineData("AccountType", "", "", "")]
+        [InlineData("AccountType", "Organisation", "", "")]
+        [InlineData("AccountType", "Organisation", "PaymentType", "")]
         [InlineData("", "Organisation", "", "")]
         [InlineData("", "Organisation", "PaymentType", "")]
         [InlineData("", "Organisation", "PaymentType", "SchemeType")]
         [InlineData("", "", "PaymentType", "")]
         [InlineData("", "", "PaymentType", "SchemeType")]
-        [InlineData("InvoiceType", "", "PaymentType", "SchemeType")]
+        [InlineData("AccountType", "", "PaymentType", "SchemeType")]
         [InlineData("", "", "", "SchemeType")]
-        [InlineData("InvoiceType", "", "", "SchemeType")]
-        [InlineData("InvoiceType", "Organisation", "", "SchemeType")]
-        [InlineData("InvoiceType", "", "PaymentType", "")]
+        [InlineData("AccountType", "", "", "SchemeType")]
+        [InlineData("AccountType", "Organisation", "", "SchemeType")]
+        [InlineData("AccountType", "", "PaymentType", "")]
         [InlineData("", "Organisation", "", "SchemeType")]
-        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? accountType, string? organisation, string? paymentType, string? schemeType)
         {
             //Arrange
             InvoiceLine invoiceLine = new InvoiceLine()
@@ -755,7 +755,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             var route = new FieldsRoute()
             {
-                InvoiceType = invoiceType,
+                AccountType = accountType,
                 Organisation = organisation,
                 PaymentType = paymentType,
                 SchemeType = schemeType

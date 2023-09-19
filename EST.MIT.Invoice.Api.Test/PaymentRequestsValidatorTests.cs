@@ -130,7 +130,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -186,7 +185,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = accountType ?? "",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -228,7 +226,7 @@ public class PaymentRequestsValidatorTests
     }
 
     [Fact]
-    public async Task Given_Invoice_When_Organisation_And_InvoiceType_Is_Not_Empty_And_SchemeType_Is_Invalid_Then_Invoice_Fails()
+    public async Task Given_Invoice_When_Organisation_And_AccountType_Is_Not_Empty_And_SchemeType_Is_Invalid_Then_Invoice_Fails()
     {
         //Arrange
         var errors = new Dictionary<string, List<string>>();
@@ -266,7 +264,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -309,7 +306,7 @@ public class PaymentRequestsValidatorTests
 
 
     [Fact]
-    public async Task Given_Invoice_When_And_InvoiceType_Is_Not_Empty_And_Organisation_Is_Invalid_Then_Invoice_Fails()
+    public async Task Given_Invoice_When_And_AccountType_Is_Not_Empty_And_Organisation_Is_Invalid_Then_Invoice_Fails()
     {
         //Arrange
         var errors = new Dictionary<string, List<string>>();
@@ -348,7 +345,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -397,7 +393,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -456,7 +451,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -521,7 +515,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -590,7 +583,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
@@ -649,7 +641,6 @@ public class PaymentRequestsValidatorTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             Organisation = "Test Org",
             Reference = "123456789",
