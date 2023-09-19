@@ -1,8 +1,8 @@
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using NSubstitute;
 using FluentAssertions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
@@ -10,9 +10,9 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoicePutEndpointTests
 {

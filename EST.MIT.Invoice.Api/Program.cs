@@ -1,5 +1,5 @@
-using Invoices.Api.Endpoints;
-using Invoices.Api.Repositories;
+using EST.MIT.Invoice.Api.Endpoints;
+using EST.MIT.Invoice.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var storageConnection = builder.Configuration["Storage:ConnectionString"];

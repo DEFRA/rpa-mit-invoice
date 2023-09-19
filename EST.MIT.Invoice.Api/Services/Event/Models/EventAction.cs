@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Invoices.Api.Services.Models;
+namespace EST.MIT.Invoice.Api.Services.Models;
 
 public class EventAction
 {

@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dapper;
-using Invoices.Api.Repositories.Entities;
-using Invoices.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Repositories.Entities;
+using EST.MIT.Invoice.Api.Repositories.Interfaces;
 
-namespace Invoices.Api.Repositories
+namespace EST.MIT.Invoice.Api.Repositories
 {
     // Not really worth doing a series of unit tests for these methods since we could only really test that the correct SQL was being passed,
     // but considerable effort would be needed to mock the DB interfaces

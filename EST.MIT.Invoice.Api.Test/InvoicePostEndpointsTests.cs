@@ -2,18 +2,18 @@ using System.Net;
 using System.Net.WebSockets;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using NSubstitute;
 using FluentAssertions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NSubstitute.ReturnsExtensions;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoicePostEndpointTests
 {

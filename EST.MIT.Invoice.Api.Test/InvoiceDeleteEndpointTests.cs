@@ -1,10 +1,10 @@
 using FluentAssertions;
-using Invoices.Api.Endpoints;
-using Invoices.Api.Services;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using NSubstitute;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceDeleteEndpointTests
 {

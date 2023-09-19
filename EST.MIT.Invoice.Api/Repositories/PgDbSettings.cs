@@ -1,4 +1,4 @@
-﻿namespace Invoices.Api.Repositories
+﻿namespace EST.MIT.Invoice.Api.Repositories
 {
 	public class PgDbSettings
 	{

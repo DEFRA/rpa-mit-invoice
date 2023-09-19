@@ -1,8 +1,8 @@
 ﻿using System;
-using Invoices.Api.Models;
-using Invoices.Api.Repositories.Entities;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Repositories.Entities;
 
-namespace Invoices.Api.Repositories.Interfaces
+namespace EST.MIT.Invoice.Api.Repositories.Interfaces
 {
 	public interface IPaymentRequestsBatchRepository
 	{

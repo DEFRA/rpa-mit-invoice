@@ -3,7 +3,7 @@ using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace Invoices.Api.Repositories
+namespace EST.MIT.Invoice.Api.Repositories
 {
 	public class PgDbContext
 	{

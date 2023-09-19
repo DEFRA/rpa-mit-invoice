@@ -1,11 +1,11 @@
 using FluentValidation.TestHelper;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class PaymentRequestsValidatorTests
 {

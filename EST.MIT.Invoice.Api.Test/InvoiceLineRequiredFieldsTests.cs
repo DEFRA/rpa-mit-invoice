@@ -1,4 +1,4 @@
-﻿using Invoices.Api.Models;
+﻿using EST.MIT.Invoice.Api.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

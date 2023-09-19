@@ -1,13 +1,13 @@
 using FluentAssertions;
-using Invoices.Api.Models;
-using Invoices.Api.Repositories.Entities;
-using Invoices.Api.Repositories.Interfaces;
-using Invoices.Api.Services.PaymentsBatch;
-using Invoices.Api.Util;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Repositories.Entities;
+using EST.MIT.Invoice.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Util;
 using Moq;
 using Newtonsoft.Json;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceServiceTests
 {

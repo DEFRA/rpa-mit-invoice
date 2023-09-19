@@ -1,4 +1,4 @@
-﻿using Invoices.Api.Models;
+﻿using EST.MIT.Invoice.Api.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace EST.MIT.Invoice.Api.Test

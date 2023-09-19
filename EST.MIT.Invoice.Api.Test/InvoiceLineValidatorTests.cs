@@ -1,7 +1,7 @@
 ﻿using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation.TestHelper;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using NSubstitute;
 using System.Net;
 

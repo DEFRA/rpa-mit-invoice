@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 public static class InvoiceGetEndpoints
 {

@@ -3,7 +3,7 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Util;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 [ExcludeFromCodeCoverage]
 public static class ApiDefinition

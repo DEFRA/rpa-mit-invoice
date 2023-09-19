@@ -1,6 +1,6 @@
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 
-namespace Invoices.Api.Services.PaymentsBatch;
+namespace EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
 public interface IPaymentRequestsBatchService
 {

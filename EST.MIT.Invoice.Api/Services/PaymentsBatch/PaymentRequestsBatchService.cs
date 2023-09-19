@@ -1,9 +1,9 @@
-using Invoices.Api.Models;
-using Invoices.Api.Repositories.Entities;
-using Invoices.Api.Repositories.Interfaces;
-using Invoices.Api.Util;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Repositories.Entities;
+using EST.MIT.Invoice.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Util;
 
-namespace Invoices.Api.Services.PaymentsBatch;
+namespace EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
 public class PaymentRequestsBatchService : IPaymentRequestsBatchService
 {

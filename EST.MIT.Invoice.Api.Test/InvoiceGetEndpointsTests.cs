@@ -1,12 +1,12 @@
-using Invoices.Api.Services;
-using Invoices.Api.Endpoints;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Endpoints;
 using FluentAssertions;
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceGetEndpointTests
 {

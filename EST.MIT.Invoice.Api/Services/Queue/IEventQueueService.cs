@@ -1,6 +1,6 @@
-using Invoices.Api.Models;
+using EST.MIT.Invoice.Api.Models;
 
-namespace Invoices.Api.Services;
+namespace EST.MIT.Invoice.Api.Services;
 
 public interface IEventQueueService
 {

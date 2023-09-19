@@ -1,4 +1,4 @@
-﻿namespace Invoices.Api.Repositories.Entities
+﻿namespace EST.MIT.Invoice.Api.Repositories.Entities
 {
 	public class BulkInvoicesEntity
 	{

@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Storage.Queues;
-using Invoices.Api.Services;
+using EST.MIT.Invoice.Api.Services;
 
-namespace Invoices.Api.Endpoints;
+namespace EST.MIT.Invoice.Api.Endpoints;
 
 [ExcludeFromCodeCoverage]
 public static class QueueDefinition

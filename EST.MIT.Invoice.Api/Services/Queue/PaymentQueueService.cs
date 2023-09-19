@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Storage.Queues;
 
-namespace Invoices.Api.Services;
+namespace EST.MIT.Invoice.Api.Services;
 
 [ExcludeFromCodeCoverage]
 public class PaymentQueueService : IQueueService

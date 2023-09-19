@@ -3,15 +3,15 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentAssertions;
 using FluentValidation;
-using Invoices.Api.Endpoints;
-using Invoices.Api.Models;
-using Invoices.Api.Services;
-using Invoices.Api.Services.PaymentsBatch;
+using EST.MIT.Invoice.Api.Endpoints;
+using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
-namespace Invoices.Api.Test;
+namespace EST.MIT.Invoice.Api.Test;
 
 public class InvoiceBulkPostEndpointsTest
 {
@@ -187,7 +187,7 @@ public class InvoiceBulkPostEndpointsTest
         };
 
         _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
-        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-falied", "Bulk invoice creation failed").Returns(Task.CompletedTask);
+        _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-failed", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
         var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
 
