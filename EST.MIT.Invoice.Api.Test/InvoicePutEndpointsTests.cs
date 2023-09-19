@@ -194,7 +194,6 @@ public class InvoicePutEndpointTests
             Id = id,
             SchemeType = scheme,
             Status = status,
-            InvoiceType = "ap",
             AccountType = "ap",
         };
 

@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories;
 public class ReferenceDataRepository_GetPaymentTypesListAsync_Tests
 {
     private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
-    private string _invoiceType = "RPA";
+    private string _accountType = "RPA";
     private string _organisation = "EST";
     private string _schemeType = "BPS";
 
@@ -34,7 +34,7 @@ public class ReferenceDataRepository_GetPaymentTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetPaymentTypesListAsync(_invoiceType, _organisation, _schemeType);
+        var response = repo.GetPaymentTypesListAsync(_accountType, _organisation, _schemeType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -48,7 +48,7 @@ public class ReferenceDataRepository_GetPaymentTypesListAsync_Tests
     [InlineData("RPA", "", "BPS")]
     [InlineData("", "EST", "BPS")]
     [InlineData("RPA", "EST", "BPS")]
-    public void GetPaymentTypesListAsync_Returns_200_When_InvoiceType_Or_Organisation_Or_SchemeType_Different_Combos(string invoiceType, string organisation, string schemeType)
+    public void GetPaymentTypesListAsync_Returns_200_When_AccountType_Or_Organisation_Or_SchemeType_Different_Combos(string accountType, string organisation, string schemeType)
     {
         _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -63,7 +63,7 @@ public class ReferenceDataRepository_GetPaymentTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetPaymentTypesListAsync(invoiceType, organisation, schemeType);
+        var response = repo.GetPaymentTypesListAsync(accountType, organisation, schemeType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -84,7 +84,7 @@ public class ReferenceDataRepository_GetPaymentTypesListAsync_Tests
 
         var repo = new ReferenceDataRepository(factory);
 
-        var response = repo.GetPaymentTypesListAsync(_invoiceType, _organisation, _schemeType);
+        var response = repo.GetPaymentTypesListAsync(_accountType, _organisation, _schemeType);
 
         response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");

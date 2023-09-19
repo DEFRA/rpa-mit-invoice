@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
     public class ReferenceDataRepository_GetCombinationsForRouteAsync
     {
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
-        private string _invoiceType = "RPA";
+        private string _accountType = "RPA";
         private string _organisation = "EST";
         private string _paymentType = "AP";
         private string _schemeType = "BPS";
@@ -35,7 +35,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetCombinationsListForRouteAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var response = repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -56,7 +56,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetCombinationsListForRouteAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var response = repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");

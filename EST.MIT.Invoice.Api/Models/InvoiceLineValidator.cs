@@ -60,7 +60,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidSchemeCodes(string schemeCode)
     {
-        var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!schemeCodes.IsSuccess || !schemeCodes.Data.Any())
         {
@@ -72,7 +72,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidFundCode(string fundCode)
     {
-        var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.InvoiceType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
         {
@@ -84,18 +84,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<IEnumerable<CombinationForRoute>> GetCombinationsListForRouteAsync()
     {
-        var invoiceType = _route.InvoiceType ?? "";
+        var accountType = _route.AccountType ?? "";
         var organisation = _route.Organisation ?? "";
         var paymentType = _route.PaymentType ?? "";
         var schemeType = _route.SchemeType ?? "";
 
-        if (string.IsNullOrWhiteSpace(invoiceType) || string.IsNullOrWhiteSpace(organisation) ||
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
             string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
         {
             return new List<CombinationForRoute>();
         }
 
-        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(invoiceType, organisation, paymentType, schemeType);
+        var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
         {

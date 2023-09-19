@@ -11,13 +11,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         _clientFactory = clientFactory;
     }
 
-    public async Task<HttpResponseMessage> GetSchemeTypesListAsync(string? invoiceType, string? organisation)
+    public async Task<HttpResponseMessage> GetSchemeTypesListAsync(string? accountType, string? organisation)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi.SchemeTypes");
 
-        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation))
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation))
             ? await client.GetAsync($"/schemeTypes")
-            : await client.GetAsync($"/schemeTypes?invoiceType={invoiceType}&organisation={organisation}");
+            : await client.GetAsync($"/schemeTypes?invoiceType={accountType}&organisation={organisation}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -27,13 +27,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetPaymentTypesListAsync(string? invoiceType, string? organisation, string? schemeType)
+    public async Task<HttpResponseMessage> GetPaymentTypesListAsync(string? accountType, string? organisation, string? schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi.PaymentTypes");
 
-        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation))
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation))
             ? await client.GetAsync($"/paymentTypes")
-            : await client.GetAsync($"/paymentTypes?invoiceType={invoiceType}&organisation={organisation}&schemeType={schemeType}");
+            : await client.GetAsync($"/paymentTypes?invoiceType={accountType}&organisation={organisation}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -43,13 +43,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetOrganisationsListAsync(string? invoiceType)
+    public async Task<HttpResponseMessage> GetOrganisationsListAsync(string? accountType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi.Organisations");
 
-        var response = (string.IsNullOrEmpty(invoiceType))
+        var response = (string.IsNullOrEmpty(accountType))
            ? await client.GetAsync($"/organisations")
-            : await client.GetAsync($"/organisations?invoiceType={invoiceType}");
+            : await client.GetAsync($"/organisations?invoiceType={accountType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -59,13 +59,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetSchemeCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<HttpResponseMessage> GetSchemeCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceApi.SchemeCodes");
 
-        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
             ? await client.GetAsync($"/schemeCodes")
-            : await client.GetAsync($"/schemeCodes?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            : await client.GetAsync($"/schemeCodes?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -75,13 +75,13 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetFundCodesListAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<HttpResponseMessage> GetFundCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceApi.FundCodes");
 
-        var response = (string.IsNullOrEmpty(invoiceType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
             ? await client.GetAsync($"/funds")
-            : await client.GetAsync($"/funds?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            : await client.GetAsync($"/funds?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -91,11 +91,11 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
-    public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceApi.Combinations");
 
-        var response = await client.GetAsync($"/combinations?invoiceType={invoiceType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+        var response = await client.GetAsync($"/combinations?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
 
         if (!response.IsSuccessStatusCode)
         {
