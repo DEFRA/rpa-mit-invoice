@@ -136,7 +136,6 @@ public class BulkInvoiceDuplicateIdValidationTests
 
                 new PaymentRequestsBatch {
                     Id = "SDEF",
-                    InvoiceType = "AP",
                     AccountType = "AP",
                     Organisation = "Test Org",
                     Reference = "123456789",
@@ -175,7 +174,6 @@ public class BulkInvoiceDuplicateIdValidationTests
 
                 new PaymentRequestsBatch {
                     Id = "SDEF",
-                    InvoiceType = "AP",
                     AccountType = "AP",
                     Organisation = "Test Org",
                     Reference = "123456789",

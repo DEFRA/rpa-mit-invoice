@@ -20,10 +20,10 @@ public class ReferenceDataApi : IReferenceDataApi
         _httpContentDeserializer = httpContentDeserializer;
     }
 
-    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemeTypesAsync(string? invoiceType, string? organisation)
+    public async Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemeTypesAsync(string? accountType, string? organisation)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetSchemeTypesListAsync(invoiceType, organisation);
+        var response = await _referenceDataRepository.GetSchemeTypesListAsync(accountType, organisation);
 
         _logger.LogInformation($"Calling Reference Data API for Scheme Types");
 
@@ -91,10 +91,10 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<PaymentType>>> GetPaymentTypesAsync(string? invoiceType, string? organisation, string? schemeType)
+    public async Task<ApiResponse<IEnumerable<PaymentType>>> GetPaymentTypesAsync(string? accountType, string? organisation, string? schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetPaymentTypesListAsync(invoiceType, organisation, schemeType);
+        var response = await _referenceDataRepository.GetPaymentTypesListAsync(accountType, organisation, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Payment Types");
 
@@ -162,10 +162,10 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync(string? invoiceType)
+    public async Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync(string? accountType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetOrganisationsListAsync(invoiceType);
+        var response = await _referenceDataRepository.GetOrganisationsListAsync(accountType);
 
         _logger.LogInformation($"Calling Reference Data API for Organisations");
 
@@ -232,10 +232,10 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<SchemeCode>>> GetSchemeCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<ApiResponse<IEnumerable<SchemeCode>>> GetSchemeCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetSchemeCodesListAsync(invoiceType, organisation, paymentType, schemeType);
+        var response = await _referenceDataRepository.GetSchemeCodesListAsync(accountType, organisation, paymentType, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Scheme Codes");
 
@@ -303,10 +303,10 @@ public class ReferenceDataApi : IReferenceDataApi
         return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.InternalServerError, error);
     }
 
-    public async Task<ApiResponse<IEnumerable<FundCode>>> GetFundCodesAsync(string? invoiceType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<ApiResponse<IEnumerable<FundCode>>> GetFundCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetFundCodesListAsync(invoiceType, organisation, paymentType, schemeType);
+        var response = await _referenceDataRepository.GetFundCodesListAsync(accountType, organisation, paymentType, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Fund Codes");
 

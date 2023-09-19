@@ -19,7 +19,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
 
         _route = new FieldsRoute()
         {
-            InvoiceType = RuleFor(x => x.InvoiceType).NotNull().ToString(),
+            AccountType = RuleFor(x => x.AccountType).NotNull().ToString(),
             Organisation = RuleFor(x => x.Organisation).NotEmpty().ToString(),
             PaymentType = RuleFor(x => x.PaymentType).NotEmpty().ToString(),
             SchemeType = RuleFor(x => x.SchemeType).NotEmpty().ToString(),
@@ -39,17 +39,17 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))
             .WithMessage("Scheme Type is invalid")
-            .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation));
+            .When(model => !string.IsNullOrWhiteSpace(model.AccountType) && !string.IsNullOrWhiteSpace(model.Organisation));
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidPaymentType(x))
             .WithMessage("Payment Type is invalid")
-            .When(model => !string.IsNullOrWhiteSpace(model.InvoiceType) && !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.SchemeType));
+            .When(model => !string.IsNullOrWhiteSpace(model.AccountType) && !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.SchemeType));
 
         RuleFor(model => model)
             .MustAsync((x, CancellationToken) => BeAValidOrganisationCode(x))
             .WithMessage("Organisation is Invalid")
-            .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.InvoiceType));
+            .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.AccountType));
     }
 
     private async Task<bool> BeAValidSchemeType(PaymentRequestsBatch paymentRequestsBatch)
@@ -59,7 +59,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             return false;
         }
 
-        var schemeTypes = await _referenceDataApi.GetSchemeTypesAsync(paymentRequestsBatch.InvoiceType, paymentRequestsBatch.Organisation);
+        var schemeTypes = await _referenceDataApi.GetSchemeTypesAsync(paymentRequestsBatch.AccountType, paymentRequestsBatch.Organisation);
 
         if (!schemeTypes.IsSuccess || !schemeTypes.Data.Any())
         {
@@ -76,7 +76,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             return false;
         }
 
-        var paymentTypes = await _referenceDataApi.GetPaymentTypesAsync(paymentRequestsBatch.InvoiceType, paymentRequestsBatch.Organisation, paymentRequestsBatch.SchemeType);
+        var paymentTypes = await _referenceDataApi.GetPaymentTypesAsync(paymentRequestsBatch.AccountType, paymentRequestsBatch.Organisation, paymentRequestsBatch.SchemeType);
 
         if (!paymentTypes.IsSuccess || !paymentTypes.Data.Any())
         {
@@ -88,7 +88,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
 
     private async Task<bool> BeAValidOrganisationCode(PaymentRequestsBatch paymentRequestsBatch)
     {
-        var organisationCodes = await _referenceDataApi.GetOrganisationsAsync(paymentRequestsBatch.InvoiceType);
+        var organisationCodes = await _referenceDataApi.GetOrganisationsAsync(paymentRequestsBatch.AccountType);
 
         if (!organisationCodes.IsSuccess || !organisationCodes.Data.Any())
         {

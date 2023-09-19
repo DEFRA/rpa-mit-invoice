@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepository;
         private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-        private readonly string _invoiceType = "RPA";
+        private readonly string _accountType = "RPA";
 
         private readonly ReferenceDataApi _referenceDataApi;
         public ReferenceDataApiOrganisationTests()
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
                 });
 
             //Act
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var response = _referenceDataApi.GetOrganisationsAsync(_accountType).Result;
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -92,7 +92,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var response = _referenceDataApi.GetOrganisationsAsync(_accountType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.IsSuccess.Should().BeFalse();
@@ -110,7 +110,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepository.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
-            var response = service.GetOrganisationsAsync(_invoiceType).Result;
+            var response = service.GetOrganisationsAsync(_accountType).Result;
 
             response.IsSuccess.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -124,7 +124,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var response = _referenceDataApi.GetOrganisationsAsync(_accountType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             response.IsSuccess.Should().BeFalse();
@@ -137,7 +137,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var response = _referenceDataApi.GetOrganisationsAsync(_accountType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.IsSuccess.Should().BeFalse();
@@ -151,7 +151,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             _mockReferenceDataRepository.Setup(x => x.GetOrganisationsListAsync(It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
 
-            var response = _referenceDataApi.GetOrganisationsAsync(_invoiceType).Result;
+            var response = _referenceDataApi.GetOrganisationsAsync(_accountType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             response.IsSuccess.Should().BeFalse();
@@ -179,7 +179,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
             // Act
-            var result = await service.GetOrganisationsAsync(_invoiceType);
+            var result = await service.GetOrganisationsAsync(_accountType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -221,7 +221,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
             // Act
-            var result = await service.GetOrganisationsAsync(_invoiceType);
+            var result = await service.GetOrganisationsAsync(_accountType);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

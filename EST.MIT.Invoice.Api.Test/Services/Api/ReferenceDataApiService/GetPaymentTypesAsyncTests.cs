@@ -14,7 +14,7 @@ public class GetPaymentTypesAsyncTests
 {
     private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepositoryMock;
     private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-    private readonly string _invoiceType = "RPA";
+    private readonly string _accountType = "RPA";
     private readonly string _organisation = "EST";
     private readonly string _schemeType = "BPS";
 
@@ -62,7 +62,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.IsSuccess.Should().BeTrue();
@@ -92,7 +92,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.IsSuccess.Should().BeFalse();
@@ -110,7 +110,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.IsSuccess.Should().BeFalse();
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -126,7 +126,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         response.IsSuccess.Should().BeFalse();
@@ -141,7 +141,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.IsSuccess.Should().BeFalse();
@@ -157,7 +157,7 @@ public class GetPaymentTypesAsyncTests
 
         var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-        var response = service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType).Result;
+        var response = service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType).Result;
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         response.IsSuccess.Should().BeFalse();
@@ -185,7 +185,7 @@ public class GetPaymentTypesAsyncTests
         var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
         // Act
-        var result = await service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType);
+        var result = await service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -227,7 +227,7 @@ public class GetPaymentTypesAsyncTests
         var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
         // Act
-        var result = await service.GetPaymentTypesAsync(_invoiceType, _organisation, _schemeType);
+        var result = await service.GetPaymentTypesAsync(_accountType, _organisation, _schemeType);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

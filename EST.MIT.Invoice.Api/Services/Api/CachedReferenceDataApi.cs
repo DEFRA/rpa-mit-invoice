@@ -27,9 +27,9 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         _cacheService = cacheService;
     }
 
-    public async Task<ApiResponse<IEnumerable<CombinationForRoute>>> GetCombinationsListForRouteAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    public async Task<ApiResponse<IEnumerable<CombinationForRoute>>> GetCombinationsListForRouteAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
-        var cacheKey = new { invoiceType, organisation, paymentType, schemeType };
+        var cacheKey = new { accountType, organisation, paymentType, schemeType };
         var apiResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(false);
 
         var cachedCombinationsForRoute = _cacheService.GetData<IEnumerable<CombinationForRoute>>(cacheKey);
@@ -59,7 +59,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
                 }
                 else
                 {
-                    var combinationsForRouteResponse = await this.GetCombinationsListForRouteFromApiAsync(invoiceType, organisation, paymentType, schemeType);
+                    var combinationsForRouteResponse = await this.GetCombinationsListForRouteFromApiAsync(accountType, organisation, paymentType, schemeType);
 
                     if (combinationsForRouteResponse.IsSuccess)
                     {
@@ -82,10 +82,10 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         return apiResponse;
     }
 
-    private async Task<ApiResponse<IEnumerable<CombinationForRoute>>> GetCombinationsListForRouteFromApiAsync(string invoiceType, string organisation, string paymentType, string schemeType)
+    private async Task<ApiResponse<IEnumerable<CombinationForRoute>>> GetCombinationsListForRouteFromApiAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
         var error = new Dictionary<string, List<string>>();
-        var response = await _referenceDataRepository.GetCombinationsListForRouteAsync(invoiceType, organisation, paymentType, schemeType);
+        var response = await _referenceDataRepository.GetCombinationsListForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         _logger.LogInformation($"Calling Reference Data API for Route Combinations");
 

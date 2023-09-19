@@ -173,7 +173,6 @@ public class InvoicePostEndpointTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             PaymentType = "DOM",
             Organisation = "Test Org",
@@ -224,7 +223,6 @@ public class InvoicePostEndpointTests
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
         {
             Id = "123456789",
-            InvoiceType = "AP",
             AccountType = "AP",
             SchemeType = "XP",
             Organisation = "Test Org",
@@ -269,7 +267,7 @@ public class InvoicePostEndpointTests
     }
 
     [Fact]
-    public async Task PostInvoice_When_InvoiceType_Is_Missing_InvoiceHeader_FRN_IsMissing_InvoiceLine_SchemeCode_Is_Missing_Should_Return_Status_Code_400()
+    public async Task PostInvoice_When_AccountType_Is_Missing_InvoiceHeader_FRN_IsMissing_InvoiceLine_SchemeCode_Is_Missing_Should_Return_Status_Code_400()
     {
         //Arrange
         PaymentRequestsBatch paymentRequestsBatch = new PaymentRequestsBatch()
@@ -326,7 +324,6 @@ public class InvoicePostEndpointTests
             Id = id,
             SchemeType = scheme,
             Status = status,
-            InvoiceType = "ap",
             AccountType = "ap",
             PaymentRequests = new List<PaymentRequest>
             {

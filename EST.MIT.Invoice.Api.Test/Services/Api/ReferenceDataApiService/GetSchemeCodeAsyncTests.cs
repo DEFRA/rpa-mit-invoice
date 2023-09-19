@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
     {
         private readonly Mock<IReferenceDataRepository> _mockReferenceDataRepositoryMock;
         private readonly Mock<IHttpContentDeserializer> _httpContentDeserializerMock;
-        private readonly string _invoiceType = "RPA";
+        private readonly string _accountType = "RPA";
         private readonly string _organisation = "EST";
         private readonly string _paymentType = "AP";
         private readonly string _schemeType = "BPS";
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();
@@ -94,7 +94,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.IsSuccess.Should().BeFalse();
@@ -112,7 +112,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.IsSuccess.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -128,7 +128,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             response.IsSuccess.Should().BeFalse();
@@ -143,7 +143,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.IsSuccess.Should().BeFalse();
@@ -159,7 +159,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType).Result;
+            var response = service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             response.IsSuccess.Should().BeFalse();
@@ -187,7 +187,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new FaultedHttpContentDeserializer());
 
             // Act
-            var result = await service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var result = await service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -229,7 +229,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
             var service = new ReferenceDataApi(mockRepository.Object, mockLogger.Object, new HttpContentDeserializer());
 
             // Act
-            var result = await service.GetSchemeCodesAsync(_invoiceType, _organisation, _paymentType, _schemeType);
+            var result = await service.GetSchemeCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

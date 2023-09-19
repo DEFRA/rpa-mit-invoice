@@ -17,7 +17,7 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly FieldsRoute route = new()
         {
             PaymentType = "AP",
-            InvoiceType = "AP",
+            AccountType = "AP",
             Organisation = "Test Org",
             SchemeType = "bps"
         };
