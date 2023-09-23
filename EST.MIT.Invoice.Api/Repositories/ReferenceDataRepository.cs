@@ -61,11 +61,11 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetSchemeCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceApi.SchemeCodes");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
-            ? await client.GetAsync($"/schemeCodes")
-            : await client.GetAsync($"/schemeCodes?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            ? await client.GetAsync($"/schemes")
+            : await client.GetAsync($"/schemes/{accountType}/{organisation}/{schemeType}/{paymentType}");
 
         if (!response.IsSuccessStatusCode)
         {

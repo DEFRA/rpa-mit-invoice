@@ -1,5 +1,6 @@
 
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
 
 namespace EST.MIT.Invoice.Api.Models;
@@ -13,7 +14,9 @@ public class BulkInvoiceValidator : AbstractValidator<BulkInvoices>
         RuleFor(x => x.Reference).NotEmpty();
         RuleFor(x => x.SchemeType).NotEmpty();
 
-        RuleForEach(x => x.Invoices).NotEmpty().SetValidator(new PaymentRequestsBatchValidator(_referenceDataApi, cachedReferenceDataApi));
+        RuleForEach(x => x.Invoices)
+            .NotEmpty()
+            .SetValidator(new PaymentRequestsBatchValidator(_referenceDataApi, cachedReferenceDataApi));
         RuleFor(model => model)
             .Must(HaveNoDuplicatedPaymentRequestIds)
             .WithMessage("Payment Request Id is duplicated in this batch");

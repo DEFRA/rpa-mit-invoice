@@ -111,7 +111,7 @@ public class InvoicePostEndpointTests
             }
         };
         combinationsForRouteResponse.Data = combinationsForRoute;
-
+        
         _referenceDataApiMock
             .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(paymentTypesResponse));
