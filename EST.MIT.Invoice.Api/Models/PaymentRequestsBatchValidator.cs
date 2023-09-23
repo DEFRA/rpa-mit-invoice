@@ -10,20 +10,10 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
     private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
     private readonly string[] _validAccountTypes = { "AP", "AR" };
 
-    private readonly FieldsRoute _route;
-
     public PaymentRequestsBatchValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _referenceDataApi = referenceDataApi;
         _cachedReferenceDataApi = cachedReferenceDataApi;
-
-        _route = new FieldsRoute()
-        {
-            AccountType = RuleFor(x => x.AccountType).NotNull().ToString(),
-            Organisation = RuleFor(x => x.Organisation).NotEmpty().ToString(),
-            PaymentType = RuleFor(x => x.PaymentType).NotEmpty().ToString(),
-            SchemeType = RuleFor(x => x.SchemeType).NotEmpty().ToString(),
-        };
 
         RuleFor(x => x.Id)
             .NotEmpty();
@@ -34,7 +24,9 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleFor(x => x.PaymentRequests)
             .NotEmpty();
-        RuleForEach(x => x.PaymentRequests).SetValidator(x => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, _route)).When(x => x.PaymentRequests != null);
+        RuleForEach(x => x.PaymentRequests)
+            .SetValidator((paymentRequest) => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, new FieldsRoute(){ AccountType = paymentRequest.AccountType, Organisation = paymentRequest.Organisation, PaymentType = paymentRequest.PaymentType, SchemeType = paymentRequest.SchemeType}))
+            .When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
             .MustAsync((x, cancellation) => BeAValidSchemeType(x))
