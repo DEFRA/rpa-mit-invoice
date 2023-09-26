@@ -133,7 +133,6 @@ public class BulkInvoiceDuplicateIdValidationTests
             SchemeType = "AP",
 
             Invoices = new List<PaymentRequestsBatch> {
-
                 new PaymentRequestsBatch {
                     Id = "SDEF",
                     AccountType = "AP",
