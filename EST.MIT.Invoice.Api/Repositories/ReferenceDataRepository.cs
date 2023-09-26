@@ -13,7 +13,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetSchemeTypesListAsync(string? accountType, string? organisation)
     {
-        var client = _clientFactory.CreateClient("ReferenceDataApi.SchemeTypes");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation))
             ? await client.GetAsync($"/schemeTypes")
@@ -29,7 +29,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetPaymentTypesListAsync(string? accountType, string? organisation, string? schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceDataApi.PaymentTypes");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation))
             ? await client.GetAsync($"/paymentTypes")
@@ -45,7 +45,7 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetOrganisationsListAsync(string? accountType)
     {
-        var client = _clientFactory.CreateClient("ReferenceDataApi.Organisations");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = (string.IsNullOrEmpty(accountType))
            ? await client.GetAsync($"/organisations")
@@ -77,11 +77,11 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetFundCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceApi.FundCodes");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
             ? await client.GetAsync($"/funds")
-            : await client.GetAsync($"/funds?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+            : await client.GetAsync($"/funds/{accountType}/{organisation}/{schemeType}/{paymentType}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -93,9 +93,9 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
     public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
-        var client = _clientFactory.CreateClient("ReferenceApi.Combinations");
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
 
-        var response = await client.GetAsync($"/combinations?invoiceType={accountType}&organisation={organisation}&paymentType={paymentType}&schemeType={schemeType}");
+        var response = await client.GetAsync($"/combinations/{accountType}/{organisation}/{schemeType}/{paymentType}");
 
         if (!response.IsSuccessStatusCode)
         {
