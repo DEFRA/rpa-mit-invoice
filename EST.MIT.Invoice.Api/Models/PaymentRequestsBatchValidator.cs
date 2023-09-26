@@ -18,6 +18,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
         RuleFor(x => x.Id)
             .NotEmpty();
         RuleFor(x => x.Status).NotEmpty();
+        RuleFor(x => x.SchemeType).NotEmpty();
         RuleFor(x => x.AccountType)
             .NotEmpty()
             .Must(x => this._validAccountTypes.Contains(x.ToUpper()))
