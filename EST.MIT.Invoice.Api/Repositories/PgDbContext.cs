@@ -1,12 +1,14 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
 {
-	public class PgDbContext
-	{
+    [ExcludeFromCodeCoverage]
+    public class PgDbContext
+    {
         private PgDbSettings _dbSettings;
 
         public PgDbContext(PgDbSettings dbSettings)
