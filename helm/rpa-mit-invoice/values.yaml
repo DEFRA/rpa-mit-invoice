@@ -35,6 +35,24 @@ container:
   limitCpu: 120m
   port: 3000
   comPlusEnableDiagnostics: 0
+  AzureADPostgreSQLResourceID: https://ossrdbms-aad.database.windows.net/.default
+
+ingress:
+  class: nginx
+  endpoint: rpa-mit-invoice
+  server: value.replaced.from.app.config
+
+postgresService:
+  postgresDb: rpa_mit_invoice
+  # postgresExternalName is the external host name to which PostgreSQL
+  # requests should be forwarded. If empty, PostgreSQL is assumed to be
+  # within the cluster and accessible via postgresHost
+  postgresExternalName: 
+  postgresHost: rpa-mit-invoice-postgres
+  postgresPort: 5432
+  postgresSchema: public
+  postgresUser: postgres
+  postgresPassword: password
 
 ingress:
   class: nginx

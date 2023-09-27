@@ -1,22 +1,24 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
 {
-	public class PgDbContext
-	{
+    [ExcludeFromCodeCoverage]
+    public class PgDbContext
+    {
         private PgDbSettings _dbSettings;
 
-        public PgDbContext(IOptions<PgDbSettings> dbSettings)
+        public PgDbContext(PgDbSettings dbSettings)
         {
-            _dbSettings = dbSettings.Value;
+            _dbSettings = dbSettings;
         }
 
         public IDbConnection CreateConnection()
         {
-            var connectionString = $"Host={_dbSettings.Server}; Database={_dbSettings.Database}; Username={_dbSettings.Username}; Password={_dbSettings.Password};";
+            var connectionString = $"Host={_dbSettings.Server}; Database={_dbSettings.Database}; Username={_dbSettings.Username}; Password={_dbSettings.Password}; Port={_dbSettings.Port};";
             return new NpgsqlConnection(connectionString);
         }
 
