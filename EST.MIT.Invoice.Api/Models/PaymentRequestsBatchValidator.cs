@@ -23,9 +23,8 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .NotEmpty()
             .Must(x => this._validAccountTypes.Contains(x.ToUpper()))
             .WithMessage("Account Type is invalid. Should be AP or AR");
-        RuleFor(x => x.PaymentRequests)
-            .NotEmpty();
         RuleForEach(x => x.PaymentRequests)
+            .NotEmpty()
             .SetValidator((paymentRequest) => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, new FieldsRoute(){ AccountType = paymentRequest.AccountType, Organisation = paymentRequest.Organisation, PaymentType = paymentRequest.PaymentType, SchemeType = paymentRequest.SchemeType}))
             .When(x => x.PaymentRequests != null);
 
