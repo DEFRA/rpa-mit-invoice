@@ -54,11 +54,6 @@ postgresService:
   postgresUser: postgres
   postgresPassword: password
 
-ingress:
-  class: nginx
-  endpoint: rpa-mit-invoice
-  server: value.replaced.from.app.config
-
 volumeMounts:
   mountPath: /var/www/
   name: core-app-dir
