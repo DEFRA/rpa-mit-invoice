@@ -5,7 +5,7 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLine
 {
-    public Guid InvoiceLineId { get; set; }
+    public Guid Id { get; set; }
 
     [JsonProperty("value")]
     [Range(0, 999999999999.99, ErrorMessage = "Value must be between 0 and 999999999999.99")]
