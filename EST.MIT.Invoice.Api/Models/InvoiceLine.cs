@@ -5,6 +5,7 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLine
 {
+    [JsonProperty("id")]
     public Guid Id { get; set; }
 
     [JsonProperty("value")]
