@@ -4,7 +4,7 @@ using Azure.Storage.Queues;
 namespace EST.MIT.Invoice.Api.Services;
 
 [ExcludeFromCodeCoverage]
-public class PaymentQueueService : IQueueService
+public class PaymentQueueService : IPaymentQueueService
 {
     private readonly QueueClient _queueClient;
 

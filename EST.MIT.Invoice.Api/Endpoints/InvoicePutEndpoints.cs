@@ -20,7 +20,7 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IQueueService queueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IPaymentQueueService paymentQueueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
     {
         var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
@@ -42,7 +42,7 @@ public static class InvoicePutEndpoints
         if (paymentRequestsBatch.Status == InvoiceStatuses.Approved)
         {
             var message = JsonSerializer.Serialize(new InvoiceGenerator { Id = paymentRequestsBatch.Id, Scheme = paymentRequestsBatch.SchemeType });
-            await queueService.CreateMessage(message);
+            await paymentQueueService.CreateMessage(message);
             await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-payment-request-sent", "Invoice payment request sent");
         }
 
