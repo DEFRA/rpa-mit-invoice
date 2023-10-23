@@ -25,8 +25,8 @@ public class InvoicePutEndpointTests
     private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
         Substitute.For<ICachedReferenceDataApi>();
 
-    private readonly IQueueService _queueService =
-        Substitute.For<IQueueService>();
+    private readonly IPaymentQueueService _paymentQueueService =
+        Substitute.For<IPaymentQueueService>();
 
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
@@ -148,12 +148,12 @@ public class InvoicePutEndpointTests
         _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
 
-        await _queueService.DidNotReceive().CreateMessage("");
+        await _paymentQueueService.DidNotReceive().CreateMessage("");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class InvoicePutEndpointTests
         _paymentRequestsBatchService.UpdateAsync(invoice).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -177,13 +177,13 @@ public class InvoicePutEndpointTests
         _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
 
         var expectedMessage = JsonSerializer.Serialize(new InvoiceGenerator { Id = invoice.Id, Scheme = invoice.SchemeType });
-        await _queueService.Received().CreateMessage(expectedMessage);
+        await _paymentQueueService.Received().CreateMessage(expectedMessage);
     }
 
     [Theory]
@@ -199,7 +199,7 @@ public class InvoicePutEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _queueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

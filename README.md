@@ -21,8 +21,9 @@ The function app uses Azure Storage for Table and Queue.
 
 The function app requires:
 
-- Table name: `invoices`
-- Queue name: `payment`
+- Table name: `rpamitinvoices`
+- Queue name: `rpa-mit-payment`
+- Queue name: `rpa-mit-events`
 
 ## local.settings
 
@@ -34,26 +35,20 @@ The function app requires:
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "Storage": {
-    "ConnectionString": "UseDevelopmentStorage=true",
-    "QueueName": "payment"
-  },
-  ,
-  "AzureCosmosDbSettings": {
-    "URL": "https://localhost:8081/",
-    "PrimaryKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-    "DatabaseName": "Manual-Invoice-Template",
-    "ContainerName": "Invoice"
-  },
-  "AllowedHosts": "*"
+  "QueueConnectionString": "UseDevelopmentStorage=true",
+  "EventQueueName": "rpa-mit-events"
+  "PaymentQueueName": "rpa-mit-payment"
+  "POSTGRES_HOST": "",
+  "POSTGRES_PORT": "",
+  "POSTGRES_DB": "",
+  "POSTGRES_USER": "",
+  "POSTGRES_PASSWORD": "",
+  "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
+  "ApiEndpoints": {
+    "ReferenceDataApiBaseUri": "https://localhost:7012"
+  }
 }
 ```
-
-## CosmosDb
-
-Database Name: `Manual-Invoice-Template`
-Container Id: `Invoice`
-PartitionKey: `/schemeType`
 
 ## Endpoints
 
@@ -109,42 +104,51 @@ PartitionKey: `/schemeType`
 
 ```
 {
-   "Id":"e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
-   "InvoiceType":"AP",
-   "AccountType":"",
-   "Organisation":"",
-   "SchemeType":"bps",
-   "PaymentRequests":[
-      {
-         "PaymentRequestId":"9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
-         "FRN":1234567890,
-         "SourceSystem":"Manual",
-         "MarketingYear":0,
-         "DeliveryBody":"RP00",
-         "PaymentRequestNumber":0,
-         "AgreementNumber":"",
-         "ContractNumber":"",
-         "Value":0.0,
-         "DueDate":"",
-         "InvoiceLines":[
-            {
-               "Value":0,
-               "Currency":"GBP",
-               "SchemeCode":"",
-               "Description":"",
-               "FundCode":""
-            }
-         ],
-         "AppendixReferences":{
-            "ClaimReference":""
-         }
-      }
-   ],
-   "status":"awaiting",
-   "created":"2023-03-28T00:00:00+00:00",
-   "updated":"2023-03-28T00:00:00+00:00",
-   "createdBy":"",
-   "updatedBy":""
+  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
+  "accountType": "AP",
+  "organisation": "RPA",
+  "paymentType": "DOM",
+  "schemeType": "DA",
+  "paymentRequests": [
+    {
+      "paymentRequestId": "a123",
+      "sourceSystem": "Manual",
+      "value": 100,
+      "currency": "GBP",
+      "description": "test invoice",
+      "originalInvoiceNumber": "12345",
+      "originalSettlementDate": "2023-09-26T05:57:30.358Z",
+      "recoveryDate": "2023-09-26T05:57:30.358Z",
+      "invoiceCorrectionReference": "string",
+      "invoiceLines": [
+        {
+          "value": 100,
+          "fundCode": "EXQ00",
+          "mainAccount": "SOS210",
+          "schemeCode": "10501",
+          "marketingYear": 2099,
+          "deliveryBody": "RP00",
+          "description": "test invoice line",
+          "currency": "GBP"
+        }
+      ],
+      "marketingYear": 2023,
+      "paymentRequestNumber": 1,
+      "agreementNumber": "12345",
+      "dueDate": "2023-11-01",
+      "appendixReferences": {
+        "claimReferenceNumber": "string"
+      },
+      "sbi": 0,
+      "vendor": "string"
+    }
+  ],
+  "status": "string",
+  "reference": "string",
+  "created": "2023-09-26T05:57:30.358Z",
+  "updated": "2023-09-26T05:57:30.358Z",
+  "createdBy": "string",
+  "updatedBy": "string"
 }
 ```
 

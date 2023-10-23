@@ -4,9 +4,6 @@ using EST.MIT.Invoice.Api.Endpoints;
 using EST.MIT.Invoice.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
-var storageConnection = builder.Configuration["Storage:ConnectionString"];
-var eventQueueName = builder.Configuration["Storage:EventQueueName"];
-var paymentQueueName = builder.Configuration["Storage:PaymentQueueName"];
 
 // Postgres 
 var host = builder.Configuration["POSTGRES_HOST"];
@@ -48,7 +45,7 @@ var settings = new PgDbSettings()
 
 var dbContext = new PgDbContext(settings);
 builder.Services.AddSingleton(dbContext);
-builder.Services.AddQueueServices(storageConnection, eventQueueName, paymentQueueName);
+builder.Services.AddQueueServices(builder.Configuration);
 builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApiServices();

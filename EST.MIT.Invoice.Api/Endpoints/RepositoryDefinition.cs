@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using EST.MIT.Invoice.Api.Repositories;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
-using EST.MIT.Invoice.Api.Repositories;
-using EST.MIT.Invoice.Api.Repositories.Interfaces;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
 
