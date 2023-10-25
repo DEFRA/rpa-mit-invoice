@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 {
-    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
+    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status)
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
@@ -27,17 +27,20 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .WithMessage("PaymentRequestId cannot contain spaces");
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
+            .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
             .NotEqual(0)
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
+
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, cachedReferenceDataApi));
 
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
+            .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
@@ -107,5 +110,14 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         return (sbi != 0 && frn == 0 && string.IsNullOrWhiteSpace(vendor))
             || (sbi == 0 && frn != 0 && string.IsNullOrWhiteSpace(vendor))
             || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
+    }
+
+    private bool HaveStatusFieldEqualPendingOrApproval(string status)
+    {
+        if (status.ToLower() == "pendingapproval" || status.ToLower() == "approval")
+        {
+            return true;
+        }
+        return false;
     }
 }
