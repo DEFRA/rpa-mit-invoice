@@ -14,7 +14,7 @@ public static class PaymentRequestsBatchTestData
             Reference = "123456789",
             SchemeType = "bps",
             PaymentType = "DOM",
-            Status = status,
+            Status = "approved",
             CreatedBy = "Test User",
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {

@@ -136,7 +136,7 @@ public class PaymentRequestsValidatorTests
             SchemeType = "bps",
             PaymentType = "DOM",
             CreatedBy = "Test User",
-            Status = "status",
+            Status = "approved",
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {
                     PaymentRequestId = "123456789",
