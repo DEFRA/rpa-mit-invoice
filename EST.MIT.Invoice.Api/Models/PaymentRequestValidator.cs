@@ -28,7 +28,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
             .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
-            .WithMessage("Status Field not equal to pending or approval")
+            .WithMessage("Status Field not equal to PendingApproval or Approved")
             .NotEqual(0)
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
@@ -42,7 +42,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
             .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
-            .WithMessage("Status Field not equal to pending or approval")
+            .WithMessage("Status Field not equal to PendingApproval or Approved")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
@@ -116,6 +116,6 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 
     private bool HaveStatusFieldEqualPendingOrApproval(string status)
     {
-        return status.ToLower() == "pendingapproval" || status.ToLower() == "approval";
+        return status.ToLower() == "pendingapproval" || status.ToLower() == "approved";
     }
 }
