@@ -6,6 +6,12 @@ services:
       target: development
     ports:
       - "3000:3000"
-    # volumes:
-    #   - ./EST.MIT.Invoice.Api:/home/dotnet/EST.MIT.Invoice.Api
-    #   - ./EST.MIT.Invoice.Api.Tests:/home/dotnet/EST.MIT.Invoice.Api.Tests
+    volumes:
+      - ./EST.MIT.Invoice.Api:/home/dotnet/EST.MIT.Invoice.Api
+      - ./EST.MIT.Invoice.Api.Tests:/home/dotnet/EST.MIT.Invoice.Api.Tests
+
+  rpa-mit-invoice-postgres:
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
