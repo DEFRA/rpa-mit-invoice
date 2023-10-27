@@ -215,7 +215,7 @@ public class BulkInvoiceDuplicateIdValidationTests
         var response = await _bulkInvoiceValidator.TestValidateAsync(bulkInvoices);
 
         //Assert
-        Assert.True(response.Errors[4].ErrorMessage.Equals("Payment Request Id is duplicated in this batch"));
+        Assert.True(response.Errors[0].ErrorMessage.Equals("Payment Request Id is duplicated in this batch"));
     }
 }
 

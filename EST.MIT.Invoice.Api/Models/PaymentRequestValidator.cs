@@ -13,7 +13,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
-        RuleFor(x => x.InvoiceLines).NotEmpty();
+        RuleFor(x => x.InvoiceLines).NotEmpty().When(x => HaveStatusFieldEqualPendingOrApproval(status));
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
@@ -27,9 +27,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .WithMessage("PaymentRequestId cannot contain spaces");
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
-            .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
-            .WithMessage("Status Field not equal to PendingApproval or Approved")
-            .NotEqual(0)
+            .NotEqual(0).When(x => HaveStatusFieldEqualPendingOrApproval(status))
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice value cannot be more than 2dp")
@@ -41,8 +39,6 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         RuleFor(invoiceHeader => invoiceHeader)
             .Must(HaveSameCurrencyTypes)
             .WithMessage("Cannot mix currencies in an invoice")
-            .Must(x => HaveStatusFieldEqualPendingOrApproval(status))
-            .WithMessage("Status Field not equal to PendingApproval or Approved")
             .Must(HaveAValueEqualToTheSumOfLinesValue)
             .WithMessage((invoiceHeader) => $"Invoice Value ({invoiceHeader.Value}) does not equal the sum of Line Values ({invoiceHeader.InvoiceLines.Sum(x => x.Value)})")
             .When(invoiceHeader => invoiceHeader.InvoiceLines != null && invoiceHeader.InvoiceLines.Any())
