@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test
 {
     public class PaymentRequestValidatorCustomerIdTest
     {
-        private readonly PaymentRequestValidator _paymentRequestValidator;
+        private PaymentRequestValidator _paymentRequestValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock =
             Substitute.For<IReferenceDataApi>();
@@ -82,7 +82,7 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status");
         }
 
         [Fact]
@@ -172,7 +172,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Vendor = vendor,
             };
 
-            //Act
+            //Act 
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -328,7 +328,7 @@ namespace EST.MIT.Invoice.Api.Test
                 Vendor = vendor,
             };
 
-            //Act
+            //Act 
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert

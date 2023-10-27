@@ -4,7 +4,7 @@ namespace EST.MIT.Invoice.Api.Test;
 
 public static class PaymentRequestsBatchTestData
 {
-    public static PaymentRequestsBatch CreateInvoice(string status = "awaiting")
+    public static PaymentRequestsBatch CreateInvoice(string status = "approved")
     {
         return new PaymentRequestsBatch
         {
