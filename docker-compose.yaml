@@ -7,5 +7,20 @@ services:
       target: production
     image: rpa-mit-invoice
     container_name: rpa-mit-invoice
+    depends_on:
+      - rpa-mit-invoice-postgres
     environment:
       COMPlus_EnableDiagnostics: 0
+      POSTGRES_HOST: ${POSTGRES_HOST:-rpa-mit-invoice-postgres}
+      POSTGRES_DB: rpa_mit_invoice
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:-password}
+      POSTGRES_PORT: "5432"
+      SCHEMA_DEFAULT: ${POSTGRES_SCHEMA_NAME:-public}
+
+  rpa-mit-invoice-postgres:
+    image: postgres:15.3-alpine
+    environment:
+      POSTGRES_DB: rpa_mit_invoice
+      POSTGRES_USERNAME: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:-password}
