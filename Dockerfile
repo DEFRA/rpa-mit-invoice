@@ -19,7 +19,7 @@ COPY --chown=dotnet:dotnet ./EST.MIT.Invoice.Api/ ./EST.MIT.Invoice.Api/
 COPY --chown=dotnet:dotnet ./EST.MIT.Invoice.Api.Test/ ./EST.MIT.Invoice.Api.Test/
 
 RUN dotnet publish ./EST.MIT.Invoice.Api/ -c Release -o /home/dotnet/out
-
+ 
 ARG PORT=3000
 ENV PORT ${PORT}
 EXPOSE ${PORT}
