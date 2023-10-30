@@ -9,11 +9,11 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 {
-    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route)
+    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status)
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
-        RuleFor(x => x.InvoiceLines).NotEmpty();
+        RuleFor(x => x.InvoiceLines).NotEmpty().When(x => HaveStatusFieldEqualPendingOrApproval(status));
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.DueDate).NotEmpty();
         RuleFor(x => x.MarketingYear).NotEmpty();
@@ -27,12 +27,13 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .WithMessage("PaymentRequestId cannot contain spaces");
         RuleFor(x => x.PaymentRequestNumber).NotEmpty();
         RuleFor(x => x.Value)
-            .NotEqual(0)
+            .NotEqual(0).When(x => HaveStatusFieldEqualPendingOrApproval(status))
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice value cannot be more than 2dp")
             .Must(value => HaveAMaximumAbsoluteValueOf(value, 999999999))
             .WithMessage("The ABS invoice value must be less than 1 Billion");
+
         RuleForEach(x => x.InvoiceLines).SetValidator(new InvoiceLineValidator(referenceDataApi, route, cachedReferenceDataApi));
 
         RuleFor(invoiceHeader => invoiceHeader)
@@ -107,5 +108,10 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
         return (sbi != 0 && frn == 0 && string.IsNullOrWhiteSpace(vendor))
             || (sbi == 0 && frn != 0 && string.IsNullOrWhiteSpace(vendor))
             || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
+    }
+
+    private static bool HaveStatusFieldEqualPendingOrApproval(string status)
+    {
+        return status.ToLower() == "pendingapproval" || status.ToLower() == "approved";
     }
 }

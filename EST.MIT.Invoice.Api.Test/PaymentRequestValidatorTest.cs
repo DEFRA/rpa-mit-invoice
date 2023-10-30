@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test
 {
     public class PaymentRequestValidatorTest
     {
-        private readonly PaymentRequestValidator _paymentRequestValidator;
+        private PaymentRequestValidator _paymentRequestValidator;
 
         private readonly IReferenceDataApi _referenceDataApiMock = Substitute.For<IReferenceDataApi>();
         private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock = Substitute.For<ICachedReferenceDataApi>();
@@ -79,7 +79,7 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route);
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status");
         }
 
         [Fact]
@@ -256,6 +256,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -362,6 +363,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -412,6 +414,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -461,6 +464,8 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000,
             };
 
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
@@ -477,6 +482,147 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Equal(2, response.Errors.Count);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice value must be non-zero")) == 1);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsGreaterThan_Zero_And_InvoiceLines_IsNot_Empty_Then_InvoiceHeader_Pass()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 1.2M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 1.2M,
+                FRN = 1000000000
+            };
+
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+
+            //Act
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_Is_Zero_And_InvoiceLines_IsNot_Empty_Then_InvoiceHeader_Fail()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 20M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 0M,
+                FRN = 1000000000
+            };
+
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+
+            //Act
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.Value);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsNot_Zero_And_InvoiceLines_Is_Empty_Then_InvoiceHeader_Fail()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>(),
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 20M,
+                FRN = 1000000000
+            };
+
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+
+            //Act
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.InvoiceLines);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("'Invoice Lines' must not be empty.")) == 1);
+            Assert.Single(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_Is_Zero_And_InvoiceLines_Is_Empty_Then_InvoiceHeader_Fail()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>(),
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 0M,
+                FRN = 1000000000
+            };
+
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+
+            //Act
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.InvoiceLines);
+            response.ShouldHaveValidationErrorFor(x =>x.Value);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("'Invoice Lines' must not be empty.")) == 1);
+            Assert.True(response.Errors.Count(x =>x.ErrorMessage.Contains("Invoice value must be non-zero")) == 1);
         }
 
         [Theory]
@@ -526,6 +672,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "pendingApproval");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -589,6 +736,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
