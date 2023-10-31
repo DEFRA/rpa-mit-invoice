@@ -704,7 +704,6 @@ namespace EST.MIT.Invoice.Api.Test
                 OriginalInvoiceNumber = "45RTFGR"
             };
 
-
             //Act
             _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
