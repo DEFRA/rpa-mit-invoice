@@ -16,7 +16,7 @@ namespace EST.MIT.Invoice.Api.Test
 
         private FieldsRoute route = new()
         {
-            PaymentType = "AP",
+            PaymentType = "DOM",
             AccountType = "AR",
             Organisation = "Test Org",
             SchemeType = "bps"
@@ -335,7 +335,7 @@ namespace EST.MIT.Invoice.Api.Test
             // counted unless they are followed by a non-zero value
 
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -388,7 +388,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Has_More_Than_2DP_Then_InvoiceHeader_Fails(decimal value)
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -441,7 +441,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Is_Equal_To_Zero_Then_InvoiceHeader_Fails()
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -494,7 +494,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsGreaterThan_Zero_And_InvoiceLines_IsNot_Empty_Then_InvoiceHeader_Pass()
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -578,7 +578,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsNot_Zero_And_InvoiceLines_Is_Empty_Then_InvoiceHeader_Fail()
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -727,7 +727,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_AccountType_IsNot_AR__And_OriginalInvoiceNumber_OriginalSettlementDate_RecoveryDate_Properties_Are_Given_Then_InvoiceHeader_Pass()
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -819,7 +819,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Does_Not_Equal_Sum_Of_InvoiceLines_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
@@ -885,7 +885,7 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Absolute_Value_Is_Not_Less_Than_1_Billion_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
-            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
 
             PaymentRequest paymentRequest = new PaymentRequest()
             {
