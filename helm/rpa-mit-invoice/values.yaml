@@ -36,6 +36,7 @@ container:
   port: 3000
   comPlusEnableDiagnostics: 0
   AzureADPostgreSQLResourceID: https://ossrdbms-aad.database.windows.net/.default
+  ReferenceDataApiBaseUri: from-config
 
 ingress:
   class: nginx
