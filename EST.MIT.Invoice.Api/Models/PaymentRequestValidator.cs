@@ -12,7 +12,6 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
     public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status,string accountType)
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
-        RuleFor(x => x.AppendixReferences).NotEmpty();
         RuleFor(x => x.InvoiceLines).NotEmpty().When(x => HaveStatusFieldEqualPendingOrApproval(status));
         RuleFor(x => x.SourceSystem).NotEmpty();
         RuleFor(x => x.DueDate).NotEmpty();
