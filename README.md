@@ -44,9 +44,7 @@ The function app requires:
   "POSTGRES_USER": "",
   "POSTGRES_PASSWORD": "",
   "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
-  "ApiEndpoints": {
-    "ReferenceDataApiBaseUri": "https://localhost:7012"
-  }
+  "ReferenceDataApiBaseUri": "https://localhost:7012"
 }
 ```
 

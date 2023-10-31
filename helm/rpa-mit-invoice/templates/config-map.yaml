@@ -9,4 +9,5 @@ data:
   POSTGRES_PASSWORD: {{ .Values.postgresService.postgresPassword | quote }}
   POSTGRES_PORT: {{ .Values.postgresService.postgresPort | quote }}
   AzureADPostgreSQLResourceID: {{ .Values.container.AzureADPostgreSQLResourceID | quote }}
+  ReferenceDataAPIBaseURI: {{ .Values.container.ReferenceDataAPIBaseURI | quote }}
 {{- end -}}
