@@ -51,6 +51,21 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
                     && invoiceHeader.FRN != 0,
                 ApplyConditionTo.CurrentValidator);
 
+        RuleFor(invoiceHeader => invoiceHeader.OriginalInvoiceNumber)
+            .NotEmpty()
+            .WithMessage("Please input Original AP Reference")
+            .When(invoiceHeader => route.AccountType == "AR");
+
+        RuleFor(invoiceHeader => invoiceHeader.OriginalSettlementDate)
+            .NotEmpty()
+            .WithMessage("Please input Original AP Settlement Date")
+            .When(invoiceHeader => route.AccountType == "AR");
+
+        RuleFor(invoiceHeader => invoiceHeader.RecoveryDate)
+            .NotEmpty()
+            .WithMessage("Please input earliest date possible recovery identified")
+            .When(invoiceHeader => route.AccountType == "AR");
+
         RuleFor(invoiceHeader => invoiceHeader.SBI)
             .InclusiveBetween(105000000, 999999999)
             .WithMessage("SBI is not in valid range (105000000 .. 999999999)")

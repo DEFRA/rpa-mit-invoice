@@ -21,7 +21,7 @@ public static class InvoiceDefinition
             serviceProvider => new PaymentRequestValidator(
                 referenceDataApi: serviceProvider.GetRequiredService<IReferenceDataApi>(),
                 cachedReferenceDataApi: serviceProvider.GetRequiredService<ICachedReferenceDataApi>(),
-                new FieldsRoute(),"status")
+                new FieldsRoute(), "status")
         );
 
         services.AddScoped<IValidator<InvoiceLine>, InvoiceLineValidator>(
