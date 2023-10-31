@@ -335,6 +335,8 @@ namespace EST.MIT.Invoice.Api.Test
             // counted unless they are followed by a non-zero value
 
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -386,6 +388,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Has_More_Than_2DP_Then_InvoiceHeader_Fails(decimal value)
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -437,6 +441,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Is_Equal_To_Zero_Then_InvoiceHeader_Fails()
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -488,6 +494,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsGreaterThan_Zero_And_InvoiceLines_IsNot_Empty_Then_InvoiceHeader_Pass()
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -570,6 +578,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_The_Status_Field_Is_PendingApproval_Or_Approved_And_Invoice_Value_IsNot_Zero_And_InvoiceLines_Is_Empty_Then_InvoiceHeader_Fail()
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -664,7 +674,7 @@ namespace EST.MIT.Invoice.Api.Test
             response.ShouldHaveValidationErrorFor(x => x.OriginalSettlementDate);
             response.ShouldHaveValidationErrorFor(x => x.RecoveryDate);
 
-            Assert.Equal(2, response.Errors.Count);
+            Assert.Equal(3, response.Errors.Count);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input Original AP Reference")) == 1);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input Original AP Settlement Date")) == 1);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input earliest date possible recovery identified")) == 1);
@@ -809,6 +819,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Value_Does_Not_Equal_Sum_Of_InvoiceLines_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
@@ -873,6 +885,8 @@ namespace EST.MIT.Invoice.Api.Test
         public async Task Given_InvoiceHeader_When_Absolute_Value_Is_Not_Less_Than_1_Billion_Then_InvoiceHeader_Fails(decimal invoiceValue, decimal invoiceLine1Value, decimal invoiceLine2Value)
         {
             //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
             PaymentRequest paymentRequest = new PaymentRequest()
             {
                 AgreementNumber = "ER456G",
