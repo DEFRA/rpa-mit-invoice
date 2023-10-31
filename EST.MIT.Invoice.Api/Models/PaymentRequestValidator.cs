@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
 {
-    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status)
+    public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status,string accountType)
     {
         RuleFor(x => x.AgreementNumber).NotEmpty();
         RuleFor(x => x.AppendixReferences).NotEmpty();
@@ -51,6 +51,21 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .When(invoiceHeader => string.IsNullOrWhiteSpace(invoiceHeader.Vendor) && invoiceHeader.SBI == 0
                     && invoiceHeader.FRN != 0,
                 ApplyConditionTo.CurrentValidator);
+
+        RuleFor(invoiceHeader => invoiceHeader.OriginalInvoiceNumber)
+            .NotEmpty()
+            .WithMessage("Please input Original AP Reference")
+            .When(invoiceHeader => accountType == "AR");
+
+        RuleFor(invoiceHeader => invoiceHeader.OriginalSettlementDate)
+            .NotEmpty()
+            .WithMessage("Please input Original AP Settlement Date")
+            .When(invoiceHeader => accountType == "AR");
+
+        RuleFor(invoiceHeader => invoiceHeader.RecoveryDate)
+            .NotEmpty()
+            .WithMessage("Please input earliest date possible recovery identified")
+            .When(invoiceHeader => accountType == "AR");
 
         RuleFor(invoiceHeader => invoiceHeader.SBI)
             .InclusiveBetween(105000000, 999999999)
