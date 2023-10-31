@@ -14,10 +14,10 @@ namespace EST.MIT.Invoice.Api.Test
         private readonly IReferenceDataApi _referenceDataApiMock = Substitute.For<IReferenceDataApi>();
         private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock = Substitute.For<ICachedReferenceDataApi>();
 
-        private readonly FieldsRoute route = new()
+        private FieldsRoute route = new()
         {
             PaymentType = "AP",
-            AccountType = "AP",
+            AccountType = "AR",
             Organisation = "Test Org",
             SchemeType = "bps"
         };
@@ -79,7 +79,7 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status", "accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status");
         }
 
         [Fact]
@@ -256,7 +256,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -363,7 +363,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved","accoutType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -414,7 +414,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -464,7 +464,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000,
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -515,7 +515,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -557,7 +557,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -584,7 +584,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -613,16 +613,193 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval","accountType");
-
             //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
             response.ShouldHaveValidationErrorFor(x => x.InvoiceLines);
-            response.ShouldHaveValidationErrorFor(x =>x.Value);
+            response.ShouldHaveValidationErrorFor(x => x.Value);
             Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("'Invoice Lines' must not be empty.")) == 1);
-            Assert.True(response.Errors.Count(x =>x.ErrorMessage.Contains("Invoice value must be non-zero")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice value must be non-zero")) == 1);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_AccountType_Is_AR_And_OriginalInvoiceNumber_OriginalSettlementDate_RecoveryDate_Properties_Are_Null_Then_InvoiceHeader_Fails()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 1.2M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 1.2M,
+                FRN = 1000000000
+            };
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.OriginalInvoiceNumber);
+            response.ShouldHaveValidationErrorFor(x => x.OriginalSettlementDate);
+            response.ShouldHaveValidationErrorFor(x => x.RecoveryDate);
+
+            Assert.Equal(2, response.Errors.Count);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input Original AP Reference")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input Original AP Settlement Date")) == 1);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input earliest date possible recovery identified")) == 1);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_AccountType_Is_AR_And_OriginalInvoiceNumber_OriginalSettlementDate_RecoveryDate_Properties_Are_Given_Then_InvoiceHeader_Pass()
+        {
+            //Arrange
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 1.2M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 1.2M,
+                FRN = 1000000000,
+                RecoveryDate = DateTime.Now,
+                OriginalSettlementDate = DateTime.Now,
+                OriginalInvoiceNumber = "45RTFGR"
+            };
+
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldNotHaveAnyValidationErrors();
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_AccountType_IsNot_AR__And_OriginalInvoiceNumber_OriginalSettlementDate_RecoveryDate_Properties_Are_Given_Then_InvoiceHeader_Pass()
+        {
+            //Arrange
+            route = new() { PaymentType = "AP", AccountType = "AD", Organisation = "Test Org", SchemeType = "bps" };
+
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 1.2M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 1.2M,
+                FRN = 1000000000,
+                RecoveryDate = DateTime.Now,
+                OriginalSettlementDate = DateTime.Now,
+                OriginalInvoiceNumber = "45RTFGR"
+            };
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldNotHaveAnyValidationErrors();
+            Assert.Empty(response.Errors);
+        }
+
+        [Fact]
+        public async Task Given_InvoiceHeader_When_AccountType_Is_AR_And_OriginalInvoiceNumber_IsNull_And_OriginalSettlementDate_RecoveryDate_Properties_Are_Given_Then_InvoiceHeader_Fail()
+        {
+            //Arrange 
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                DueDate = DateTime.Now.ToString(),
+                InvoiceLines = new List<InvoiceLine>()
+                {
+                    new InvoiceLine()
+                    {
+                        Value = 1.2M,
+                        Currency = "GBP",
+                        Description = "ABD",
+                        FundCode = "FUNDCODE",
+                        SchemeCode = "SchemeCodeValue",
+                        MainAccount = "AccountCodeValue",
+                        DeliveryBody = "RP00",
+                        MarketingYear = 2023,
+                    }
+                },
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 1.2M,
+                FRN = 1000000000,
+                RecoveryDate = DateTime.Now,
+                OriginalSettlementDate = DateTime.Now
+            };
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldHaveValidationErrorFor(x => x.OriginalInvoiceNumber);
+            Assert.Single(response.Errors);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Please input Original AP Reference")) == 1);
         }
 
         [Theory]
@@ -672,7 +849,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "pendingApproval","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "pendingApproval");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -736,7 +913,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved","accountType");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
