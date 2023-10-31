@@ -54,7 +54,7 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
 {
-    clientBuilder.BaseAddress = new Uri(builder.Configuration["ApiEndpoints:ReferenceDataApiBaseUri"]);
+    clientBuilder.BaseAddress = new Uri(builder.Configuration["ReferenceDataAPIBaseURI"]);
 });
 
 var app = builder.Build();
