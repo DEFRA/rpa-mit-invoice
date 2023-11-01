@@ -37,6 +37,13 @@ container:
   comPlusEnableDiagnostics: 0
   AzureADPostgreSQLResourceID: https://ossrdbms-aad.database.windows.net/.default
   ReferenceDataAPIBaseURI: from-config
+  serviceBusConnectionString__fullyQualifiedNamespace: value-from-app-config-service
+  serviceBusConnectionString__credential: value-from-app-config-service
+  serviceBusQueueName: value-from-app-config-service
+  queueConnectionString__credential: value-from-app-config-service
+  queueConnectionString__queueServiceUri: value-from-app-config-service
+  eventQueueName: value-from-app-config-service
+  paymentQueueName: value-from-app-config-service
 
 ingress:
   class: nginx

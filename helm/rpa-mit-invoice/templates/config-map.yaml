@@ -10,4 +10,11 @@ data:
   POSTGRES_PORT: {{ .Values.postgresService.postgresPort | quote }}
   AzureADPostgreSQLResourceID: {{ .Values.container.AzureADPostgreSQLResourceID | quote }}
   ReferenceDataAPIBaseURI: {{ .Values.container.ReferenceDataAPIBaseURI | quote }}
+  QueueConnectionString__queueServiceUri: {{ quote .Values.container.queueConnectionString__queueServiceUri }}
+  QueueConnectionString__credential: {{ quote .Values.container.queueConnectionString__credential }}
+  ServiceBusConnectionString__fullyQualifiedNamespace: {{ quote .Values.container.serviceBusConnectionString__fullyQualifiedNamespace }}
+  ServiceBusConnectionString__credential: {{ quote .Values.container.serviceBusConnectionString__credential }}
+  ServiceBusQueueName: {{ quote .Values.container.serviceBusQueueName }}
+  EventQueueName: {{ quote .Values.container.eventQueueName }}
+  PaymentQueueName: {{ quote .Values.container.paymentQueueName }}
 {{- end -}}
