@@ -274,55 +274,6 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Theory]
-        [InlineData("GBP", "EUR")]
-        [InlineData("EUR", "GBP")]
-        public async Task Given_InvoiceHeader_When_Currencies_Are_Different_Then_InvoiceHeader_Fails(string currencyOne, string currencyTwo)
-        {
-            //Arrange
-            PaymentRequest paymentRequest = new PaymentRequest()
-            {
-                AgreementNumber = "ER456G",
-                AppendixReferences = new AppendixReferences(),
-                SourceSystem = "4ADTRT",
-                DueDate = DateTime.Now.ToString(),
-                InvoiceLines = new List<InvoiceLine>()
-                {
-                    new InvoiceLine()
-                    {
-                        Value = 2345678.00M,
-                        Currency = currencyOne,
-                        Description = "ABD",
-                        FundCode = "FUNDCODE",
-                        SchemeCode = "SchemeCodeValue",
-                        MainAccount = "AccountCodeValue",
-                        DeliveryBody = "RP00",
-                    },
-                    new InvoiceLine()
-                    {
-                        Value = 0.65M,
-                        Currency = currencyTwo,
-                        Description = "ABD",
-                        FundCode = "FUNDCODE",
-                        SchemeCode = "SchemeCodeValue",
-                        MainAccount = "AccountCodeValue",
-                        DeliveryBody = "RP00",
-                    }
-                },
-                MarketingYear = 2022,
-                PaymentRequestId = "1234",
-                PaymentRequestNumber = 123456,
-                Value = 2345678.65M,
-                FRN = 1000000000,
-            };
-
-            //Act
-            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
-
-            //Assert
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Cannot mix currencies in an invoice")) == 1);
-        }
-
-        [Theory]
         [InlineData(10)]
         [InlineData(10.000)]
         [InlineData(10.100)]
@@ -342,13 +293,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = value,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -395,13 +346,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = value,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -448,13 +399,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 0,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -501,13 +452,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 1.2M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -585,6 +536,7 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>(),
                 MarketingYear = 2022,
@@ -643,13 +595,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 1.2M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -689,13 +641,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 1.2M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -734,13 +686,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 1.2M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -777,13 +729,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 1.2M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -812,6 +764,87 @@ namespace EST.MIT.Invoice.Api.Test
         }
 
         [Theory]
+        [InlineData("GBP")]
+        [InlineData("EUR")]
+        public async Task Given_PaymentRequest_When_Currency_Is_Valid_Then_PaymentRequest_Passes(string? currency)
+        {
+            //Arrange
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
+
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                Currency = currency,
+                DueDate = DateTime.Now.ToString(),
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 0,
+                FRN = 1000000000,
+            };
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "new");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestId);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+            response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
+            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+            Assert.Empty(response.Errors);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("NOT GBP")]
+        [InlineData("NOT EUR")]
+        [InlineData("12345")]
+        public async Task Given_PaymentRequest_When_Currency_Is_Invalid_Then_PaymentRequest_Fails(string? currency)
+        {
+            //Arrange
+            route = new() { AccountType = "AP", Organisation = "Test Org", SchemeType = "bps", PaymentType = "DOM" };
+
+            PaymentRequest paymentRequest = new PaymentRequest()
+            {
+                AgreementNumber = "ER456G",
+                AppendixReferences = new AppendixReferences(),
+                SourceSystem = "4ADTRT",
+                Currency = currency,
+                DueDate = DateTime.Now.ToString(),
+                MarketingYear = 2022,
+                PaymentRequestId = "1234",
+                PaymentRequestNumber = 123456,
+                Value = 0,
+                FRN = 1000000000,
+            };
+
+            //Act
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "new");
+            var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
+
+            //Assert
+            response.ShouldNotHaveValidationErrorFor(x => x.SourceSystem);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestId);
+            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+            response.ShouldNotHaveValidationErrorFor(x => x.PaymentRequestNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.Value);
+            response.ShouldNotHaveValidationErrorFor(x => x.AgreementNumber);
+            response.ShouldNotHaveValidationErrorFor(x => x.AppendixReferences);
+            response.ShouldNotHaveValidationErrorFor(x => x.InvoiceLines);
+            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Currency must be GBP or EUR")) == 1);
+        }
+
+        [Theory]
         [InlineData(10, 5, 4)]
         [InlineData(10, 3, 6)]
         [InlineData(10, -5, -5)]
@@ -826,13 +859,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = invoiceLine1Value,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -892,13 +925,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = invoiceLine1Value,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -909,7 +942,6 @@ namespace EST.MIT.Invoice.Api.Test
                     new InvoiceLine()
                     {
                         Value = invoiceLine2Value,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",

@@ -9,7 +9,6 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 {
-    private readonly string[] _validCurrencyTypes = { "GBP", "EUR" };
     private readonly IReferenceDataApi _referenceDataApi;
     private readonly FieldsRoute _route;
     private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
@@ -35,10 +34,6 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
            .MustAsync((x, cancellation) => BeAValidFundCode(x))
            .WithMessage("Fund Code is invalid for this route")
            .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
-        RuleFor(x => x.Currency)
-            .NotEmpty()
-            .Must(x => this._validCurrencyTypes.Contains(x.ToUpper()))
-            .WithMessage("Currency must be GBP or EUR");
         RuleFor(x => x.MainAccount).NotEmpty()
             .MustAsync((x, cancellation) => BeAValidMainAccount(x))
             .WithMessage("Account is Invalid for this route")

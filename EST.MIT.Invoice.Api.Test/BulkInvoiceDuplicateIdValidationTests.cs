@@ -149,6 +149,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                             MarketingYear = 2023,
                             PaymentRequestNumber = 123456789,
                             AgreementNumber = "123456789",
+                            Currency = "GBP",
                             Value = 100,
                             DueDate = "2023-01-01",
                             AppendixReferences = new AppendixReferences {
@@ -156,7 +157,6 @@ public class BulkInvoiceDuplicateIdValidationTests
                             },
                             InvoiceLines = new List<InvoiceLine> {
                                 new InvoiceLine {
-                                    Currency = "GBP",
                                     Description = "Test Description",
                                     Value = 100,
                                     SchemeCode = "SchemeCodeValue",
@@ -187,6 +187,7 @@ public class BulkInvoiceDuplicateIdValidationTests
                             MarketingYear = 2023,
                             PaymentRequestNumber = 123456789,
                             AgreementNumber = "123456789",
+                            Currency = "GBP",
                             Value = 100,
                             DueDate = "2023-01-01",
                             AppendixReferences = new AppendixReferences {
@@ -194,7 +195,6 @@ public class BulkInvoiceDuplicateIdValidationTests
                             },
                             InvoiceLines = new List<InvoiceLine> {
                                 new InvoiceLine {
-                                    Currency = "GBP",
                                     Description = "Test Description",
                                     Value = 100,
                                     SchemeCode = "SchemeCodeValue",
