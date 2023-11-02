@@ -94,13 +94,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 10M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -148,13 +148,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 10M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -202,13 +202,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 10M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -254,13 +254,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 10M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",
@@ -306,13 +306,13 @@ namespace EST.MIT.Invoice.Api.Test
                 AgreementNumber = "ER456G",
                 AppendixReferences = new AppendixReferences(),
                 SourceSystem = "4ADTRT",
+                Currency = "GBP",
                 DueDate = DateTime.Now.ToString(),
                 InvoiceLines = new List<InvoiceLine>()
                 {
                     new InvoiceLine()
                     {
                         Value = 10M,
-                        Currency = "GBP",
                         Description = "ABD",
                         FundCode = "FUNDCODE",
                         SchemeCode = "SchemeCodeValue",

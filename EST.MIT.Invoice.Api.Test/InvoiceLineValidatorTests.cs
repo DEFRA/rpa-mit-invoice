@@ -217,41 +217,6 @@ namespace EST.MIT.Invoice.Api.Test
             Assert.Empty(response.Errors);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("NOT GBP")]
-        [InlineData("NOT EUR")]
-        [InlineData("12345")]
-        public async Task Given_InvoiceLine_When_Currency_Is_Invalid_Then_InvoiceLine_Fails(string? currency)
-        {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = currency ?? "",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
-
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
-
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.Value);
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Currency must be GBP or EUR")) == 1);
-        }
 
         [Theory]
         [InlineData("GBP")]
