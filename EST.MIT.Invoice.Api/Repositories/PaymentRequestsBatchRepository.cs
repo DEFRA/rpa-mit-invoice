@@ -19,7 +19,7 @@ namespace EST.MIT.Invoice.Api.Repositories
 
         public async Task<IEnumerable<InvoiceEntity>> GetBySchemeAndIdAsync(string schemeType, string id)
 		{
-            using var connection = _dbContext.CreateConnection();
+            using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "SELECT * FROM Invoices WHERE SchemeType = @SchemeType and Id = @Id";
 			var parameters = new { SchemeType = schemeType, Id = id };
             return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
@@ -27,7 +27,7 @@ namespace EST.MIT.Invoice.Api.Repositories
 
         public async Task<InvoiceEntity> CreateAsync(InvoiceEntity invoice)
 		{
-            using var connection = _dbContext.CreateConnection();
+            using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "INSERT INTO Invoices (Id, SchemeType, Data, Reference, Value, Status, CreatedBy, Created) " +
             "VALUES (@Id, @SchemeType, @Data, @Reference, @Value, @Status, @CreatedBy, @Created)";
             await connection.ExecuteAsync(sql, invoice);
@@ -36,7 +36,7 @@ namespace EST.MIT.Invoice.Api.Repositories
 
 		public async Task<BulkInvoicesEntity?> CreateBulkAsync(BulkInvoicesEntity entities)
 		{
-            using var connection = _dbContext.CreateConnection();
+            using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "INSERT INTO Invoices (Id, SchemeType, Data, Reference, Value, Status, CreatedBy, Created) " +
             "VALUES (@Id, @SchemeType, @Data, @Reference, @Value, @Status, @CreatedBy, @Created)";
             foreach (var invoice in entities.Invoices)
@@ -48,7 +48,7 @@ namespace EST.MIT.Invoice.Api.Repositories
 
         public async Task<InvoiceEntity> UpdateAsync(InvoiceEntity invoice)
 		{
-            using var connection = _dbContext.CreateConnection();
+            using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "UPDATE Invoices " +
                     "SET SchemeType = @SchemeType, " +
                     "Data = @Data, " +
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Repositories
 
         public async Task<string> DeleteBySchemeAndIdAsync(string schemeType, string id)
 		{
-            using var connection = _dbContext.CreateConnection();
+            using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "DELETE FROM Invoices WHERE Id = @Id AND SchemeType = @schemeType";
             await connection.ExecuteAsync(sql, new { SchemeType = schemeType, Id = id });
             return id;

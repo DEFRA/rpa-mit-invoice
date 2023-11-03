@@ -1,23 +1,38 @@
 ﻿using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Dapper;
+using EST.MIT.Invoice.Api.Authentication;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
 {
-    [ExcludeFromCodeCoverage]
     public class PgDbContext
     {
-        private PgDbSettings _dbSettings;
+        private readonly PgDbSettings _dbSettings;
+        private readonly bool _isProd;
+        private readonly ITokenGenerator _tokenService;
 
-        public PgDbContext(PgDbSettings dbSettings)
+        public PgDbContext(PgDbSettings dbSettings, ITokenGenerator tokenService, bool isProd)
         {
             _dbSettings = dbSettings;
+            _isProd = isProd;
+            _tokenService = tokenService;   
         }
 
-        public IDbConnection CreateConnection()
+        public async Task<IDbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
         {
+            if (_isProd)
+            {
+                if ((!TokenCache.AccessToken.HasValue) || (DateTime.Now >= TokenCache.AccessToken.Value.ExpiresOn.AddMinutes(-1)))
+                {
+                    TokenCache.AccessToken = await _tokenService.GetTokenAsync(_dbSettings.PostgresSqlAAD!, cancellationToken);
+                }
+
+                _dbSettings.Password = TokenCache.AccessToken.Value.Token;
+            }
+
             var connectionString = $"Host={_dbSettings.Server}; Database={_dbSettings.Database}; Username={_dbSettings.Username}; Password={_dbSettings.Password}; Port={_dbSettings.Port};";
             return new NpgsqlConnection(connectionString);
         }
@@ -30,7 +45,7 @@ namespace EST.MIT.Invoice.Api.Repositories
         private async Task _initTables()
         {
             // create table and index if they don't exist
-            using var connection = CreateConnection();
+            using var connection = await CreateConnectionAsync();
 
             var sql = "CREATE TABLE IF NOT EXISTS Invoices (" +
                     "Id VARCHAR, " +
