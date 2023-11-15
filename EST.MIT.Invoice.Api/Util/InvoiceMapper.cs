@@ -37,6 +37,16 @@ public static class InvoiceMapper
         return invoices;
     }
 
+    public static PaymentRequestsBatch? MapToPaymentRequestsBatch(InvoiceEntity invoiceEntity)
+    {
+        if (invoiceEntity?.Data == null)
+        {
+            return null;
+        }
+
+        return JsonConvert.DeserializeObject<PaymentRequestsBatch>(invoiceEntity.Data);
+    }
+
     public static List<InvoiceEntity> BulkMapToInvoiceEntity(IEnumerable<PaymentRequestsBatch> batches)
     {
         var invoiceEntities = new List<InvoiceEntity>();
