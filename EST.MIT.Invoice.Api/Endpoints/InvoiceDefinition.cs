@@ -32,6 +32,7 @@ public static class InvoiceDefinition
         );
 
         services.AddScoped<IPaymentRequestsBatchService, PaymentRequestsBatchService>();
+        services.AddScoped<IPaymentRequestsBatchApprovalService, PaymentRequestsBatchApprovalService>();
 
         return services;
     }

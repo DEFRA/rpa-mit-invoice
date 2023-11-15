@@ -14,6 +14,16 @@ public static class InvoiceGetEndpoints
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoice");
+        
+        app.MapGet("/invoice/approval/{invoiceId}", GetApprovalById)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetApprovalById");
+
+        app.MapGet("/invoice/approval", GetAllApprovals)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetAllApprovals");
 
         return app;
     }
@@ -28,5 +38,31 @@ public static class InvoiceGetEndpoints
         }
 
         return Results.Ok(invoiceResponse.FirstOrDefault());
+    }
+
+    public static async Task<IResult> GetAllApprovals(IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    {
+        var userId = "1"; // TODO: fxs need to get the user id from the token
+        var invoiceResponse = await paymentRequestsBatchApprovalService.GetAllInvoicesForApprovalByUserIdAsync(userId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse);
+    }
+
+    public static async Task<IResult> GetApprovalById(string invoiceId, IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    {
+        var userId = "1"; // TODO: fxs need to get the user id from the token
+        var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoiceForApprovalByUserIdAndInvoiceIdAsync(userId, invoiceId);
+
+        if (invoiceResponse is null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse);
     }
 }
