@@ -119,7 +119,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
     }
 
-    private static bool HaveStatusFieldEqualPendingOrApproval(string status)
+    public static bool HaveStatusFieldEqualPendingOrApproval(string status)
     {
         return status.ToLower() == "pendingapproval" || status.ToLower() == "approved";
     }

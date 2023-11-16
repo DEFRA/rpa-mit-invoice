@@ -192,6 +192,9 @@ public class PaymentRequestsValidatorTests
             PaymentType = "EU",
             CreatedBy = "Test User",
             Status = "status",
+            ApproverId = "12345",
+            ApproverEmail = "test.email@defra.gov.uk",
+            ApprovedBy = "approver.email@defra.gov.uk",
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {
                     PaymentRequestId = "123456789",

@@ -25,7 +25,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .WithMessage("Account Type is invalid. Should be AP or AR");
         RuleForEach(x => x.PaymentRequests)
             .NotEmpty()
-            .SetValidator((paymentRequest) => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, new FieldsRoute(){ AccountType = paymentRequest.AccountType, Organisation = paymentRequest.Organisation, PaymentType = paymentRequest.PaymentType, SchemeType = paymentRequest.SchemeType}, paymentRequest.Status))
+            .SetValidator((paymentRequest) => new PaymentRequestValidator(_referenceDataApi, _cachedReferenceDataApi, new FieldsRoute() { AccountType = paymentRequest.AccountType, Organisation = paymentRequest.Organisation, PaymentType = paymentRequest.PaymentType, SchemeType = paymentRequest.SchemeType }, paymentRequest.Status))
             .When(x => x.PaymentRequests != null);
 
         RuleFor(model => model)
@@ -42,6 +42,9 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .MustAsync((x, CancellationToken) => BeAValidOrganisationCode(x))
             .WithMessage("Organisation is Invalid")
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.AccountType));
+        RuleFor(model => model.ApproverEmail)
+            .NotEmpty()
+            .When(model => PaymentRequestValidator.HaveStatusFieldEqualPendingOrApproval(model.Status));
     }
 
     private async Task<bool> BeAValidSchemeType(PaymentRequestsBatch paymentRequestsBatch)

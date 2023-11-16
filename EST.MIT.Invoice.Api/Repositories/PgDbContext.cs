@@ -1,9 +1,6 @@
 ﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Dapper;
 using EST.MIT.Invoice.Api.Authentication;
-using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
@@ -54,6 +51,10 @@ namespace EST.MIT.Invoice.Api.Repositories
                     "Reference VARCHAR, " +
                     "Value DECIMAL(13,2), " +
                     "Status VARCHAR, " +
+                    "ApproverId VARCHAR, " +
+                    "ApproverEmail VARCHAR, " +
+                    "ApprovedBy VARCHAR, " +
+                    "Approved TIMESTAMP, " +
                     "CreatedBy VARCHAR, " +
                     "UpdatedBy VARCHAR, " +
                     "Created TIMESTAMP, " +

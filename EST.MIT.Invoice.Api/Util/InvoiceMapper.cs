@@ -1,6 +1,5 @@
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Repositories.Entities;
-using EST.MIT.Invoice.Api.Services.Models;
 using Newtonsoft.Json;
 
 namespace EST.MIT.Invoice.Api.Util;
@@ -17,6 +16,10 @@ public static class InvoiceMapper
             Value = paymentRequestsBatch.PaymentRequests.Sum(x => x.Value),
             Status = paymentRequestsBatch.Status,
             Reference = paymentRequestsBatch.Reference,
+            ApproverId = paymentRequestsBatch.ApproverId,
+            ApproverEmail = paymentRequestsBatch.ApproverEmail,
+            ApprovedBy = paymentRequestsBatch.ApprovedBy,
+            Approved = paymentRequestsBatch.Approved,
             CreatedBy = paymentRequestsBatch.CreatedBy,
             UpdatedBy = paymentRequestsBatch.UpdatedBy,
             Created = paymentRequestsBatch.Created,
