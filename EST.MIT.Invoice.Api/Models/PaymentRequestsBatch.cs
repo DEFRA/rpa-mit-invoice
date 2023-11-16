@@ -31,6 +31,18 @@ public class PaymentRequestsBatch
     [JsonProperty("created")]
     public DateTime Created { get; init; } = DateTime.UtcNow;
 
+    [JsonProperty("approverId")]
+    public string ApproverId { get; set; } = default!;
+
+    [JsonProperty("approverEmail")]
+    public string ApproverEmail { get; set; } = default!;
+
+    [JsonProperty("approvedBy")]
+    public string ApprovedBy { get; set; } = default!;
+
+    [JsonProperty("approved")]
+    public DateTime? Approved { get; init; }
+
     [JsonProperty("updated")]
     public DateTime? Updated { get; init; }
 
