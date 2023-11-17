@@ -14,7 +14,7 @@ public static class InvoiceGetEndpoints
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoice");
-        
+
         app.MapGet("/invoice/approval/{invoiceId}", GetApprovalById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
@@ -24,6 +24,11 @@ public static class InvoiceGetEndpoints
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetAllApprovals");
+
+        app.MapGet("/invoices/user/{userId}", GetInvoicesById)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetInvoicesById");
 
         return app;
     }
@@ -59,6 +64,19 @@ public static class InvoiceGetEndpoints
         var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoiceForApprovalByUserIdAndInvoiceIdAsync(userId, invoiceId);
 
         if (invoiceResponse is null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse);
+    }
+
+    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    {
+        var userId = "1"; // TODO: fxs need to get the user id from the token
+        var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoicesByUserIdAsync(userId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
             return Results.NotFound();
         }

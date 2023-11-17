@@ -33,7 +33,7 @@ public class InvoiceServiceTests
 
         _mockPaymentRequestsBatchRepository.Setup(x => x.GetBySchemeAndIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(invoiceEntities);
 
-        var result = await _paymentRequestsBatchService.GetBySchemeAndIdAsync("1","1");
+        var result = await _paymentRequestsBatchService.GetBySchemeAndIdAsync("1", "1");
         result.Should().BeEquivalentTo(InvoiceMapper.MapToInvoice(invoiceEntities));
     }
 

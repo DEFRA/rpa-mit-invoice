@@ -11,9 +11,9 @@ namespace EST.MIT.Invoice.Api.Repositories
     [ExcludeFromCodeCoverage]
     public class PaymentRequestsBatchRepository : IPaymentRequestsBatchRepository
     {
-        private readonly PgDbContext _dbContext;
+        private readonly IPgDbContext _dbContext;
 
-        public PaymentRequestsBatchRepository(PgDbContext dbContext)
+        public PaymentRequestsBatchRepository(IPgDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -110,6 +110,19 @@ namespace EST.MIT.Invoice.Api.Repositories
                     Updated = new DateTime(2023, 11, 02, 11, 45, 52, 175, DateTimeKind.Utc),
                 },
             };
+        }
+
+        public async Task<IEnumerable<InvoiceEntity>> GetInvoicesByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            using var connection = await _dbContext.CreateConnectionAsync();
+            var sql = "SELECT SchemeType, Id, Data, Reference, Value, Status, ApproverId, ApproverEmail, ApprovedBy, Approved, CreatedBy, Updated, Created, Updated FROM Invoices WHERE Status = @Status AND ApproverId = @ApproverId";
+            var parameters = new { Status = InvoiceStatuses.Awaiting, ApproverId = userId };
+            return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
         }
     }
 }

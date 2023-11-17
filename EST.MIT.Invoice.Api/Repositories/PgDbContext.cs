@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
 {
-    public class PgDbContext
+    public class PgDbContext : IPgDbContext
     {
         private readonly PgDbSettings _dbSettings;
         private readonly bool _isProd;
@@ -15,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Repositories
         {
             _dbSettings = dbSettings;
             _isProd = isProd;
-            _tokenService = tokenService;   
+            _tokenService = tokenService;
         }
 
         public async Task<IDbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
@@ -38,7 +38,6 @@ namespace EST.MIT.Invoice.Api.Repositories
         {
             await _initTables();
         }
-
         private async Task _initTables()
         {
             // create table and index if they don't exist

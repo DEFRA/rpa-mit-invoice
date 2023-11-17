@@ -3,7 +3,6 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Models;
 using NSubstitute;
 using System.Net;
-using FluentValidation.TestHelper;
 using FluentAssertions;
 
 namespace EST.MIT.Invoice.Api.Test
