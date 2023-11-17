@@ -7,8 +7,11 @@ namespace EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
 public class PaymentRequestsBatchApprovalService : IPaymentRequestsBatchApprovalService
 {
-    public PaymentRequestsBatchApprovalService()
+    private readonly IPaymentRequestsBatchRepository _paymentRequestsBatchRepository;
+
+    public PaymentRequestsBatchApprovalService(IPaymentRequestsBatchRepository paymentRequestsBatchRepository)
     {
+        _paymentRequestsBatchRepository = paymentRequestsBatchRepository;
     }
 
     public Task<List<PaymentRequestsBatch>> GetAllInvoicesForApprovalByUserIdAsync(string userId)
@@ -26,6 +29,12 @@ public class PaymentRequestsBatchApprovalService : IPaymentRequestsBatchApproval
         }
 
         return Task.FromResult<PaymentRequestsBatch?>(InvoiceMapper.MapToPaymentRequestsBatch(invoice));
+    }
+
+    public async Task<List<PaymentRequestsBatch>> GetInvoicesByUserIdAsync(string userId)
+    {
+        var result = await _paymentRequestsBatchRepository.GetInvoicesByUserIdAsync(userId);
+        return InvoiceMapper.MapToInvoice(result);
     }
 
     private List<InvoiceEntity> GetAllMockedInvoiceEntities()
