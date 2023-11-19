@@ -71,10 +71,10 @@ public static class InvoiceGetEndpoints
         return Results.Ok(invoiceResponse);
     }
 
-    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchService paymentRequestsBatchService)
     {
         var userId = "1"; // TODO: fxs need to get the user id from the token
-        var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoicesByUserIdAsync(userId);
+        var invoiceResponse = await paymentRequestsBatchService.GetInvoicesByUserIdAsync(userId);
 
         if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
