@@ -53,7 +53,9 @@ public class PaymentRequestsBatchApprovalService : IPaymentRequestsBatchApproval
                 Created = new DateTime(2023, 11, 02, 11, 27, 45, 540, DateTimeKind.Utc),
                 UpdatedBy = "1",
                 Updated = new DateTime(2023, 11, 02, 11, 45, 52, 175, DateTimeKind.Utc),
-            },
+                ApproverId = "1",
+				ApproverEmail = "user1@defra.gov.uk"
+            }
         };
     }
 }

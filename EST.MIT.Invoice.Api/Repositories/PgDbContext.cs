@@ -38,6 +38,7 @@ namespace EST.MIT.Invoice.Api.Repositories
         {
             await _initTables();
         }
+
         private async Task _initTables()
         {
             // create table and index if they don't exist

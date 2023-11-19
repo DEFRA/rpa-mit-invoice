@@ -40,7 +40,7 @@ var app = builder.Build();
 // ensure database and tables exist
 {
     using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<PgDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<IPgDbContext>();
     await context.Init();
 }
 

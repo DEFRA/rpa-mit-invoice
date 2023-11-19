@@ -15,12 +15,12 @@ public static class InvoiceGetEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoice");
 
-        app.MapGet("/invoice/approval/{invoiceId}", GetApprovalById)
+        app.MapGet("/invoice/approvals/{invoiceId}", GetApprovalById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetApprovalById");
 
-        app.MapGet("/invoice/approval", GetAllApprovals)
+        app.MapGet("/invoice/approvals", GetAllApprovals)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetAllApprovals");

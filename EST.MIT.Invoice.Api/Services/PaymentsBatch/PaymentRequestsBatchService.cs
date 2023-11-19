@@ -20,12 +20,6 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         return InvoiceMapper.MapToInvoice(result);
     }
 
-    public async Task<List<PaymentRequestsBatch>> GetInvoicesForApprovalByUserIdAsync(string userId)
-    {
-        var result = await _paymentRequestsBatchRepository.GetInvoicesForApprovalByUserIdAsync(userId);
-        return InvoiceMapper.MapToInvoice(result);
-    }
-
     public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice)
     {
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
