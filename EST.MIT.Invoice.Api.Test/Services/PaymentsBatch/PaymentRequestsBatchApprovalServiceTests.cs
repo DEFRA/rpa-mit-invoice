@@ -15,7 +15,7 @@ public class PaymentRequestsBatchApprovalServiceTests
     public async Task GetInvoicesByUserIdAsync_WithValidUserId_ReturnsInvoices()
     {
         var mockRepository = new Mock<IPaymentRequestsBatchRepository>();
-        var service = new PaymentRequestsBatchApprovalService(mockRepository.Object);
+        var service = new PaymentRequestsBatchService(mockRepository.Object);
 
         var userId = "validUserId";
         var data = JsonConvert.SerializeObject(invoiceTestData);

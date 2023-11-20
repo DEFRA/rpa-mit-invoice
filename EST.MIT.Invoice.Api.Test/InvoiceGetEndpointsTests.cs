@@ -49,7 +49,7 @@ public class InvoiceGetEndpointTests
     [Fact]
     public async Task GetInvoicesById_ReturnsOkResult_WhenInvoicesExist()
     {
-        var mockService = new Mock<IPaymentRequestsBatchApprovalService>();
+        var mockService = new Mock<IPaymentRequestsBatchService>();
         var userId = "1";
         var expectedInvoices = new List<PaymentRequestsBatch>
         {
@@ -102,7 +102,7 @@ public class InvoiceGetEndpointTests
     [Fact]
     public async Task GetInvoicesById_ReturnsNotFound_WhenNoInvoicesExist()
     {
-        var mockService = new Mock<IPaymentRequestsBatchApprovalService>();
+        var mockService = new Mock<IPaymentRequestsBatchService>();
         var userId = "1";
         var nullInvoices = new Mock<List<PaymentRequestsBatch>>();
 
