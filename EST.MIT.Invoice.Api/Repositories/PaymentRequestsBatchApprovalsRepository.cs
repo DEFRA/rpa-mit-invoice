@@ -34,8 +34,8 @@ namespace EST.MIT.Invoice.Api.Repositories
 	        }
 
 	        using var connection = await _dbContext.CreateConnectionAsync();
-	        var sql = "SELECT SchemeType, Id, Data, Reference, Value, Status, ApproverId, ApproverEmail, ApprovedBy, Approved, CreatedBy, Updated, Created, Updated FROM Invoices WHERE ApproverId = @ApproverId AND Status = @Status";
-	        var parameters = new { Status = InvoiceStatuses.AwaitingApproval, ApproverId = userId };
+	        var sql = "SELECT SchemeType, Id, Data, Reference, Value, Status, ApproverId, ApproverEmail, ApprovedBy, Approved, CreatedBy, Updated, Created, Updated FROM Invoices WHERE (ApproverId = @ApproverId AND Status = @Status) OR @FetchAll";
+	        var parameters = new { Status = InvoiceStatuses.AwaitingApproval, ApproverId = userId, FetchAll = true };   // TODO: Remove the FetchAll override when AD User access is patched in
 	        return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
 		}
 		
