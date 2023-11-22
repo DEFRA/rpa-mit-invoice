@@ -23,7 +23,14 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
     public async Task<List<PaymentRequestsBatch>> GetInvoicesByUserIdAsync(string userId)
     {
 	    var result = await _paymentRequestsBatchRepository.GetInvoicesByUserIdAsync(userId);
-	    return InvoiceMapper.MapToInvoice(result);
+        try
+        {
+            List<PaymentRequestsBatch> resultList = InvoiceMapper.MapToInvoice(result);
+            return resultList;
+        } catch (Exception ex)
+        {
+            return new List<PaymentRequestsBatch>();
+        }
     }
 
 	public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice)
