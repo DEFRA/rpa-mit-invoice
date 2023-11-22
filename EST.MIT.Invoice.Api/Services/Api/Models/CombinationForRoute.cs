@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace EST.MIT.Invoice.Api.Services.Api.Models;
 

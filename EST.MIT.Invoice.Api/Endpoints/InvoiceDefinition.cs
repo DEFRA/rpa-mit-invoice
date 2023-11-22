@@ -3,7 +3,6 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using FluentValidation;
 using EST.MIT.Invoice.Api.Models;
-using EST.MIT.Invoice.Api.Services;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
@@ -32,6 +31,7 @@ public static class InvoiceDefinition
         );
 
         services.AddScoped<IPaymentRequestsBatchService, PaymentRequestsBatchService>();
+        services.AddScoped<IPaymentRequestsBatchApprovalService, PaymentRequestsBatchApprovalService>();
 
         return services;
     }

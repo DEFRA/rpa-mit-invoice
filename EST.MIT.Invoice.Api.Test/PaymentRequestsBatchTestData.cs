@@ -15,6 +15,9 @@ public static class PaymentRequestsBatchTestData
             SchemeType = "bps",
             PaymentType = "DOM",
             Status = status,
+            ApproverId = "12345",
+            ApproverEmail = "test.email@defra.gov.uk",
+            ApprovedBy = "approver.email@defra.gov.uk",
             CreatedBy = "Test User",
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {

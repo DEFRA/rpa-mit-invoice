@@ -5,32 +5,32 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dc091c33-b672-4f91-bd49-2cdd55581fba</UserSecretsId>
-    <Version>1.0.24</Version>
+    <Version>1.0.29</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
-      <PackageReference Include="Azure.Identity" Version="1.10.1" />
+      <PackageReference Include="Azure.Identity" Version="1.10.4" />
       <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
       </PackageReference>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.3.0" />
-    <PackageReference Include="Azure.Storage.Files.Shares" Version="12.1.0" />
-    <PackageReference Include="Azure.Storage.Queues" Version="12.13.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.0.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
+    <PackageReference Include="Azure.Storage.Files.Shares" Version="12.17.1" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.17.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Dapper" Version="2.0.151" />
+    <PackageReference Include="Dapper" Version="2.1.21" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Npgsql" Version="7.0.4" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.8.0.76515">
+    <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="7.0.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>

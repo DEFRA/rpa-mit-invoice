@@ -1,5 +1,3 @@
-using Azure.Core.Diagnostics;
-using Azure.Identity;
 using EST.MIT.Invoice.Api.Authentication;
 using EST.MIT.Invoice.Api.Endpoints;
 using EST.MIT.Invoice.Api.Repositories;
@@ -16,16 +14,15 @@ var postgresSqlAAD = builder.Configuration["AzureADPostgreSQLResourceID"];
 
 var settings = new PgDbSettings()
 {
-				Database = db,
-				Password = pass,
-				Server = host,
-				Username = user,
-				Port = port,
+    Database = db,
+    Password = pass,
+    Server = host,
+    Username = user,
+    Port = port,
     PostgresSqlAAD = postgresSqlAAD
 };
 
-var dbContext = new PgDbContext(settings, new TokenGenerator(), builder.Environment.IsProduction());
-builder.Services.AddSingleton(dbContext);
+builder.Services.AddSingleton<IPgDbContext>(new PgDbContext(settings, new TokenGenerator(), builder.Environment.IsProduction()));
 builder.Services.AddQueueServices(builder.Configuration);
 builder.Services.AddInvoiceServices();
 builder.Services.AddSwaggerServices();
@@ -43,7 +40,7 @@ var app = builder.Build();
 // ensure database and tables exist
 {
     using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<PgDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<IPgDbContext>();
     await context.Init();
 }
 

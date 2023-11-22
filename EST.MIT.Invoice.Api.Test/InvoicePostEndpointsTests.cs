@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.WebSockets;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services;
@@ -9,7 +8,6 @@ using FluentAssertions;
 using EST.MIT.Invoice.Api.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Moq;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
@@ -111,7 +109,7 @@ public class InvoicePostEndpointTests
             }
         };
         combinationsForRouteResponse.Data = combinationsForRoute;
-        
+
         _referenceDataApiMock
             .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(paymentTypesResponse));

@@ -6,7 +6,7 @@ namespace EST.MIT.Invoice.Api.Authentication;
 
 public static class TokenCache
 {
-    public static AccessToken? AccessToken 
+    public static AccessToken? AccessToken
     {
         get { lock (_sync) { return _accessToken; } }
         set { lock (_sync) { _accessToken = value; } }

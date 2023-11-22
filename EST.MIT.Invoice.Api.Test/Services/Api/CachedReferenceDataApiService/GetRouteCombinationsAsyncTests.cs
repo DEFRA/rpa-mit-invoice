@@ -3,7 +3,6 @@ using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Util;
 using FluentAssertions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;

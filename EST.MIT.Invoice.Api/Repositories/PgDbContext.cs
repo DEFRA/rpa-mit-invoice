@@ -1,14 +1,11 @@
 ﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Dapper;
 using EST.MIT.Invoice.Api.Authentication;
-using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace EST.MIT.Invoice.Api.Repositories
 {
-    public class PgDbContext
+    public class PgDbContext : IPgDbContext
     {
         private readonly PgDbSettings _dbSettings;
         private readonly bool _isProd;
@@ -18,7 +15,7 @@ namespace EST.MIT.Invoice.Api.Repositories
         {
             _dbSettings = dbSettings;
             _isProd = isProd;
-            _tokenService = tokenService;   
+            _tokenService = tokenService;
         }
 
         public async Task<IDbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
@@ -54,6 +51,10 @@ namespace EST.MIT.Invoice.Api.Repositories
                     "Reference VARCHAR, " +
                     "Value DECIMAL(13,2), " +
                     "Status VARCHAR, " +
+                    "ApproverId VARCHAR, " +
+                    "ApproverEmail VARCHAR, " +
+                    "ApprovedBy VARCHAR, " +
+                    "Approved TIMESTAMP, " +
                     "CreatedBy VARCHAR, " +
                     "UpdatedBy VARCHAR, " +
                     "Created TIMESTAMP, " +

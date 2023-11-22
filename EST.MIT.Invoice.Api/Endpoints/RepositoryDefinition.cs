@@ -11,6 +11,7 @@ public static class RepositoryDefinition
     {
         services.AddSingleton<IReferenceDataRepository, ReferenceDataRepository>();
         services.AddScoped<IPaymentRequestsBatchRepository, PaymentRequestsBatchRepository>();
+        services.AddScoped<IPaymentRequestsBatchApprovalsRepository, PaymentRequestsBatchApprovalsRepository>();
         return services;
     }
 }
