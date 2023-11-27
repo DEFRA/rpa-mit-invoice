@@ -87,7 +87,7 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
 
         if (existingEntity.Status.ToLower() == InvoiceStatuses.Approved.ToLower() || existingEntity.Status.ToLower() == InvoiceStatuses.Rejected.ToLower())
         {
-            throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
+            throw new ApprovedOrRejectedInvoiceCannotBeUpdatedException();
         }
 
         if (existingEntity.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower() && (invoice.Status == InvoiceStatuses.Approved.ToLower() || invoice.Status == InvoiceStatuses.Rejected.ToLower()))
