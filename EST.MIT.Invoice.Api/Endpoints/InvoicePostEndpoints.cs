@@ -29,13 +29,13 @@ public static class InvoicePostEndpoints
     {
 	    try
 	    {
-			var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
+			//var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
-			if (!validationResult.IsValid)
-			{
-				await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
-				return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
-			}
+			//if (!validationResult.IsValid)
+			//{
+			//	await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
+			//	return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
+			//}
 
 			// TODO: 
 			// get the logged in user
@@ -65,12 +65,12 @@ public static class InvoicePostEndpoints
     {
 	    var reference = invoices.Reference;
 
-		var validationResult = await validator.ValidateAsync(invoices);
-		if (!validationResult.IsValid)
-		{
-			await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
-			return Results.ValidationProblem(validationResult.ToDictionary());
-		}
+		//var validationResult = await validator.ValidateAsync(invoices);
+		//if (!validationResult.IsValid)
+		//{
+		//	await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
+		//	return Results.ValidationProblem(validationResult.ToDictionary());
+		//}
 
 		// TODO: 
 		// get the logged in user
