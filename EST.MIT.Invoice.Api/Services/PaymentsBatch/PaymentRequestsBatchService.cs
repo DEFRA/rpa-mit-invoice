@@ -1,3 +1,4 @@
+using EST.MIT.Invoice.Api.Exceptions;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Repositories.Entities;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
@@ -73,18 +74,25 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         // first get the existing entity
         var existingEntity = (await _paymentRequestsBatchRepository.GetBySchemeAndIdAsync(invoice.SchemeType, invoice.Id)).FirstOrDefault();
 
-        if (existingEntity != null)
+        if (existingEntity == null)
         {
-	        if ((existingEntity.Status == InvoiceStatuses.AwaitingApproval)
-	            && (invoice.Status == InvoiceStatuses.Approved || invoice.Status == InvoiceStatuses.Rejected))
-	        {
-                invoice.Approved = DateTime.Now;
-                invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
-	        }
+            throw new InvoiceNotFoundException();
+        }
+
+        if ((existingEntity.Status == InvoiceStatuses.AwaitingApproval)
+            && (invoice.Status != InvoiceStatuses.Approved && invoice.Status != InvoiceStatuses.Rejected))
+        {
+            throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
+        }
+
+        if (existingEntity.Status == InvoiceStatuses.AwaitingApproval && (invoice.Status == InvoiceStatuses.Approved || invoice.Status == InvoiceStatuses.Rejected))
+        {
+            invoice.Approved = DateTime.Now;
+            invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
         }
 
         invoice.UpdatedBy = loggedInUser.UserId;
-        
+
         var updatedEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
         await _paymentRequestsBatchRepository.UpdateAsync(updatedEntity);
         return invoice;
