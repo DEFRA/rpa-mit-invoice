@@ -79,13 +79,18 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
             throw new InvoiceNotFoundException();
         }
 
-        if ((existingEntity.Status == InvoiceStatuses.AwaitingApproval)
-            && (invoice.Status != InvoiceStatuses.Approved && invoice.Status != InvoiceStatuses.Rejected))
+        if ((existingEntity.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower())
+            && (invoice.Status.ToLower() != InvoiceStatuses.Approved.ToLower() && invoice.Status.ToLower() != InvoiceStatuses.Rejected.ToLower()))
         {
             throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
         }
 
-        if (existingEntity.Status == InvoiceStatuses.AwaitingApproval && (invoice.Status == InvoiceStatuses.Approved || invoice.Status == InvoiceStatuses.Rejected))
+        if (existingEntity.Status.ToLower() == InvoiceStatuses.Approved.ToLower() || existingEntity.Status.ToLower() == InvoiceStatuses.Rejected.ToLower())
+        {
+            throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
+        }
+
+        if (existingEntity.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower() && (invoice.Status == InvoiceStatuses.Approved.ToLower() || invoice.Status == InvoiceStatuses.Rejected.ToLower()))
         {
             invoice.Approved = DateTime.Now;
             invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else

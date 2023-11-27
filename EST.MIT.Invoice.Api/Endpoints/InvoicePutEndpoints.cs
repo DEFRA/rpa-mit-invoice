@@ -23,12 +23,12 @@ public static class InvoicePutEndpoints
 
     public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IPaymentQueueService paymentQueueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService, IMockedDataService mockedDataService)
     {
-        //var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
+        var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
-        //if (!validationResult.IsValid)
-        //{
-        //    return Results.ValidationProblem(validationResult.ToDictionary());
-        //}
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
 
         // TODO: 
         // get the logged in user

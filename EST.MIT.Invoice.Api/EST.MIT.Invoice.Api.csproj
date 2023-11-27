@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dc091c33-b672-4f91-bd49-2cdd55581fba</UserSecretsId>
-    <Version>1.0.30</Version>
+    <Version>1.0.31</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
