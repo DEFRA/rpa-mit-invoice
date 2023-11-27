@@ -10,6 +10,7 @@ using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.Api.Models;
 using System.Net;
+using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 
 namespace EST.MIT.Invoice.Api.Test;
@@ -31,9 +32,11 @@ public class InvoicePutEndpointTests
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
+    private readonly IMockedDataService _mockedDataService = new MockedDataService();
+
     private readonly IValidator<PaymentRequestsBatch> _validator;
 
-    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     public InvoicePutEndpointTests()
     {
@@ -145,10 +148,10 @@ public class InvoicePutEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
+        _paymentRequestsBatchService.UpdateAsync(invoice, Arg.Any<LoggedInUser>()).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService, _mockedDataService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -161,10 +164,10 @@ public class InvoicePutEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _paymentRequestsBatchService.UpdateAsync(invoice).ReturnsNull();
+		_paymentRequestsBatchService.UpdateAsync(invoice, Arg.Any<LoggedInUser>()).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService, _mockedDataService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -172,12 +175,12 @@ public class InvoicePutEndpointTests
     [Fact]
     public async Task PutInvoicebySchemeAndInvoiceId_WhenApproved()
     {
-        var invoice = PaymentRequestsBatchTestData.CreateInvoice("approved");
+        var invoice = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
-        _paymentRequestsBatchService.UpdateAsync(invoice).Returns(invoice);
+		_paymentRequestsBatchService.UpdateAsync(invoice, Arg.Any<LoggedInUser>()).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-updated", "Invoice updated").Returns(Task.CompletedTask);
 
-        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(invoice.Id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService, _mockedDataService);
 
         result.GetOkObjectResultStatusCode().Should().Be(200);
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -199,7 +202,7 @@ public class InvoicePutEndpointTests
         };
 
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-validation-failed", "Invoice validation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService);
+        var result = await InvoicePutEndpoints.UpdateInvoice(id, invoice, _paymentRequestsBatchService, _paymentQueueService, _validator, _eventQueueService, _mockedDataService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

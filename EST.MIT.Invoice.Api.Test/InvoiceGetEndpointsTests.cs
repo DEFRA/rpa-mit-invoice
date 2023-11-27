@@ -1,6 +1,8 @@
 using EST.MIT.Invoice.Api.Endpoints;
 using FluentAssertions;
 using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Api;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
@@ -14,7 +16,9 @@ public class InvoiceGetEndpointTests
     private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
         Substitute.For<IPaymentRequestsBatchService>();
 
-    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly IMockedDataService _mockedDataService = new MockedDataService();
+
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
@@ -93,7 +97,7 @@ public class InvoiceGetEndpointTests
         mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(expectedInvoices);
 
-        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object);
+		var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
 
         result.GetOkObjectResultValue<List<PaymentRequestsBatch>>().Should().BeEquivalentTo(expectedInvoices);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -106,10 +110,10 @@ public class InvoiceGetEndpointTests
         var userId = "1";
         var nullInvoices = new Mock<List<PaymentRequestsBatch>>();
 
-        mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
+mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(nullInvoices.Object);
 
-        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object);
+        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }

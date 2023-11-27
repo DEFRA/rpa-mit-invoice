@@ -4,6 +4,7 @@ using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using FluentValidation;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
 
@@ -20,7 +21,7 @@ public static class InvoicePutEndpoints
         return app;
     }
 
-    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IPaymentQueueService paymentQueueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService)
+    public static async Task<IResult> UpdateInvoice(string invoiceId, PaymentRequestsBatch paymentRequestsBatch, IPaymentRequestsBatchService paymentRequestsBatchService, IPaymentQueueService paymentQueueService, IValidator<PaymentRequestsBatch> validator, IEventQueueService eventQueueService, IMockedDataService mockedDataService)
     {
         var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
@@ -29,7 +30,12 @@ public static class InvoicePutEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch);
+        // TODO: 
+        // get the logged in user
+        // from the auth token, but for now mock it
+        var loggedInUser = mockedDataService.GetLoggedInUser();
+
+        var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch, loggedInUser);
 
         if (invoiceUpdated is null)
         {

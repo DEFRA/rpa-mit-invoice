@@ -2,6 +2,7 @@ using FluentAssertions;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Repositories.Entities;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
+using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using EST.MIT.Invoice.Api.Util;
 using Moq;
@@ -13,11 +14,13 @@ public class InvoiceServiceTests
 {
     private readonly Mock<IPaymentRequestsBatchRepository> _mockPaymentRequestsBatchRepository;
     private readonly PaymentRequestsBatchService _paymentRequestsBatchService;
-    private readonly PaymentRequestsBatch invoiceTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly MockedDataService _mockedDataService;
+    private readonly PaymentRequestsBatch invoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     public InvoiceServiceTests()
     {
         _mockPaymentRequestsBatchRepository = new Mock<IPaymentRequestsBatchRepository>();
+        _mockedDataService = new MockedDataService();
         _paymentRequestsBatchService = new PaymentRequestsBatchService(_mockPaymentRequestsBatchRepository.Object);
     }
 
@@ -42,10 +45,11 @@ public class InvoiceServiceTests
     {
         var invoice = invoiceTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var loggedInUser = _mockedDataService.GetLoggedInUser();
 
-        _mockPaymentRequestsBatchRepository.Setup(x => x.CreateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
+		_mockPaymentRequestsBatchRepository.Setup(x => x.CreateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
 
-        var result = await _paymentRequestsBatchService.CreateAsync(invoice);
+        var result = await _paymentRequestsBatchService.CreateAsync(invoice, loggedInUser);
 
         result.Should().BeEquivalentTo(invoice);
     }
@@ -55,10 +59,11 @@ public class InvoiceServiceTests
     {
         var invoice = invoiceTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var loggedInUser = _mockedDataService.GetLoggedInUser();
 
-        _mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
+		_mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
 
-        var result = await _paymentRequestsBatchService.UpdateAsync(invoice);
+        var result = await _paymentRequestsBatchService.UpdateAsync(invoice, loggedInUser);
 
         result.Should().BeEquivalentTo(invoice);
     }

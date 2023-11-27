@@ -9,7 +9,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.PaymentsBatch;
 
 public class PaymentRequestsBatchApprovalServiceTests
 {
-    private readonly PaymentRequestsBatch invoiceTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch invoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     [Fact]
     public async Task GetInvoicesByUserIdAsync_WithValidUserId_ReturnsInvoices()

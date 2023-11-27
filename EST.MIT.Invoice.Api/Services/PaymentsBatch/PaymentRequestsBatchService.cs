@@ -33,15 +33,29 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         }
     }
 
-	public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice)
-    {
-        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
-        await _paymentRequestsBatchRepository.CreateAsync(invoiceEntity);
-        return invoice;
-    }
+	public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser)
+	{
+		try
+		{
+			invoice.CreatedBy = loggedInUser.UserId;
+			var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+			await _paymentRequestsBatchRepository.CreateAsync(invoiceEntity);
+			return invoice;
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			throw;
+		}
+	}
 
-    public async Task<BulkInvoices?> CreateBulkAsync(BulkInvoices invoices)
+    public async Task<BulkInvoices?> CreateBulkAsync(BulkInvoices invoices, LoggedInUser loggedInUser)
     {
+	    foreach (var invoice in invoices.Invoices)
+	    {
+		    invoice.CreatedBy = loggedInUser.UserId;
+	    }
+
         var entity = new BulkInvoicesEntity
         {
             SchemeType = invoices.SchemeType,
@@ -54,10 +68,25 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         return invoices;
     }
 
-    public async Task<PaymentRequestsBatch> UpdateAsync(PaymentRequestsBatch invoice)
+    public async Task<PaymentRequestsBatch> UpdateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser)
     {
-        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
-        await _paymentRequestsBatchRepository.UpdateAsync(invoiceEntity);
+        // first get the existing entity
+        var existingEntity = (await _paymentRequestsBatchRepository.GetBySchemeAndIdAsync(invoice.SchemeType, invoice.Id)).FirstOrDefault();
+
+        if (existingEntity != null)
+        {
+	        if ((existingEntity.Status == InvoiceStatuses.AwaitingApproval)
+	            && (invoice.Status == InvoiceStatuses.Approved || invoice.Status == InvoiceStatuses.Rejected))
+	        {
+                invoice.Approved = DateTime.Now;
+                invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
+	        }
+        }
+
+        invoice.UpdatedBy = loggedInUser.UserId;
+        
+        var updatedEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        await _paymentRequestsBatchRepository.UpdateAsync(updatedEntity);
         return invoice;
     }
 

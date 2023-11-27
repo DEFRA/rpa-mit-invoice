@@ -136,7 +136,7 @@ public class PaymentRequestsValidatorTests
             SchemeType = "bps",
             PaymentType = "DOM",
             CreatedBy = "Test User",
-            Status = "approved",
+            Status = InvoiceStatuses.Approved,
             PaymentRequests = new List<PaymentRequest> {
                 new PaymentRequest {
                     PaymentRequestId = "123456789",

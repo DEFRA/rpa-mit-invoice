@@ -44,7 +44,7 @@ public class PaymentRequestsBatchValidator : AbstractValidator<PaymentRequestsBa
             .When(model => !string.IsNullOrWhiteSpace(model.Organisation) && !string.IsNullOrWhiteSpace(model.AccountType));
         RuleFor(model => model.ApproverEmail)
             .NotEmpty()
-            .When(model => PaymentRequestValidator.HaveStatusFieldEqualPendingOrApproval(model.Status));
+            .When(model => PaymentRequestValidator.HaveStatusFieldEqualAwaitingApprovalOrApproval(model.Status));
     }
 
     private async Task<bool> BeAValidSchemeType(PaymentRequestsBatch paymentRequestsBatch)

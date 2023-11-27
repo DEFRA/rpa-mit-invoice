@@ -256,7 +256,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.Approved);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -316,7 +316,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.Approved);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -369,7 +369,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.Approved);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -421,7 +421,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000,
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.Approved);
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -474,7 +474,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -516,7 +516,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -546,7 +546,7 @@ namespace EST.MIT.Invoice.Api.Test
                 FRN = 1000000000
             };
 
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
 
             //Act
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
@@ -576,7 +576,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -618,7 +618,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -667,7 +667,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -712,7 +712,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -754,7 +754,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "PendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -893,7 +893,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "pendingApproval");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.AwaitingApproval);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
@@ -958,7 +958,7 @@ namespace EST.MIT.Invoice.Api.Test
             };
 
             //Act
-            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "approved");
+            _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, InvoiceStatuses.Approved);
             var response = await _paymentRequestValidator.TestValidateAsync(paymentRequest);
 
             //Assert
