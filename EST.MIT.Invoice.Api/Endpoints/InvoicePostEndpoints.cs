@@ -29,18 +29,18 @@ public static class InvoicePostEndpoints
     {
 	    try
 	    {
-		    var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
+			var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
-		    if (!validationResult.IsValid)
-		    {
-			    await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
-			    return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
-		    }
+			if (!validationResult.IsValid)
+			{
+				await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
+				return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
+			}
 
-		    // TODO: 
-		    // get the logged in user
-		    // from the auth token, but for now mock it
-		    var loggedInUser = mockedDataService.GetLoggedInUser();
+			// TODO: 
+			// get the logged in user
+			// from the auth token, but for now mock it
+			var loggedInUser = mockedDataService.GetLoggedInUser();
 
 		    var invoiceCreated = await paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, loggedInUser);
 
@@ -63,18 +63,19 @@ public static class InvoicePostEndpoints
 
     public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService, IMockedDataService mockedDataService)
     {
-        var validationResult = await validator.ValidateAsync(invoices);
-        var reference = invoices.Reference;
+	    var reference = invoices.Reference;
 
-        if (!validationResult.IsValid)
-        {
-            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
-        // TODO: 
-        // get the logged in user
-        // from the auth token, but for now mock it
-        var loggedInUser = mockedDataService.GetLoggedInUser();
+		var validationResult = await validator.ValidateAsync(invoices);
+		if (!validationResult.IsValid)
+		{
+			await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
+			return Results.ValidationProblem(validationResult.ToDictionary());
+		}
+
+		// TODO: 
+		// get the logged in user
+		// from the auth token, but for now mock it
+		var loggedInUser = mockedDataService.GetLoggedInUser();
 
 		var bulkInvoiceCreated = await paymentRequestsBatchService.CreateBulkAsync(invoices, loggedInUser);
 
