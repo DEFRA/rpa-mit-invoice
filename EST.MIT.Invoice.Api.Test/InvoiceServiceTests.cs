@@ -15,7 +15,8 @@ public class InvoiceServiceTests
     private readonly Mock<IPaymentRequestsBatchRepository> _mockPaymentRequestsBatchRepository;
     private readonly PaymentRequestsBatchService _paymentRequestsBatchService;
     private readonly MockedDataService _mockedDataService;
-    private readonly PaymentRequestsBatch invoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
+    private readonly PaymentRequestsBatch newInvoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.New);
+    private readonly PaymentRequestsBatch approvedInvoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     public InvoiceServiceTests()
     {
@@ -27,7 +28,7 @@ public class InvoiceServiceTests
     [Fact]
     public async Task Get_ReturnsInvoices()
     {
-        var data = JsonConvert.SerializeObject(invoiceTestData);
+        var data = JsonConvert.SerializeObject(approvedInvoiceTestData);
         var invoiceEntities = new List<InvoiceEntity>
         {
             new InvoiceEntity { Id = "1", SchemeType = "Scheme1", Value = 100, Status = "awaiting", Data = data },
@@ -43,7 +44,7 @@ public class InvoiceServiceTests
     [Fact]
     public async Task Create_AddsInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = approvedInvoiceTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
         var loggedInUser = _mockedDataService.GetLoggedInUser();
 
@@ -57,11 +58,13 @@ public class InvoiceServiceTests
     [Fact]
     public async Task Update_UpdatesInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = newInvoiceTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var invoiceEntities = new List<InvoiceEntity> { invoiceEntity };
         var loggedInUser = _mockedDataService.GetLoggedInUser();
 
-		_mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
+        _mockPaymentRequestsBatchRepository.Setup(x => x.GetBySchemeAndIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(invoiceEntities);
+        _mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
 
         var result = await _paymentRequestsBatchService.UpdateAsync(invoice, loggedInUser);
 
@@ -71,7 +74,7 @@ public class InvoiceServiceTests
     [Fact]
     public async Task Delete_DeletesInvoice()
     {
-        var invoice = invoiceTestData;
+        var invoice = approvedInvoiceTestData;
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
 
         _mockPaymentRequestsBatchRepository.Setup(x => x.DeleteBySchemeAndIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(invoice.Id);
