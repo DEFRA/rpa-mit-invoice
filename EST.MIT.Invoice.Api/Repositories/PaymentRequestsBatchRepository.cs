@@ -18,6 +18,14 @@ namespace EST.MIT.Invoice.Api.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task<IEnumerable<InvoiceEntity>> GetByIdAsync(string id)
+        {
+            using var connection = await _dbContext.CreateConnectionAsync();
+            var sql = "SELECT * FROM Invoices WHERE Id = @Id";
+            var parameters = new { Id = id };
+            return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
+        }
+
         public async Task<IEnumerable<InvoiceEntity>> GetBySchemeAndIdAsync(string schemeType, string id)
         {
             using var connection = await _dbContext.CreateConnectionAsync();

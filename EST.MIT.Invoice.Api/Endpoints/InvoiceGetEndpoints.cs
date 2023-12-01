@@ -10,10 +10,15 @@ public static class InvoiceGetEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoiceGetEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
+        app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoiceBySchemeAndId)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .WithName("GetInvoice");
+            .WithName("GetInvoiceBySchemeAndId");
+
+        app.MapGet("/invoice/{invoiceId}", GetInvoiceById)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetInvoiceById");
 
         app.MapGet("/invoice/approvals/{invoiceId}", GetApprovalById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
@@ -33,7 +38,19 @@ public static class InvoiceGetEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    public static async Task<IResult> GetInvoiceById(string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    {
+        var invoiceResponse = await paymentRequestsBatchService.GetByIdAsync(invoiceId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse.FirstOrDefault());
+    }
+
+    public static async Task<IResult> GetInvoiceBySchemeAndId(string scheme, string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
     {
         var invoiceResponse = await paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId);
 
