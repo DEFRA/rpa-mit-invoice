@@ -21,6 +21,34 @@ public class InvoiceGetEndpointTests
     private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     [Fact]
+    public async Task GetInvoicebyInvoiceId_WhenInvoiceExists()
+    {
+        const string invoiceId = "123456789";
+
+        var invoice = _paymentRequestsBatchTestData;
+
+        _paymentRequestsBatchService.GetByIdAsync(invoiceId).Returns(new List<PaymentRequestsBatch> { invoice });
+
+        var result = await InvoiceGetEndpoints.GetInvoiceById(invoiceId, _paymentRequestsBatchService);
+
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultStatusCode().Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetInvoicebyInvoiceId_WhenInvoiceDoesNotExists()
+    {
+        const string invoiceId = "123456789";
+
+        _paymentRequestsBatchService.GetByIdAsync(invoiceId)
+            .ReturnsNull();
+
+        var result = await InvoiceGetEndpoints.GetInvoiceById(invoiceId, _paymentRequestsBatchService);
+
+        result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
+
+    [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";
@@ -30,7 +58,7 @@ public class InvoiceGetEndpointTests
 
         _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId).Returns(new List<PaymentRequestsBatch> { invoice });
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
+        var result = await InvoiceGetEndpoints.GetInvoiceBySchemeAndId(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -45,7 +73,7 @@ public class InvoiceGetEndpointTests
         _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId)
             .ReturnsNull();
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
+        var result = await InvoiceGetEndpoints.GetInvoiceBySchemeAndId(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }

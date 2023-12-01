@@ -62,6 +62,9 @@ namespace EST.MIT.Invoice.Api.Repositories
                     "PRIMARY KEY (Id, SchemeType));";
             await connection.ExecuteAsync(sql);
 
+            // Note. DB was originally TableStorage, then Cosmos, both partitioned on SchemeType.
+            // Currently using Postgres, but may revert to Cosmos in future, so retain potential for SchemeType partition
+
             sql = "CREATE UNIQUE INDEX IF NOT EXISTS invoices_indx1 on Invoices (id, schemeType);";
             await connection.ExecuteAsync(sql);
         }
