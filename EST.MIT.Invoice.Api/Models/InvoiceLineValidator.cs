@@ -52,12 +52,12 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .WithMessage("Account / Organisation / PaymentType / Scheme is required");
     }
 
-    private static bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
+    private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
     
-    private static bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
+    private bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
     {
         if (string.IsNullOrWhiteSpace(route.AccountType) || string.IsNullOrWhiteSpace(route.Organisation) ||
             string.IsNullOrWhiteSpace(route.PaymentType) || string.IsNullOrWhiteSpace(route.SchemeType))
