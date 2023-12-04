@@ -91,6 +91,38 @@ public class ReferenceDataRepository : IReferenceDataRepository
         return response;
     }
 
+    public async Task<HttpResponseMessage> GetMainAccountCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
+
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
+            ? await client.GetAsync($"/accounts")
+            : await client.GetAsync($"/accounts/{accountType}/{organisation}/{schemeType}/{paymentType}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
+        }
+
+        return response;
+    }
+    
+    public async Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
+
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
+            ? await client.GetAsync($"/deliveryBodies")
+            : await client.GetAsync($"/deliveryBodies/{accountType}/{organisation}/{schemeType}/{paymentType}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
+        }
+
+        return response;
+    }
+
     public async Task<HttpResponseMessage> GetCombinationsListForRouteAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");

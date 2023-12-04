@@ -373,4 +373,146 @@ public class ReferenceDataApi : IReferenceDataApi
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
         return new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.InternalServerError, error);
     }
+
+    public async Task<ApiResponse<IEnumerable<MainAccountCode>>> GetMainAccountCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var error = new Dictionary<string, List<string>>();
+        var response = await _referenceDataRepository.GetMainAccountCodesListAsync(accountType, organisation, paymentType, schemeType);
+
+        _logger.LogInformation($"Calling Reference Data API for Main Account Codes");
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                _logger.LogWarning("No content returned from API");
+                return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.NoContent);
+            }
+
+            try
+            {
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<MainAccountCode>(response.Content);
+
+                var message = responseDataTask.Exception?.Message;
+
+                if (responseDataTask.IsFaulted)
+                {
+                    _logger.LogError("Error message is ", message);
+                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
+                }
+
+                await responseDataTask;
+                var mainAccountCodes = responseDataTask.Result.ToList();
+
+                if (mainAccountCodes.Any())
+                {
+                    return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK)
+                    {
+                        Data = mainAccountCodes
+                    };
+                }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.NotFound);
+
+            }
+            catch (Exception ex)
+            {
+                error.Add("deserializing", new List<string>() { ex.Message });
+                return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.InternalServerError, error)
+                {
+                    Data = new List<MainAccountCode>()
+                };
+            }
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            _logger.LogInformation("No content returned from API");
+            return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.NotFound);
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError("Invalid request was sent to API");
+            error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
+
+            return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.BadRequest, error);
+        }
+
+        _logger.LogError("Unknown response from API");
+        error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
+        return new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.InternalServerError, error);
+    }
+
+    public async Task<ApiResponse<IEnumerable<DeliveryBodyCode>>> GetDeliveryBodyCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var error = new Dictionary<string, List<string>>();
+        var response = await _referenceDataRepository.GetDeliveryBodyCodesListAsync(accountType, organisation, paymentType, schemeType);
+
+        _logger.LogInformation($"Calling Reference Data API for Delivery Body Codes");
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                _logger.LogWarning("No content returned from API");
+                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NoContent);
+            }
+
+            try
+            {
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<DeliveryBodyCode>(response.Content);
+
+                var message = responseDataTask.Exception?.Message;
+
+                if (responseDataTask.IsFaulted)
+                {
+                    _logger.LogError("Error message is ", message);
+                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
+                }
+
+                await responseDataTask;
+                var deliveryBodyCodes = responseDataTask.Result.ToList();
+
+                if (deliveryBodyCodes.Any())
+                {
+                    return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK)
+                    {
+                        Data = deliveryBodyCodes
+                    };
+                }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NotFound);
+
+            }
+            catch (Exception ex)
+            {
+                error.Add("deserializing", new List<string>() { ex.Message });
+                return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.InternalServerError, error)
+                {
+                    Data = new List<DeliveryBodyCode>()
+                };
+            }
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            _logger.LogInformation("No content returned from API");
+            return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.NotFound);
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError("Invalid request was sent to API");
+            error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
+
+            return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.BadRequest, error);
+        }
+
+        _logger.LogError("Unknown response from API");
+        error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
+        return new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.InternalServerError, error);
+    }
 }
