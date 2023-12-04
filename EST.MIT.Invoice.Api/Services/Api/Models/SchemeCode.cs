@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EST.MIT.Invoice.Api.Services.Api.Models
+namespace EST.MIT.Invoice.Api.Services.Api.Models;
+
+[ExcludeFromCodeCoverage]
+public class SchemeCode : ReferenceDataBaseApiModel
 {
-    [ExcludeFromCodeCoverage]
-    public class SchemeCode : ReferenceDataBaseApiModel
-    {
-    }
 }
