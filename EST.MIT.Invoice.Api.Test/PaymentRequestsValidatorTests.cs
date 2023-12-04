@@ -120,6 +120,43 @@ public class PaymentRequestsValidatorTests
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
+
+        var mainAccountCodesErrors = new Dictionary<string, List<string>>();
+        var mainAccountCodeResponse = new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK, mainAccountCodesErrors);
+
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+
+        var mainAccountCodes = new List<MainAccountCode>()
+        {
+            new MainAccountCode()
+            {
+                Code = "AccountCodeValue"
+            },
+        };
+        mainAccountCodeResponse.Data = mainAccountCodes;
+
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01"
+            }
+        };
+        deliveryBodyCodeResponse.Data = deliveryBodyCodes;
+
+        _referenceDataApiMock
+            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
         _paymentRequestsBatchValidator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
