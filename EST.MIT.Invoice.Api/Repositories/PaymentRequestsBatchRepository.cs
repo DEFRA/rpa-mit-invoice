@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dapper;
-using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Repositories.Entities;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
 
@@ -23,6 +22,15 @@ namespace EST.MIT.Invoice.Api.Repositories
             using var connection = await _dbContext.CreateConnectionAsync();
             var sql = "SELECT * FROM Invoices WHERE Id = @Id";
             var parameters = new { Id = id };
+            return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
+        }
+
+        public async Task<IEnumerable<InvoiceEntity>> GetByPaymentRequestIdAsync(string paymentRequestId)
+        {
+            using var connection = await _dbContext.CreateConnectionAsync();
+            var paymentRequestIdLike = $"%\"paymentRequestId\":\"{paymentRequestId}\"%";
+            var sql = "SELECT * FROM Invoices WHERE Data LIKE @PaymentRequestId";
+            var parameters = new { PaymentRequestId = paymentRequestIdLike };
             return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
         }
 

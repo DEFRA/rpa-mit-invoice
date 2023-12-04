@@ -5,6 +5,7 @@ namespace EST.MIT.Invoice.Api.Services.PaymentsBatch;
 public interface IPaymentRequestsBatchService
 {
     Task<List<PaymentRequestsBatch>> GetByIdAsync(string id);
+    Task<List<PaymentRequestsBatch>> GetByPaymentRequestIdAsync(string paymentRequestId);
     Task<List<PaymentRequestsBatch>> GetBySchemeAndIdAsync(string scheme, string id);
     Task<List<PaymentRequestsBatch>> GetInvoicesByUserIdAsync(string userId);
 	Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser);

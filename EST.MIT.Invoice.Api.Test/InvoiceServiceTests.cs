@@ -42,6 +42,22 @@ public class InvoiceServiceTests
     }
 
     [Fact]
+    public async Task GetByPaymentRequestId_ReturnsInvoices()
+    {
+        var data = JsonConvert.SerializeObject(approvedInvoiceTestData);
+        var invoiceEntities = new List<InvoiceEntity>
+        {
+            new InvoiceEntity { Id = "1", SchemeType = "Scheme1", Value = 100, Status = "awaiting", Data = data },
+            new InvoiceEntity { Id = "2", SchemeType = "Scheme1", Value = 200, Status = "awaiting", Data = data },
+        };
+
+        _mockPaymentRequestsBatchRepository.Setup(x => x.GetByPaymentRequestIdAsync(It.IsAny<string>())).ReturnsAsync(invoiceEntities);
+
+        var result = await _paymentRequestsBatchService.GetByPaymentRequestIdAsync("abcd_12345");
+        result.Should().BeEquivalentTo(InvoiceMapper.MapToInvoice(invoiceEntities));
+    }
+
+    [Fact]
     public async Task Get_ReturnsInvoices()
     {
         var data = JsonConvert.SerializeObject(approvedInvoiceTestData);
