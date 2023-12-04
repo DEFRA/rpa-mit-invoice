@@ -5,6 +5,7 @@ namespace EST.MIT.Invoice.Api.Repositories.Interfaces
     public interface IPaymentRequestsBatchRepository
     {
         Task<IEnumerable<InvoiceEntity>> GetByIdAsync(string id);
+        Task<IEnumerable<InvoiceEntity>> GetByPaymentRequestIdAsync(string paymentRequestId);
         Task<IEnumerable<InvoiceEntity>> GetBySchemeAndIdAsync(string scheme, string id);
         Task<InvoiceEntity> CreateAsync(InvoiceEntity invoice);
         Task<BulkInvoicesEntity?> CreateBulkAsync(BulkInvoicesEntity invoices);

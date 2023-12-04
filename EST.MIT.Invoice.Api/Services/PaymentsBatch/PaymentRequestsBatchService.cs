@@ -21,6 +21,12 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         return InvoiceMapper.MapToInvoice(result);
     }
 
+    public async Task<List<PaymentRequestsBatch>> GetByPaymentRequestIdAsync(string paymentRequestId)
+    {
+        var result = await _paymentRequestsBatchRepository.GetByPaymentRequestIdAsync(paymentRequestId);
+        return InvoiceMapper.MapToInvoice(result);
+    }
+
     public async Task<List<PaymentRequestsBatch>> GetBySchemeAndIdAsync(string scheme, string id)
     {
         var result = await _paymentRequestsBatchRepository.GetBySchemeAndIdAsync(scheme, id);

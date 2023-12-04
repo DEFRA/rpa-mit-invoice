@@ -49,6 +49,33 @@ public class InvoiceGetEndpointTests
     }
 
     [Fact]
+    public async Task GetInvoicebyPaymentRequestId_WhenInvoiceExists()
+    {
+        const string paymentRequestId = "abcd_123456789";
+
+        var invoice = _paymentRequestsBatchTestData;
+
+        _paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId).Returns(new List<PaymentRequestsBatch> { invoice });
+
+        var result = await InvoiceGetEndpoints.GetInvoiceByPaymentRequestId(paymentRequestId, _paymentRequestsBatchService);
+
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultStatusCode().Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetInvoicebyPaymentRequestId_WhenInvoiceDoesNotExists()
+    {
+        const string paymentRequestId = "abcd_123456789";
+
+        _paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId).ReturnsNull();
+
+        var result = await InvoiceGetEndpoints.GetInvoiceByPaymentRequestId(paymentRequestId, _paymentRequestsBatchService);
+
+        result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
+
+    [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
     {
         const string scheme = "bps";

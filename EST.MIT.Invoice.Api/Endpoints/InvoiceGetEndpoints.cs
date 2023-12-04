@@ -20,6 +20,11 @@ public static class InvoiceGetEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoiceById");
 
+        app.MapGet("/invoice/paymentrequest/{paymentRequestId}", GetInvoiceByPaymentRequestId)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetInvoiceByPaymentRequestId");
+
         app.MapGet("/invoice/approvals/{invoiceId}", GetApprovalById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
@@ -41,6 +46,18 @@ public static class InvoiceGetEndpoints
     public static async Task<IResult> GetInvoiceById(string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
     {
         var invoiceResponse = await paymentRequestsBatchService.GetByIdAsync(invoiceId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse.FirstOrDefault());
+    }
+
+    public static async Task<IResult> GetInvoiceByPaymentRequestId(string paymentRequestId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    {
+        var invoiceResponse = await paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId);
 
         if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
