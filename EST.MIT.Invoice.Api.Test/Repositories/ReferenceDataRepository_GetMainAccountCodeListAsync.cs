@@ -19,7 +19,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         }
 
         [Fact]
-        public void GetMainAccountCodesListAsync_Returns_200()
+        public async Task GetMainAccountCodesListAsync_Returns_200()
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -34,9 +34,9 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetMainAccountCodesListAsync(_accountType, _organisation, _paymentType, _schemeType);
+            var response = await repo.GetMainAccountCodesListAsync(_accountType, _organisation, _paymentType, _schemeType);
 
-            response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Theory]
@@ -53,7 +53,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         [InlineData("", "EST", "AP", "BPS")]
         [InlineData("RPA", "EST", "", "BPS")]
         [InlineData("RPA", "EST", "AP", "BPS")]
-        public void GetMainAccountCodesListAsync_Returns_200_When_AccountType_Or_Organisation_Or_SchemeType_Or_PaymentType_Different_Combos(string accountType, string organisation, string paymentType, string schemeType)
+        public async Task GetMainAccountCodesListAsync_Returns_200_When_AccountType_Or_Organisation_Or_SchemeType_Or_PaymentType_Different_Combos(string accountType, string organisation, string paymentType, string schemeType)
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -68,13 +68,13 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetMainAccountCodesListAsync(accountType, organisation, paymentType, schemeType);
+            var response = await repo.GetMainAccountCodesListAsync(accountType, organisation, paymentType, schemeType);
 
-            response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
-        public void HandleHttpResponseError_Handed_FailCode()
+        public async Task HandleHttpResponseError_Handed_FailCode()
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.BadRequest, "Test BadRequest");
 
@@ -89,10 +89,10 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetMainAccountCodesListAsync(_accountType, _organisation, _paymentType, _schemeType);
+            var response = await repo.GetMainAccountCodesListAsync(_accountType, _organisation, _paymentType, _schemeType);
 
-            response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
         }
     }
 }

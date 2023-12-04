@@ -52,12 +52,12 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             .WithMessage("Account / Organisation / PaymentType / Scheme is required");
     }
 
-    private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
+    private static bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
     
-    private bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
+    private static bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
     {
         if (string.IsNullOrWhiteSpace(route.AccountType) || string.IsNullOrWhiteSpace(route.Organisation) ||
             string.IsNullOrWhiteSpace(route.PaymentType) || string.IsNullOrWhiteSpace(route.SchemeType))
@@ -136,12 +136,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
             return null;
         }
 
-        if (!combinationsForRoute.Data.Any())
-        {
-            return new List<CombinationForRoute>();
-        }
-
-        return combinationsForRoute.Data;
+        return !combinationsForRoute.Data.Any() ? new List<CombinationForRoute>() : combinationsForRoute.Data;
     }
 
     private async Task<bool> BeAllowedCombination(InvoiceLine invoiceLine)

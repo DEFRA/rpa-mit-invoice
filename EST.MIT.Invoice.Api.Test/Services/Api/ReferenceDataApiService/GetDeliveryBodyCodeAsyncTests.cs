@@ -42,7 +42,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
         
         [Fact]
-        public void GetDeliveryBodyCodeAsync_Returns_List()
+        public async Task GetDeliveryBodyCodeAsync_Returns_List()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
@@ -64,7 +64,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.IsSuccess.Should().BeTrue();
@@ -86,14 +86,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetDeliveryBodyCodeAsync_API_Returns_NoContent()
+        public async Task GetDeliveryBodyCodeAsync_API_Returns_NoContent()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.IsSuccess.Should().BeFalse();
@@ -101,7 +101,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetDeliveryBodyAsync_Deserialise_Fail()
+        public async Task GetDeliveryBodyAsync_Deserialise_Fail()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
@@ -111,7 +111,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), new HttpContentDeserializer());
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.IsSuccess.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -120,14 +120,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetDeliveryBodyCodeAsync_API_Returns_NotFound()
+        public async Task GetDeliveryBodyCodeAsync_API_Returns_NotFound()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             response.IsSuccess.Should().BeFalse();
@@ -135,14 +135,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetDeliveryBodyCodeAsync_API_Returns_BadRequest()
+        public async Task GetDeliveryBodyCodeAsync_API_Returns_BadRequest()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.IsSuccess.Should().BeFalse();
@@ -151,14 +151,14 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.ReferenceDataApiService
         }
 
         [Fact]
-        public void GetDeliveryBodyCodeAsync_API_Returns_Unexpected()
+        public async Task GetDeliveryBodyCodeAsync_API_Returns_Unexpected()
         {
             _mockReferenceDataRepositoryMock.Setup(x => x.GetDeliveryBodyCodesListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new HttpResponseMessage((HttpStatusCode)418));
 
             var service = new ReferenceDataApi(_mockReferenceDataRepositoryMock.Object, Mock.Of<ILogger<ReferenceDataApi>>(), _httpContentDeserializerMock.Object);
 
-            var response = service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType).Result;
+            var response = await service.GetDeliveryBodyCodesAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             response.IsSuccess.Should().BeFalse();

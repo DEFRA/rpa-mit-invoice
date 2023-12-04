@@ -560,7 +560,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is invalid for this route"));
+            Assert.Equal("Account is invalid for this route", response.Errors[0].ErrorMessage);
         }
 
         [Fact]
@@ -596,7 +596,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is invalid for this route"));
+            Assert.Equal("Account is invalid for this route", response.Errors[0].ErrorMessage);
         }
 
         [Fact]
@@ -643,7 +643,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+            Assert.Equal("Delivery Body is invalid for this route", response.Errors[0].ErrorMessage);
         }
 
         [Fact]
@@ -679,7 +679,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Delivery Body is invalid for this route"));
+            Assert.Equal("Delivery Body is invalid for this route", response.Errors[0].ErrorMessage);
         }
         
         [Fact]
@@ -715,7 +715,7 @@ namespace EST.MIT.Invoice.Api.Test
 
             //Assert
             Assert.True(response.IsValid);
-            Assert.Equal(response.Errors.Count, 0);
+            Assert.Empty(response.Errors);
             response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
             response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
             response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
@@ -765,7 +765,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+            Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
         }
 
         [Fact]
@@ -788,7 +788,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+            Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
         }
 
         [Fact]
@@ -811,7 +811,7 @@ namespace EST.MIT.Invoice.Api.Test
             var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
             //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
+            Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
         }
 
         [Fact]
