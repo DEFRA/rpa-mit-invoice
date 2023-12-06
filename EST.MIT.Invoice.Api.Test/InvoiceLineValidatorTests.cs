@@ -5,735 +5,934 @@ using EST.MIT.Invoice.Api.Models;
 using NSubstitute;
 using System.Net;
 
-namespace EST.MIT.Invoice.Api.Test
+namespace EST.MIT.Invoice.Api.Test;
+
+public class InvoiceLineValidatorTests
 {
-    public class InvoiceLineValidatorTests
+    private readonly InvoiceLineValidator _invoiceLineValidator;
+
+    private readonly IReferenceDataApi _referenceDataApiMock =
+        Substitute.For<IReferenceDataApi>();
+    private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
+        Substitute.For<ICachedReferenceDataApi>();
+
+    private readonly FieldsRoute _route = new()
     {
-        private readonly InvoiceLineValidator _invoiceLineValidator;
+        PaymentType = "AP",
+        AccountType = "AP",
+        Organisation = "Test Org",
+        SchemeType = "bps"
+    };
 
-        private readonly IReferenceDataApi _referenceDataApiMock =
-            Substitute.For<IReferenceDataApi>();
-        private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
-            Substitute.For<ICachedReferenceDataApi>();
+    public InvoiceLineValidatorTests()
+    {
+        var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
 
-        private readonly FieldsRoute _route = new()
+        var fundCodesErrors = new Dictionary<string, List<string>>();
+        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
+
+        var mainAccountCodesErrors = new Dictionary<string, List<string>>();
+        var mainAccountCodeResponse = new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK, mainAccountCodesErrors);
+
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+
+        var schemeCodes = new List<SchemeCode>()
         {
-            PaymentType = "AP",
-            AccountType = "AP",
-            Organisation = "Test Org",
-            SchemeType = "bps"
+            new SchemeCode()
+            {
+                Code = "schemecodevalue"
+            }
         };
+        schemeCodeResponse.Data = schemeCodes;
 
-        public InvoiceLineValidatorTests()
+        var fundCodes = new List<FundCode>()
         {
-            var schemeCodeErrors = new Dictionary<string, List<string>>();
-            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-
-            var fundCodesErrors = new Dictionary<string, List<string>>();
-            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
-
-            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
-            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
-
-            var schemeCodes = new List<SchemeCode>()
+            new FundCode()
             {
-                new SchemeCode()
-                {
-                    Code = "schemecodevalue"
-                }
-            };
-            schemeCodeResponse.Data = schemeCodes;
+                Code = "34ERTY6"
+            }
+        };
+        fundCodeResponse.Data = fundCodes;
 
-            var fundCodes = new List<FundCode>()
+        var mainAccountCodes = new List<MainAccountCode>()
+        {
+            new MainAccountCode()
             {
-                new FundCode()
-                {
-                    Code = "34ERTY6"
-                }
-            };
-            fundCodeResponse.Data = fundCodes;
+                Code = "AccountCodeValue"
+            },
+        };
+        mainAccountCodeResponse.Data = mainAccountCodes;
 
-            var combinationsForRoute = new List<CombinationForRoute>()
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
             {
-                new CombinationForRoute()
-                {
-                    AccountCode = "AccountCodeValue",
-                    DeliveryBodyCode = "RP00",
-                    SchemeCode = "SchemeCodeValue",
-                },
-                new CombinationForRoute()
-                {
-                    AccountCode = "AccountCodeValue",
-                    DeliveryBodyCode = "RP01",
-                    SchemeCode = "SchemeCodeValue",
-                }
-            };
-            combinationsForRouteResponse.Data = combinationsForRoute;
+                Code = "RP00"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01"
+            }
+        };
+        deliveryBodyCodeResponse.Data = deliveryBodyCodes;
 
-            _referenceDataApiMock
+        var combinationsForRoute = new List<CombinationForRoute>()
+        {
+            new CombinationForRoute()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP00",
+                SchemeCode = "SchemeCodeValue",
+            },
+            new CombinationForRoute()
+            {
+                AccountCode = "AccountCodeValue",
+                DeliveryBodyCode = "RP01",
+                SchemeCode = "SchemeCodeValue",
+            }
+        };
+        combinationsForRouteResponse.Data = combinationsForRoute;
+
+        _referenceDataApiMock
             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
 
-            _referenceDataApiMock
+        _referenceDataApiMock
             .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
-            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _referenceDataApiMock
+            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
+        _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
-            _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, _route, _cachedReferenceDataApiMock);
-        }
+        _invoiceLineValidator = new InvoiceLineValidator(_referenceDataApiMock, _route, _cachedReferenceDataApiMock);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_Value_Is_Empty_Then_InvoiceLine_Fails()
+    [Fact]
+    public async Task Given_InvoiceLine_When_GetCombinationsListForRouteAsync_Returns_Empty_Then_InvoiceLine_Passes()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+        var combinationsForRoute = new List<CombinationForRoute>();
+        combinationsForRouteResponse.Data = combinationsForRoute;
 
-            //Assert
-            response.ShouldHaveValidationErrorFor(x => x.Value);
-            response.Errors.Count.Equals(1);
-        }
+        _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_Description_Is_Empty_Then_InvoiceLine_Fails()
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.Value);
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Empty(response.Errors);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_When_Value_Is_Empty_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 234.8M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00"
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldHaveValidationErrorFor(x => x.Description);
-            response.Errors.Count.Equals(2);
-        }
+        //Assert
+        response.ShouldHaveValidationErrorFor(x => x.Value);
+        response.Errors.Count.Equals(1);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_SchemeCode_Is_Empty_Then_InvoiceLine_Fails()
+    [Fact]
+    public async Task Given_InvoiceLine_When_Description_Is_Empty_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                Value = 234.8M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
-            };
+            Currency = "GBP",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 234.8M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00"
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
-            response.Errors.Count.Equals(1);
-        }
+        //Assert
+        response.ShouldHaveValidationErrorFor(x => x.Description);
+        response.Errors.Count.Equals(2);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_SchemeCode_Is_Not_Valid_And_SchemeCode_Model_Is_Empty()
+    [Fact]
+    public async Task Given_InvoiceLine_When_SchemeCode_Is_Empty_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            var schemeCodeErrors = new Dictionary<string, List<string>>();
-            var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
-            var schemeCodes = new List<SchemeCode>()
-            {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            Value = 234.8M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00"
+        };
 
-            };
-            schemeCodeResponse.Data = schemeCodes;
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            _referenceDataApiMock
-             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-             .Returns(Task.FromResult(schemeCodeResponse));
+        //Assert
+        response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
+        response.Errors.Count.Equals(1);
+    }
 
-
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00"
-            };
-
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
-
-            //Assert
-            response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
-            response.Errors.Count.Equals(1);
-        }
-
-        [Fact]
-        public async Task Given_InvoiceLine_When_No_Field_Is_Empty_Then_InvoiceLine_Pass()
+    [Fact]
+    public async Task Given_InvoiceLine_When_SchemeCode_Is_Not_Valid_And_SchemeCode_Model_Is_Empty()
+    {
+        //Arrange
+        var schemeCodeErrors = new Dictionary<string, List<string>>();
+        var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
+        var schemeCodes = new List<SchemeCode>()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        };
+        schemeCodeResponse.Data = schemeCodes;
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.Value);
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.Empty(response.Errors);
-        }
+        _referenceDataApiMock
+            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(schemeCodeResponse));
 
 
-        [Theory]
-        [InlineData("GBP")]
-        [InlineData("EUR")]
-        public async Task Given_InvoiceLine_When_Currency_Is_Valid_Then_InvoiceLine_Passes(string currency)
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = currency,
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00"
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.Value);
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.Empty(response.Errors);
-        }
+        //Assert
+        response.ShouldHaveValidationErrorFor(x => x.SchemeCode);
+        response.Errors.Count.Equals(1);
+    }
 
-        [Theory]
-        [InlineData(10)]
-        [InlineData(10.000)]
-        [InlineData(10.100)]
-        [InlineData(-10)]
-        [InlineData(-10.000)]
-        [InlineData(-10.100)]
-        public async Task Given_InvoiceLine_When_Value_Has_Correct_Decimal_Places_Then_InvoiceLine_Passes(decimal value)
+    [Fact]
+    public async Task Given_InvoiceLine_When_No_Field_Is_Empty_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            // this is because decimal places that have a value of 0 are not
-            // counted unless they are followed by a non-zero value
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = value,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.Value);
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Empty(response.Errors);
+    }
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.Value);
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.Empty(response.Errors);
-        }
 
-        [Theory]
-        [InlineData(10.101)]
-        [InlineData(10.1234)]
-        [InlineData(10.00001)]
-        public async Task Given_InvoiceLine_When_Value_Has_More_Than_2DP_Then_InvoiceLine_Fails(decimal value)
+    [Theory]
+    [InlineData("GBP")]
+    [InlineData("EUR")]
+    public async Task Given_InvoiceLine_When_Currency_Is_Valid_Then_InvoiceLine_Passes(string currency)
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = value,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = currency,
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.Value);
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Empty(response.Errors);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_Value_Is_Equal_To_Zero_Then_InvoiceLine_Fails()
+    [Theory]
+    [InlineData(10)]
+    [InlineData(10.000)]
+    [InlineData(10.100)]
+    [InlineData(-10)]
+    [InlineData(-10.000)]
+    [InlineData(-10.100)]
+    public async Task Given_InvoiceLine_When_Value_Has_Correct_Decimal_Places_Then_InvoiceLine_Passes(decimal value)
+    {
+        // this is because decimal places that have a value of 0 are not
+        // counted unless they are followed by a non-zero value
+
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 0,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = value,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Description);
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            response.ShouldNotHaveValidationErrorFor(x => x.Currency);
-            response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
-            Assert.Single(response.Errors);
-            Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.Value);
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Empty(response.Errors);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_SchemeCode_Is_Valid_Then_InvoiceLine_Pass()
+    [Theory]
+    [InlineData(10.101)]
+    [InlineData(10.1234)]
+    [InlineData(10.00001)]
+    public async Task Given_InvoiceLine_When_Value_Has_More_Than_2DP_Then_InvoiceLine_Fails(decimal value)
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = value,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
-            Assert.Empty(response.Errors);
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Single(response.Errors);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value cannot be more than 2dp")) == 1);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_SchemeCode_Is_InValid_Then_InvoiceLine_Throws_Error_SchemeCode_Is_InValid()
+    [Fact]
+    public async Task Given_InvoiceLine_When_Value_Is_Equal_To_Zero_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "DR5699",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 0,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("SchemeCode is invalid"));
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Description);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.Currency);
+        response.ShouldNotHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Single(response.Errors);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Invoice line value must be non-zero")) == 1);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_FundCode_Is_Valid_Then_InvoiceLine_Pass()
+    [Fact]
+    public async Task Given_InvoiceLine_When_SchemeCode_Is_Valid_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
-            Assert.Empty(response.Errors);
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        Assert.Empty(response.Errors);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_FundCode_Is_InValid_Then_InvoiceLine_Throws_Error_FundCode_Is_InValid_For_This_Route()
+    [Fact]
+    public async Task Given_InvoiceLine_When_SchemeCode_Is_InValid_Then_InvoiceLine_Throws_Error_SchemeCode_Is_InValid()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTKK",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "DR5699",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
-        }
+        //Assert           
+        Assert.True(response.Errors[0].ErrorMessage.Equals("SchemeCode is invalid"));
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_Fundcode_Is_InValid_And_Fund_Model_Is_Empty()
+    [Fact]
+    public async Task Given_InvoiceLine_When_FundCode_Is_Valid_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            var fundCodesErrors = new Dictionary<string, List<string>>();
-            var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            var fundCodes = new List<FundCode>()
-            {
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            };
-            fundCodeResponse.Data = fundCodes;
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        Assert.Empty(response.Errors);
+    }
 
-            _referenceDataApiMock
-                .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(fundCodeResponse));
-
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTKK",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
-
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
-
-            //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
-        }
-
-        [Fact]
-        public async Task Given_InvoiceLine_When_MainAccount_Is_InValid_Then_InvoiceLine_Throws_Error_Account_Is_InValid_For_This_Route()
+    [Fact]
+    public async Task Given_InvoiceLine_When_FundCode_Is_InValid_Then_InvoiceLine_Throws_Error_FundCode_Is_InValid_For_This_Route()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountB",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTKK",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
-        }
+        //Assert           
+        Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_DeliveryBody_Is_InValid_Then_InvoiceLine_Throws_Error_DeliveryBody_Is_InValid_For_This_Route()
+    [Fact]
+    public async Task Given_InvoiceLine_When_Fundcode_Is_InValid_And_Fund_Model_Is_Empty()
+    {
+        //Arrange
+        var fundCodesErrors = new Dictionary<string, List<string>>();
+        var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodesErrors);
+
+        var fundCodes = new List<FundCode>()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 30,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "INVALIDDELIVERYBODY",
-                MarketingYear = 2023,
-            };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        };
+        fundCodeResponse.Data = fundCodes;
 
-            //Assert           
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Delivery Body is invalid for this route"));
-        }
+        _referenceDataApiMock
+            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(fundCodeResponse));
 
-        [Fact]
-        public async Task Given_InvoiceLine_When_CombinationForRoute_Model_Is_Empty()
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            var combinationsForRouteErrors = new Dictionary<string, List<string>>();
-            var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTKK",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            var combinationsForRoute = new List<CombinationForRoute>()
-            {
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            };
-            combinationsForRouteResponse.Data = combinationsForRoute;
+        //Assert           
+        Assert.True(response.Errors[0].ErrorMessage.Equals("Fund Code is invalid for this route"));
+    }
 
-            _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(combinationsForRouteResponse));
-
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
-
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
-
-            //Assert
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
-        }
-
-        [Fact]
-        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_DeliveryBody_Are_Valid_Then_InvoiceLine_Pass()
+    [Fact]
+    public async Task Given_InvoiceLine_When_MainAccountCode_Is_Valid_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            Assert.Empty(response.Errors);
-        }
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+        Assert.Empty(response.Errors);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_Are_Valid_And_DeliveryBody_Is_Invalid_Then_InvoiceLine_Fails()
+    [Fact]
+    public async Task Given_InvoiceLine_When_MainAccountCode_Is_InValid_Then_InvoiceLine_Throws_Error_Account_Is_InValid_For_This_Route()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "accountcodevalue",
-                DeliveryBody = "DELIVERYBODYINVALID",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "WrongValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
-        }
+        //Assert           
+        Assert.Equal("Account is invalid for this route", response.Errors[0].ErrorMessage);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_SchemeCode_Are_Valid_And_MainAccount_Is_Invalid_Then_InvoiceLine_Fails()
+    [Fact]
+    public async Task Given_InvoiceLine_When_MainAccountCode_Is_InValid_And_MainAccount_Model_Is_Empty()
+    {
+        //Arrange
+        var mainAccountCodesErrors = new Dictionary<string, List<string>>();
+        var mainAccountCodeResponse = new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK, mainAccountCodesErrors);
+
+        var mainAccountCodes = new List<MainAccountCode>()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "MAINACCOUNTINVALID",
-                DeliveryBody = "rp01",
-                MarketingYear = 2023,
-            };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        };
+        mainAccountCodeResponse.Data = mainAccountCodes;
 
-            //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
-        }
+        _referenceDataApiMock
+            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountCodeResponse));
 
-        [Fact]
-        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_MainAccount_Are_Valid_And_SchemeCode_Is_Invalid_Then_InvoiceLine_Fails()
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "SCHEMECODEINVALID",
-                Value = 4567.89M,
-                MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            //Act
-            var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Assert
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
-        }
+        //Assert           
+        Assert.Equal("Account is invalid for this route", response.Errors[0].ErrorMessage);
+    }
 
-        [Fact]
-        public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_FieldsRoute_Model_Is_Invalid_Then_InvoiceLine_Fail()
+    [Fact]
+    public async Task Given_InvoiceLine_When_DeliveryBodyCode_Is_Valid_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            FieldsRoute _inValidRoute = new()
-            {
-                AccountType = "AP",
-                Organisation = "Test Org",
-                SchemeType = "bps"
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
 
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "accountcodevalue",
-                DeliveryBody = "rp01",
-                MarketingYear = 2023,
-            };
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            var validator = new InvoiceLineValidator(_referenceDataApiMock, _inValidRoute, _cachedReferenceDataApiMock);
+        //Assert
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+        Assert.Empty(response.Errors);
+    }
 
-            //Act
-            var response = await validator.TestValidateAsync(invoiceLine);
-
-            //Assert
-            Assert.True(response.Errors[2].ErrorMessage.Equals("Account / Scheme / Delivery Body combination is invalid"));
-        }
-
-        [Theory]
-        [InlineData("", "", "", "")]
-        [InlineData(null, null, null, null)]
-        [InlineData("AccountType", "", "", "")]
-        [InlineData("AccountType", "Organisation", "", "")]
-        [InlineData("AccountType", "Organisation", "PaymentType", "")]
-        [InlineData("", "Organisation", "", "")]
-        [InlineData("", "Organisation", "PaymentType", "")]
-        [InlineData("", "Organisation", "PaymentType", "SchemeType")]
-        [InlineData("", "", "PaymentType", "")]
-        [InlineData("", "", "PaymentType", "SchemeType")]
-        [InlineData("AccountType", "", "PaymentType", "SchemeType")]
-        [InlineData("", "", "", "SchemeType")]
-        [InlineData("AccountType", "", "", "SchemeType")]
-        [InlineData("AccountType", "Organisation", "", "SchemeType")]
-        [InlineData("AccountType", "", "PaymentType", "")]
-        [InlineData("", "Organisation", "", "SchemeType")]
-        public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    [Fact]
+    public async Task Given_InvoiceLine_When_DeliveryBodyCode_Is_InValid_Then_InvoiceLine_Throws_Error_DeliveryBody_Is_InValid_For_This_Route()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
         {
-            //Arrange
-            InvoiceLine invoiceLine = new InvoiceLine()
-            {
-                Currency = "GBP",
-                Description = "Description",
-                FundCode = "34ERTY6",
-                SchemeCode = "schemecodevalue",
-                Value = 4567.89M,
-                MainAccount = "AccountCodeValue",
-                DeliveryBody = "RP00",
-                MarketingYear = 2023,
-            };
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "WrongValue",
+            MarketingYear = 2023,
+        };
 
-            var route = new FieldsRoute()
-            {
-                AccountType = accountType,
-                Organisation = organisation,
-                PaymentType = paymentType,
-                SchemeType = schemeType
-            };
-            var validator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
-            //Act
+        //Assert           
+        Assert.Equal("Delivery Body is invalid for this route", response.Errors[0].ErrorMessage);
+    }
 
-            var response = await validator.TestValidateAsync(invoiceLine);
+    [Fact]
+    public async Task Given_InvoiceLine_When_DeliveryBodyCode_Is_InValid_And_DeliveryBody_Model_Is_Empty()
+    {
+        //Arrange
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
 
-            //Assert
-            Assert.True(response.Errors[0].ErrorMessage.Equals("Account is Invalid for this route"));
-            Assert.True(response.Errors[1].ErrorMessage.Equals("Delivery Body is invalid for this route"));
-        }
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+
+        };
+        deliveryBodyCodeResponse.Data = deliveryBodyCodes;
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert           
+        Assert.Equal("Delivery Body is invalid for this route", response.Errors[0].ErrorMessage);
+    }
+        
+    [Fact]
+    public async Task Given_InvoiceLine_When_AllCombination_Values_Are_Valid_Individually_But_CombinationForRoute_Model_Is_Empty_Should_Pass()
+    {
+        //Arrange
+        var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+        var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
+
+        var combinationsForRoute = new List<CombinationForRoute>()
+        {
+
+        };
+        combinationsForRouteResponse.Data = combinationsForRoute;
+
+        _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(combinationsForRouteResponse));
+
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.True(response.IsValid);
+        Assert.Empty(response.Errors);
+        response.ShouldNotHaveValidationErrorFor(x => x.MainAccount);
+        response.ShouldNotHaveValidationErrorFor(x => x.FundCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.SchemeCode);
+        response.ShouldNotHaveValidationErrorFor(x => x.DeliveryBody);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_DeliveryBody_Are_Valid_Then_InvoiceLine_Pass()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "accountcodevalue",
+            DeliveryBody = "rp01",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Empty(response.Errors);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_Account_SchemeCode_Are_Valid_And_DeliveryBody_Is_Invalid_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "accountcodevalue",
+            DeliveryBody = "DELIVERYBODYINVALID",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_SchemeCode_Are_Valid_And_MainAccount_Is_Invalid_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "MAINACCOUNTINVALID",
+            DeliveryBody = "rp01",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_Check_For_Valid_Combinations_When_DeliveryBody_MainAccount_Are_Valid_And_SchemeCode_Is_Invalid_Then_InvoiceLine_Fails()
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "SCHEMECODEINVALID",
+            Value = 4567.89M,
+            MainAccount = "accountcodevalue",
+            DeliveryBody = "rp01",
+            MarketingYear = 2023,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_When_FieldsRoute_Model_Is_Invalid_Then_InvoiceLine_Fail()
+    {
+        //Arrange
+        FieldsRoute _inValidRoute = new()
+        {
+            AccountType = "AP",
+            Organisation = "Test Org",
+            SchemeType = "bps",
+
+        };
+
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "accountcodevalue",
+            DeliveryBody = "rp01",
+            MarketingYear = 2023,
+        };
+
+        var validator = new InvoiceLineValidator(_referenceDataApiMock, _inValidRoute, _cachedReferenceDataApiMock);
+
+        //Act
+        var response = await validator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[0].ErrorMessage);
+        Assert.Equal("Account / Organisation / PaymentType / Scheme is required", response.Errors[1].ErrorMessage);
+    }
+
+    [Theory]
+    [InlineData("", "", "", "")]
+    [InlineData(null, null, null, null)]
+    [InlineData("AccountType", "", "", "")]
+    [InlineData("AccountType", "Organisation", "", "")]
+    [InlineData("AccountType", "Organisation", "PaymentType", "")]
+    [InlineData("", "Organisation", "", "")]
+    [InlineData("", "Organisation", "PaymentType", "")]
+    [InlineData("", "Organisation", "PaymentType", "SchemeType")]
+    [InlineData("", "", "PaymentType", "")]
+    [InlineData("", "", "PaymentType", "SchemeType")]
+    [InlineData("AccountType", "", "PaymentType", "SchemeType")]
+    [InlineData("", "", "", "SchemeType")]
+    [InlineData("AccountType", "", "", "SchemeType")]
+    [InlineData("AccountType", "Organisation", "", "SchemeType")]
+    [InlineData("AccountType", "", "PaymentType", "")]
+    [InlineData("", "Organisation", "", "SchemeType")]
+    public async Task Given_InvoiceLine_When_Route_For_GetCombinationsForRouteList_Are_Empty_Then_It_Fails(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        //Arrange
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 4567.89M,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2023,
+        };
+
+        var route = new FieldsRoute()
+        {
+            AccountType = accountType,
+            Organisation = organisation,
+            PaymentType = paymentType,
+            SchemeType = schemeType
+        };
+        var validator = new InvoiceLineValidator(_referenceDataApiMock, route, _cachedReferenceDataApiMock);
+
+        //Act
+
+        var response = await validator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[0].ErrorMessage);
+        Assert.Equal("Account / Organisation / PaymentType / Scheme is required", response.Errors[1].ErrorMessage);
     }
 }

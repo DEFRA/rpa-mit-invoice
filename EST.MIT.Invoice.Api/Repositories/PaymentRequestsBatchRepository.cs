@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dapper;
-using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Repositories.Entities;
 using EST.MIT.Invoice.Api.Repositories.Interfaces;
 
@@ -16,6 +15,23 @@ namespace EST.MIT.Invoice.Api.Repositories
         public PaymentRequestsBatchRepository(IPgDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<IEnumerable<InvoiceEntity>> GetByIdAsync(string id)
+        {
+            using var connection = await _dbContext.CreateConnectionAsync();
+            var sql = "SELECT * FROM Invoices WHERE Id = @Id";
+            var parameters = new { Id = id };
+            return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
+        }
+
+        public async Task<IEnumerable<InvoiceEntity>> GetByPaymentRequestIdAsync(string paymentRequestId)
+        {
+            using var connection = await _dbContext.CreateConnectionAsync();
+            var paymentRequestIdLike = $"%\"paymentRequestId\":\"{paymentRequestId}\"%";
+            var sql = "SELECT * FROM Invoices WHERE Data LIKE @PaymentRequestId";
+            var parameters = new { PaymentRequestId = paymentRequestIdLike };
+            return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
         }
 
         public async Task<IEnumerable<InvoiceEntity>> GetBySchemeAndIdAsync(string schemeType, string id)
@@ -83,8 +99,8 @@ namespace EST.MIT.Invoice.Api.Repositories
             }
 
             using var connection = await _dbContext.CreateConnectionAsync();
-            var sql = "SELECT SchemeType, Id, Data, Reference, Value, Status, ApproverId, ApproverEmail, ApprovedBy, Approved, CreatedBy, Updated, Created, Updated FROM Invoices WHERE (CreatedBy = @UserId or Updatedby = @UserId) or @FetchAll";
-            var parameters = new { UserId = userId, FetchAll = true };      // TODO: Remove the FetchAll override when AD User access is patched in
+            var sql = "SELECT SchemeType, Id, Data, Reference, Value, Status, ApproverId, ApproverEmail, ApprovedBy, Approved, CreatedBy, Updated, Created, Updated FROM Invoices WHERE (CreatedBy = @UserId or Updatedby = @UserId)";
+            var parameters = new { UserId = userId };
             return await connection.QueryAsync<InvoiceEntity>(sql, parameters);
         }
     }

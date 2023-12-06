@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
-using FluentValidation;
 using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
 
@@ -10,10 +10,20 @@ public static class InvoiceGetEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapInvoiceGetEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoice)
+        app.MapGet("/invoice/{scheme}/{invoiceId}", GetInvoiceBySchemeAndId)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .WithName("GetInvoice");
+            .WithName("GetInvoiceBySchemeAndId");
+
+        app.MapGet("/invoice/{invoiceId}", GetInvoiceById)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetInvoiceById");
+
+        app.MapGet("/invoice/paymentrequest/{paymentRequestId}", GetInvoiceByPaymentRequestId)
+            .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetInvoiceByPaymentRequestId");
 
         app.MapGet("/invoice/approvals/{invoiceId}", GetApprovalById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
@@ -33,7 +43,31 @@ public static class InvoiceGetEndpoints
         return app;
     }
 
-    public static async Task<IResult> GetInvoice(string scheme, string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    public static async Task<IResult> GetInvoiceById(string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    {
+        var invoiceResponse = await paymentRequestsBatchService.GetByIdAsync(invoiceId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse.FirstOrDefault());
+    }
+
+    public static async Task<IResult> GetInvoiceByPaymentRequestId(string paymentRequestId, IPaymentRequestsBatchService paymentRequestsBatchService)
+    {
+        var invoiceResponse = await paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId);
+
+        if (invoiceResponse is null || invoiceResponse.Count == 0)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(invoiceResponse.FirstOrDefault());
+    }
+
+    public static async Task<IResult> GetInvoiceBySchemeAndId(string scheme, string invoiceId, IPaymentRequestsBatchService paymentRequestsBatchService)
     {
         var invoiceResponse = await paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId);
 
@@ -45,10 +79,14 @@ public static class InvoiceGetEndpoints
         return Results.Ok(invoiceResponse.FirstOrDefault());
     }
 
-    public static async Task<IResult> GetAllApprovals(IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    public static async Task<IResult> GetAllApprovals(IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService, IMockedDataService mockedDataService)
     {
-        var userId = "1"; // TODO: fxs need to get the user id from the token
-        var invoiceResponse = await paymentRequestsBatchApprovalService.GetAllInvoicesForApprovalByUserIdAsync(userId);
+	    // TODO: 
+	    // get the logged in user
+	    // from the auth token, but for now mock it
+	    var loggedInUser = mockedDataService.GetLoggedInUser();
+
+		var invoiceResponse = await paymentRequestsBatchApprovalService.GetAllInvoicesForApprovalByUserIdAsync(loggedInUser.UserId);
 
         if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
@@ -58,10 +96,13 @@ public static class InvoiceGetEndpoints
         return Results.Ok(invoiceResponse);
     }
 
-    public static async Task<IResult> GetApprovalById(string invoiceId, IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService)
+    public static async Task<IResult> GetApprovalById(string invoiceId, IPaymentRequestsBatchApprovalService paymentRequestsBatchApprovalService, IMockedDataService mockedDataService)
     {
-        var userId = "1"; // TODO: fxs need to get the user id from the token
-        var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoiceForApprovalByUserIdAndInvoiceIdAsync(userId, invoiceId);
+		// TODO: 
+		// get the logged in user
+		// from the auth token, but for now mock it
+		var loggedInUser = mockedDataService.GetLoggedInUser();
+		var invoiceResponse = await paymentRequestsBatchApprovalService.GetInvoiceForApprovalByUserIdAndInvoiceIdAsync(loggedInUser.UserId, invoiceId);
 
         if (invoiceResponse is null)
         {
@@ -71,10 +112,13 @@ public static class InvoiceGetEndpoints
         return Results.Ok(invoiceResponse);
     }
 
-    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchService paymentRequestsBatchService)
+    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchService paymentRequestsBatchService, IMockedDataService mockedDataService)
     {
-        var userId = "1"; // TODO: fxs need to get the user id from the token
-        var invoiceResponse = await paymentRequestsBatchService.GetInvoicesByUserIdAsync(userId);
+		// TODO: 
+		// get the logged in user
+		// from the auth token, but for now mock it
+		var loggedInUser = mockedDataService.GetLoggedInUser();
+		var invoiceResponse = await paymentRequestsBatchService.GetInvoicesByUserIdAsync(loggedInUser.UserId);
 
         if (invoiceResponse is null || invoiceResponse.Count == 0)
         {

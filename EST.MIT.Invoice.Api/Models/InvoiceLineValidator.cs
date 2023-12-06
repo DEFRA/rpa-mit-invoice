@@ -4,6 +4,7 @@ using EST.MIT.Invoice.Api.Services.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using FluentValidation;
 using EST.MIT.Invoice.Api.Util;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace EST.MIT.Invoice.Api.Models;
 
@@ -35,22 +36,36 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
            .WithMessage("Fund Code is invalid for this route")
            .When(model => !string.IsNullOrWhiteSpace(model.FundCode));
         RuleFor(x => x.MainAccount).NotEmpty()
-            .MustAsync((x, cancellation) => BeAValidMainAccount(x))
-            .WithMessage("Account is Invalid for this route")
+            .MustAsync((x, cancellation) => BeAValidMainAccountCode(x))
+            .WithMessage("Account is invalid for this route")
             .When(model => !string.IsNullOrWhiteSpace(model.MainAccount));
         RuleFor(x => x.DeliveryBody)
             .NotEmpty()
-            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBodyAsync(deliveryBody))
+            .MustAsync((deliveryBody, cancellationToken) => BeAValidDeliveryBody(deliveryBody))
             .WithMessage("Delivery Body is invalid for this route");
         RuleFor(model => model)
             .MustAsync((model, cancellationToken) => BeAllowedCombination(model))
             .WithMessage("Account / Scheme / Delivery Body combination is invalid")
             .When(x => !string.IsNullOrWhiteSpace(x.DeliveryBody) && !string.IsNullOrWhiteSpace(x.SchemeCode) && !string.IsNullOrWhiteSpace(x.MainAccount));
+        RuleFor(model => model)
+            .Must((model) => AllRouteValuesMustNotBeEmpty(_route))
+            .WithMessage("Account / Organisation / PaymentType / Scheme is required");
     }
 
     private bool HaveNoMoreThanTwoDecimalPlaces(decimal value)
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
+    }
+    
+    private bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
+    {
+        if (string.IsNullOrWhiteSpace(route.AccountType) || string.IsNullOrWhiteSpace(route.Organisation) ||
+            string.IsNullOrWhiteSpace(route.PaymentType) || string.IsNullOrWhiteSpace(route.SchemeType))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private async Task<bool> BeAValidSchemeCodes(string schemeCode)
@@ -77,7 +92,31 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         return fundCodes.Data.Any(x => x.Code.ToLower() == fundCode.ToLower());
     }
 
-    private async Task<IEnumerable<CombinationForRoute>> GetCombinationsListForRouteAsync()
+    private async Task<bool> BeAValidMainAccountCode(string mainAccountCode)
+    {
+        var mainAccountCodes = await _referenceDataApi.GetMainAccountCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!mainAccountCodes.IsSuccess || !mainAccountCodes.Data.Any())
+        {
+            return false;
+        }
+
+        return mainAccountCodes.Data.Any(x => x.Code.ToLower() == mainAccountCode.ToLower());
+    }
+
+    private async Task<bool> BeAValidDeliveryBody(string deliveryBodyCode)
+    {
+        var deliveryBodyCodes = await _referenceDataApi.GetDeliveryBodyCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!deliveryBodyCodes.IsSuccess || !deliveryBodyCodes.Data.Any())
+        {
+            return false;
+        }
+
+        return deliveryBodyCodes.Data.Any(x => x.Code.ToLower() == deliveryBodyCode.ToLower());
+    }
+
+    private async Task<IEnumerable<CombinationForRoute>?> GetCombinationsListForRouteAsync()
     {
         var accountType = _route.AccountType ?? "";
         var organisation = _route.Organisation ?? "";
@@ -87,36 +126,39 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
             string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
         {
-            return new List<CombinationForRoute>();
+            return null;
         }
 
         var combinationsForRoute = await _cachedReferenceDataApi.GetCombinationsListForRouteAsync(accountType, organisation, paymentType, schemeType);
 
-        if (!combinationsForRoute.IsSuccess || !combinationsForRoute.Data.Any())
+        if (!combinationsForRoute.IsSuccess)
         {
-            return new List<CombinationForRoute>();
+            return null;
         }
 
-        return combinationsForRoute.Data;
-    }
-
-    private async Task<bool> BeAValidMainAccount(string mainAccount)
-    {
-        return (await GetCombinationsListForRouteAsync()).Any(x => x.AccountCode.ToLower() == mainAccount.ToLower());
-    }
-
-    private async Task<bool> BeAValidDeliveryBodyAsync(string deliveryBody)
-    {
-        return (await GetCombinationsListForRouteAsync()).Any(x => x.DeliveryBodyCode.ToLower() == deliveryBody.ToLower());
+        return !combinationsForRoute.Data.Any() ? new List<CombinationForRoute>() : combinationsForRoute.Data;
     }
 
     private async Task<bool> BeAllowedCombination(InvoiceLine invoiceLine)
     {
-        return (await GetCombinationsListForRouteAsync()).Any(x =>
-           string.Equals(x.DeliveryBodyCode, invoiceLine.DeliveryBody, StringComparison.OrdinalIgnoreCase) &&
-           string.Equals(x.SchemeCode, invoiceLine.SchemeCode, StringComparison.OrdinalIgnoreCase) &&
-           string.Equals(x.AccountCode, invoiceLine.MainAccount, StringComparison.OrdinalIgnoreCase)
-       );
+        var combinations = await this.GetCombinationsListForRouteAsync();
+
+        if (combinations == null)
+        {
+            return false;
+        }
+        
+        var combinationForRoutes = combinations.ToList();
+
+        if (!combinationForRoutes.Any())
+        {
+            return true;
+        }
+
+        return combinationForRoutes.Exists(x =>
+            string.Equals(x.DeliveryBodyCode, invoiceLine.DeliveryBody, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(x.SchemeCode, invoiceLine.SchemeCode, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(x.AccountCode, invoiceLine.MainAccount, StringComparison.OrdinalIgnoreCase));
     }
 }
 

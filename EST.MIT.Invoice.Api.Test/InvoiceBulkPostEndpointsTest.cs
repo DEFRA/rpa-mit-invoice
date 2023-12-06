@@ -6,6 +6,7 @@ using FluentValidation;
 using EST.MIT.Invoice.Api.Endpoints;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services;
+using EST.MIT.Invoice.Api.Services.Api;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
@@ -23,8 +24,10 @@ public class InvoiceBulkPostEndpointsTest
          Substitute.For<IReferenceDataApi>();
     private readonly ICachedReferenceDataApi _cachedReferenceDataApiMock =
         Substitute.For<ICachedReferenceDataApi>();
+
+    private readonly IMockedDataService _mockedDataService = new MockedDataService();
     private readonly IValidator<BulkInvoices> _validator;
-    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     public InvoiceBulkPostEndpointsTest()
     {
@@ -128,6 +131,43 @@ public class InvoiceBulkPostEndpointsTest
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
+
+        var mainAccountCodesErrors = new Dictionary<string, List<string>>();
+        var mainAccountCodeResponse = new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK, mainAccountCodesErrors);
+
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+
+        var mainAccountCodes = new List<MainAccountCode>()
+        {
+            new MainAccountCode()
+            {
+                Code = "AccountCodeValue"
+            },
+        };
+        mainAccountCodeResponse.Data = mainAccountCodes;
+
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01"
+            }
+        };
+        deliveryBodyCodeResponse.Data = deliveryBodyCodes;
+
+        _referenceDataApiMock
+            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
         _validator = new BulkInvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
@@ -145,10 +185,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).Returns(bulkInvoices);
+		_paymentRequestsBatchService.CreateBulkAsync(bulkInvoices, Arg.Any<LoggedInUser>()).Returns(bulkInvoices);
 
         // Act
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetCreatedStatusCode().Should().Be(200);
     }
@@ -165,9 +205,9 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
+		_paymentRequestsBatchService.CreateBulkAsync(bulkInvoices, Arg.Any<LoggedInUser>()).ReturnsNull();
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey("Reference");
@@ -186,10 +226,10 @@ public class InvoiceBulkPostEndpointsTest
             }
         };
 
-        _paymentRequestsBatchService.CreateBulkAsync(bulkInvoices).ReturnsNull();
+		_paymentRequestsBatchService.CreateBulkAsync(bulkInvoices, Arg.Any<LoggedInUser>()).ReturnsNull();
         _eventQueueService.CreateMessage(bulkInvoices.Reference, "failed", "bulk-invoice-creation-failed", "Bulk invoice creation failed").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateBulkInvoices(bulkInvoices, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }

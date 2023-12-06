@@ -13,7 +13,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
     public PaymentRequestValidator(IReferenceDataApi referenceDataApi, ICachedReferenceDataApi cachedReferenceDataApi, FieldsRoute route, string status)
     {
         RuleFor(paymentRequest => paymentRequest.AgreementNumber).NotEmpty();
-        RuleFor(paymentRequest => paymentRequest.InvoiceLines).NotEmpty().When(x => HaveStatusFieldEqualPendingOrApproval(status));
+        RuleFor(paymentRequest => paymentRequest.InvoiceLines).NotEmpty().When(x => HaveStatusFieldEqualAwaitingApprovalOrApproval(status));
         RuleFor(paymentRequest => paymentRequest.SourceSystem).NotEmpty();
         RuleFor(paymentRequest => paymentRequest.DueDate).NotEmpty();
         RuleFor(paymentRequest => paymentRequest.MarketingYear).NotEmpty();
@@ -27,7 +27,7 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             .WithMessage("PaymentRequestId cannot contain spaces");
         RuleFor(paymentRequest => paymentRequest.PaymentRequestNumber).NotEmpty();
         RuleFor(paymentRequest => paymentRequest.Value)
-            .NotEqual(0).When(x => HaveStatusFieldEqualPendingOrApproval(status))
+            .NotEqual(0).When(x => HaveStatusFieldEqualAwaitingApprovalOrApproval(status))
             .WithMessage("Invoice value must be non-zero")
             .Must(HaveNoMoreThanTwoDecimalPlaces)
             .WithMessage("Invoice value cannot be more than 2dp")
@@ -119,8 +119,8 @@ public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
             || (sbi == 0 && frn == 0 && !string.IsNullOrWhiteSpace(vendor));
     }
 
-    public static bool HaveStatusFieldEqualPendingOrApproval(string status)
+    public static bool HaveStatusFieldEqualAwaitingApprovalOrApproval(string status)
     {
-        return status.ToLower() == "pendingapproval" || status.ToLower() == "approved";
+        return status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower() || status.ToLower() == InvoiceStatuses.Approved.ToLower();
     }
 }

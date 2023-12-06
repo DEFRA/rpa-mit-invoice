@@ -6,6 +6,7 @@ using EST.MIT.Invoice.Api.Endpoints;
 using NSubstitute;
 using FluentAssertions;
 using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Api;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using NSubstitute.ReturnsExtensions;
@@ -27,7 +28,9 @@ public class InvoicePostEndpointTests
     private readonly IEventQueueService _eventQueueService =
         Substitute.For<IEventQueueService>();
 
-    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly IMockedDataService _mockedDataService = new MockedDataService();
+
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
 
     private readonly IValidator<PaymentRequestsBatch> _validator;
 
@@ -134,6 +137,43 @@ public class InvoicePostEndpointTests
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));
 
+
+        var mainAccountCodesErrors = new Dictionary<string, List<string>>();
+        var mainAccountCodeResponse = new ApiResponse<IEnumerable<MainAccountCode>>(HttpStatusCode.OK, mainAccountCodesErrors);
+
+        var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
+        var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
+
+        var mainAccountCodes = new List<MainAccountCode>()
+        {
+            new MainAccountCode()
+            {
+                Code = "AccountCodeValue"
+            },
+        };
+        mainAccountCodeResponse.Data = mainAccountCodes;
+
+        var deliveryBodyCodes = new List<DeliveryBodyCode>()
+        {
+            new DeliveryBodyCode()
+            {
+                Code = "RP00"
+            },
+            new DeliveryBodyCode()
+            {
+                Code = "RP01"
+            }
+        };
+        deliveryBodyCodeResponse.Data = deliveryBodyCodes;
+
+        _referenceDataApiMock
+            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(mainAccountCodeResponse));
+
+        _referenceDataApiMock
+            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
         _validator = new PaymentRequestsBatchValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);
     }
 
@@ -141,11 +181,11 @@ public class InvoicePostEndpointTests
     public async Task PostInvoicebySchemeAndInvoiceId_WhenInvoiceDoesNotExist()
     {
         var invoice = _paymentRequestsBatchTestData;
-
-        _paymentRequestsBatchService.CreateAsync(invoice).Returns(invoice);
+        
+		_paymentRequestsBatchService.CreateAsync(invoice, Arg.Any<LoggedInUser>()).Returns(invoice);
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetCreatedStatusCode().Should().Be(201);
         result.GetCreatedResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
@@ -156,10 +196,10 @@ public class InvoicePostEndpointTests
     {
         var invoice = _paymentRequestsBatchTestData;
 
-        _paymentRequestsBatchService.CreateAsync(invoice).ReturnsNull();
+		_paymentRequestsBatchService.CreateAsync(invoice, Arg.Any<LoggedInUser>()).ReturnsNull();
         _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetCreatedStatusCode().Should().Be(400);
     }
@@ -203,12 +243,12 @@ public class InvoicePostEndpointTests
                 }
             }
         };
-
-        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+        
+		_paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, Arg.Any<LoggedInUser>()).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -254,11 +294,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+		_paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, Arg.Any<LoggedInUser>()).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -303,11 +343,11 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _paymentRequestsBatchService.CreateAsync(paymentRequestsBatch).Returns(paymentRequestsBatch);
+		_paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, Arg.Any<LoggedInUser>()).Returns(paymentRequestsBatch);
         _eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created").Returns(Task.CompletedTask);
 
         //Act
-        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService);
+        var result = await InvoicePostEndpoints.CreateInvoice(paymentRequestsBatch, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         //Assert
         result.GetCreatedStatusCode().Should().Be(400);
@@ -333,8 +373,8 @@ public class InvoicePostEndpointTests
             }
         };
 
-        _eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
-        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService);
+		_eventQueueService.CreateMessage(invoice.Id, invoice.Status, "invoice-create-failed", "Invoice creation failed").Returns(Task.CompletedTask);
+        var result = await InvoicePostEndpoints.CreateInvoice(invoice, _validator, _paymentRequestsBatchService, _eventQueueService, _mockedDataService);
 
         result.GetBadRequestResultValue<HttpValidationProblemDetails>().Should().NotBeNull();
         result?.GetBadRequestResultValue<HttpValidationProblemDetails>()?.Errors.Should().ContainKey(errorKey);

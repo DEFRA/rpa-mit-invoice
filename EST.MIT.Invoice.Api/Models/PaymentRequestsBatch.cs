@@ -41,14 +41,14 @@ public class PaymentRequestsBatch
     public string ApprovedBy { get; set; } = default!;
 
     [JsonProperty("approved")]
-    public DateTime? Approved { get; init; }
+    public DateTime? Approved { get; set; } = default!;
 
-    [JsonProperty("updated")]
+	[JsonProperty("updated")]
     public DateTime? Updated { get; init; }
 
     [JsonProperty("createdBy")]
-    public string CreatedBy { get; init; } = default!;
+    public string CreatedBy { get; set; } = default!;
 
     [JsonProperty("updatedBy")]
-    public string UpdatedBy { get; init; } = default!;
+    public string UpdatedBy { get; set; } = default!;
 }

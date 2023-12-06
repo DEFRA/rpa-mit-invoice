@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace EST.MIT.Invoice.Api.Services.Api.Models;
 
-public class FundCode
+[ExcludeFromCodeCoverage]
+public class MainAccountCode
 {
     [JsonProperty("code")]
     public string Code { get; set; } = default!;

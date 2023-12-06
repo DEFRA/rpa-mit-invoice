@@ -1,6 +1,8 @@
 using EST.MIT.Invoice.Api.Endpoints;
 using FluentAssertions;
 using EST.MIT.Invoice.Api.Models;
+using EST.MIT.Invoice.Api.Services.Api;
+using EST.MIT.Invoice.Api.Services.Api.Interfaces;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
@@ -14,7 +16,64 @@ public class InvoiceGetEndpointTests
     private readonly IPaymentRequestsBatchService _paymentRequestsBatchService =
         Substitute.For<IPaymentRequestsBatchService>();
 
-    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice();
+    private readonly IMockedDataService _mockedDataService = new MockedDataService();
+
+    private readonly PaymentRequestsBatch _paymentRequestsBatchTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
+
+    [Fact]
+    public async Task GetInvoicebyInvoiceId_WhenInvoiceExists()
+    {
+        const string invoiceId = "123456789";
+
+        var invoice = _paymentRequestsBatchTestData;
+
+        _paymentRequestsBatchService.GetByIdAsync(invoiceId).Returns(new List<PaymentRequestsBatch> { invoice });
+
+        var result = await InvoiceGetEndpoints.GetInvoiceById(invoiceId, _paymentRequestsBatchService);
+
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultStatusCode().Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetInvoicebyInvoiceId_WhenInvoiceDoesNotExists()
+    {
+        const string invoiceId = "123456789";
+
+        _paymentRequestsBatchService.GetByIdAsync(invoiceId)
+            .ReturnsNull();
+
+        var result = await InvoiceGetEndpoints.GetInvoiceById(invoiceId, _paymentRequestsBatchService);
+
+        result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
+
+    [Fact]
+    public async Task GetInvoicebyPaymentRequestId_WhenInvoiceExists()
+    {
+        const string paymentRequestId = "abcd_123456789";
+
+        var invoice = _paymentRequestsBatchTestData;
+
+        _paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId).Returns(new List<PaymentRequestsBatch> { invoice });
+
+        var result = await InvoiceGetEndpoints.GetInvoiceByPaymentRequestId(paymentRequestId, _paymentRequestsBatchService);
+
+        result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
+        result.GetOkObjectResultStatusCode().Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetInvoicebyPaymentRequestId_WhenInvoiceDoesNotExists()
+    {
+        const string paymentRequestId = "abcd_123456789";
+
+        _paymentRequestsBatchService.GetByPaymentRequestIdAsync(paymentRequestId).ReturnsNull();
+
+        var result = await InvoiceGetEndpoints.GetInvoiceByPaymentRequestId(paymentRequestId, _paymentRequestsBatchService);
+
+        result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
 
     [Fact]
     public async Task GetInvoicebySchemeAndInvoiceId_WhenInvoiceExists()
@@ -26,7 +85,7 @@ public class InvoiceGetEndpointTests
 
         _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId).Returns(new List<PaymentRequestsBatch> { invoice });
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
+        var result = await InvoiceGetEndpoints.GetInvoiceBySchemeAndId(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetOkObjectResultValue<PaymentRequestsBatch>().Should().BeEquivalentTo(invoice);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -41,7 +100,7 @@ public class InvoiceGetEndpointTests
         _paymentRequestsBatchService.GetBySchemeAndIdAsync(scheme, invoiceId)
             .ReturnsNull();
 
-        var result = await InvoiceGetEndpoints.GetInvoice(scheme, invoiceId, _paymentRequestsBatchService);
+        var result = await InvoiceGetEndpoints.GetInvoiceBySchemeAndId(scheme, invoiceId, _paymentRequestsBatchService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }
@@ -93,7 +152,7 @@ public class InvoiceGetEndpointTests
         mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(expectedInvoices);
 
-        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object);
+		var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
 
         result.GetOkObjectResultValue<List<PaymentRequestsBatch>>().Should().BeEquivalentTo(expectedInvoices);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -106,10 +165,10 @@ public class InvoiceGetEndpointTests
         var userId = "1";
         var nullInvoices = new Mock<List<PaymentRequestsBatch>>();
 
-        mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
+mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(nullInvoices.Object);
 
-        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object);
+        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
     }
