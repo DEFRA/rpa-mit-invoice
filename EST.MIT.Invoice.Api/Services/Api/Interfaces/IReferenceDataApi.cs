@@ -11,4 +11,5 @@ public interface IReferenceDataApi
     Task<ApiResponse<IEnumerable<FundCode>>> GetFundCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
     Task<ApiResponse<IEnumerable<MainAccountCode>>> GetMainAccountCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
     Task<ApiResponse<IEnumerable<DeliveryBodyCode>>> GetDeliveryBodyCodesAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
+    Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
 }

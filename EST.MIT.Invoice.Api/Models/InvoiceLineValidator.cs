@@ -20,6 +20,10 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         _referenceDataApi = referenceDataApi;
 
         RuleFor(x => x.MarketingYear).NotEmpty();
+        RuleFor(x => x.MarketingYear)
+            .MustAsync((x, Cancellation) => MustBeValidMarketingYear(x))
+            .WithMessage("Marketing Year must be between 2021 and 2099")
+            .When(model => model.MarketingYear != 0);
         RuleFor(x => x.SchemeCode).NotEmpty();
         RuleFor(x => x.SchemeCode)
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))
@@ -78,6 +82,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
 
         return schemeCodes.Data.Any(x => x.Code.ToLower() == schemeCode.ToLower());
+    }
+
+    private async Task<bool> MustBeValidMarketingYear(int marketingYear)
+    {
+        var marketingYears = await _referenceDataApi.GetMarketingYearsAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+
+        if (!marketingYears.IsSuccess || !marketingYears.Data.Any())
+        {
+            return false;
+        }
+
+        return marketingYears.Data.Any(x => x.Code == marketingYear.ToString());
     }
 
     private async Task<bool> BeAValidFundCode(string fundCode)
