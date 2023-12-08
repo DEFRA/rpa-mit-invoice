@@ -74,6 +74,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidSchemeCodes(string schemeCode)
     {
+        
         var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!schemeCodes.IsSuccess || !schemeCodes.Data.Any())
