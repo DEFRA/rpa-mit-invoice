@@ -20,7 +20,7 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
         }
 
         [Fact]
-        public void GetCombinationsForRouteAsync_Returns_200()
+        public async Task GetCombinationsForRouteAsync_Returns_200()
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK);
 
@@ -35,13 +35,13 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
+            var response = await repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
 
-            response.Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
-        public void HandleHttpResponseError_Handed_FailCode()
+        public async Task HandleHttpResponseError_Handed_FailCode()
         {
             _mockHttpMessageHandler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.BadRequest, "Test BadRequest");
 
@@ -56,10 +56,11 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
 
             var repo = new ReferenceDataRepository(factory);
 
-            var response = repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
+            var response = await repo.GetCombinationsListForRouteAsync(_accountType, _organisation, _paymentType, _schemeType);
 
-            response.Result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response.Result.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Test BadRequest");
         }
     }
 }
