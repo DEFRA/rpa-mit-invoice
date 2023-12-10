@@ -92,7 +92,8 @@ namespace EST.MIT.Invoice.Api.Test.Repositories
             var response = await repo.GetDeliveryBodyCodesListAsync(_accountType, _organisation, _paymentType, _schemeType);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response.Content.ReadAsStringAsync().Result.Should().Be("Test BadRequest");
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Test BadRequest");
         }
     }
 }
