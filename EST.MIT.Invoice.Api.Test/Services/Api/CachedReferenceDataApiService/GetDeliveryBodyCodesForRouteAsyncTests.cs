@@ -81,6 +81,21 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
+        public async Task GetCombinationsListForRouteAsync_ReturnsDataFromCache_WhenDataExists_TheSecondTime()
+        {
+            // Arrange
+            _mockCacheService.GetData<IEnumerable<DeliveryBodyCode>?>(Arg.Any<object>())
+                .Returns(x => null, x => deliveryBodyCodes);
+
+            // Act
+            var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(result.Data);
+        }
+
+        [Fact]
         public async Task GetDeliveryBodyCodesForRouteAsync_ReturnsDataFromApi_WhenNotInCache()
         {
             // Act
