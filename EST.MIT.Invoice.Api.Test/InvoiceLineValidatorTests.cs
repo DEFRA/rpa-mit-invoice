@@ -88,6 +88,9 @@ public class InvoiceLineValidatorTests
         {
             new MarketingYear() {
                 Code ="2023"
+            },
+            new MarketingYear(){
+                Code = "2045"
             }
         };
         marketingYearResponse.Data = marketingYears;
@@ -700,6 +703,75 @@ public class InvoiceLineValidatorTests
     }
 
     [Fact]
+    public async Task Given_InvoiceLine_When_MarketingYear_IsInvalid_Then_InvoiceLine_Throws_Error()
+    {
+        //Arrange        
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2000,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert           
+        Assert.Equal("Marketing Year must be between 2021 and 2099", response.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_When_MarketingYear_IsValid_Then_InvoiceLine_Pass()
+    {
+        //Arrange        
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00",
+            MarketingYear = 2045,
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        Assert.Empty(response.Errors);
+    }
+
+    [Fact]
+    public async Task Given_InvoiceLine_When_MarketingYear_Is_Empty_Then_InvoiceLine_Fails()
+    {
+        //Arrange        
+        InvoiceLine invoiceLine = new InvoiceLine()
+        {
+            Currency = "GBP",
+            Description = "Description",
+            FundCode = "34ERTY6",
+            SchemeCode = "schemecodevalue",
+            Value = 30,
+            MainAccount = "AccountCodeValue",
+            DeliveryBody = "RP00"
+        };
+
+        //Act
+        var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
+
+        //Assert
+        response.ShouldHaveValidationErrorFor(x => x.MarketingYear);
+        Assert.Equal("'Marketing Year' must not be empty.", response.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
     public async Task Given_InvoiceLine_When_DeliveryBodyCode_Is_InValid_And_DeliveryBody_Model_Is_Empty()
     {
         //Arrange
@@ -734,7 +806,7 @@ public class InvoiceLineValidatorTests
         //Assert           
         Assert.Equal("Delivery Body is invalid for this route", response.Errors[0].ErrorMessage);
     }
-        
+
     [Fact]
     public async Task Given_InvoiceLine_When_AllCombination_Values_Are_Valid_Individually_But_CombinationForRoute_Model_Is_Empty_Should_Pass()
     {
