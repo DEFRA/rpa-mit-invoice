@@ -30,9 +30,11 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var marketingYearErrors = new Dictionary<string, List<string>>();
 
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+            var marketingYearResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK, marketingYearErrors);
             var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
             var schemeCodes = new List<SchemeCode>()
@@ -52,6 +54,14 @@ namespace EST.MIT.Invoice.Api.Test
                 }
             };
             fundCodeResponse.Data = fundCodes;
+
+            var marketingYears = new List<MarketingYear>()
+            {
+                new MarketingYear() {
+                    Code ="2023"
+                }
+            };
+            marketingYearResponse.Data = marketingYears;
 
             var combinationsForRoute = new List<CombinationForRoute>()
             {
@@ -118,6 +128,10 @@ namespace EST.MIT.Invoice.Api.Test
             _referenceDataApiMock
                 .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
+            _referenceDataApiMock
+                .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(marketingYearResponse));
 
             _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status");
         }

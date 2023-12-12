@@ -38,6 +38,9 @@ public class InvoiceLineValidatorTests
         var deliveryBodyCodesErrors = new Dictionary<string, List<string>>();
         var deliveryBodyCodeResponse = new ApiResponse<IEnumerable<DeliveryBodyCode>>(HttpStatusCode.OK, deliveryBodyCodesErrors);
 
+        var marketingYearErrors = new Dictionary<string, List<string>>();
+        var marketingYearResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK, marketingYearErrors);
+
         var combinationsForRouteErrors = new Dictionary<string, List<string>>();
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
@@ -81,6 +84,14 @@ public class InvoiceLineValidatorTests
         };
         deliveryBodyCodeResponse.Data = deliveryBodyCodes;
 
+        var marketingYears = new List<MarketingYear>()
+        {
+            new MarketingYear() {
+                Code ="2023"
+            }
+        };
+        marketingYearResponse.Data = marketingYears;
+
         var combinationsForRoute = new List<CombinationForRoute>()
         {
             new CombinationForRoute()
@@ -113,6 +124,10 @@ public class InvoiceLineValidatorTests
         _referenceDataApiMock
             .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodeResponse));
+
+        _referenceDataApiMock
+          .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+          .Returns(Task.FromResult(marketingYearResponse));
 
         _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));

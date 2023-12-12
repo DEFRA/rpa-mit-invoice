@@ -24,6 +24,7 @@ public class PaymentRequestsValidatorTests
         var payTypesErrors = new Dictionary<string, List<string>>();
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
+        var marketingYearErrors = new Dictionary<string, List<string>>();
         var combinationsForRouteErrors = new Dictionary<string, List<string>>();
 
         var response = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, paymentSchemeErrors);
@@ -31,6 +32,7 @@ public class PaymentRequestsValidatorTests
         var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+        var marketingYearResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK, marketingYearErrors);
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
 
@@ -79,6 +81,14 @@ public class PaymentRequestsValidatorTests
         };
         fundCodeResponse.Data = fundCodes;
 
+        var marketingYears = new List<MarketingYear>()
+        {
+            new MarketingYear() {
+                Code ="2023"
+            }
+        };
+        marketingYearResponse.Data = marketingYears;
+
         var combinationsForRoute = new List<CombinationForRoute>()
         {
             new CombinationForRoute()
@@ -115,6 +125,10 @@ public class PaymentRequestsValidatorTests
         _referenceDataApiMock
              .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(fundCodeResponse));
+
+        _referenceDataApiMock
+            .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(marketingYearResponse));
 
         _cachedReferenceDataApiMock
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
