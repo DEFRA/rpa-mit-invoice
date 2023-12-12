@@ -74,8 +74,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidSchemeCodes(string schemeCode)
     {
-        
-        var schemeCodes = await _referenceDataApi.GetSchemeCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var schemeCodes = await _cachedReferenceDataApi.GetSchemeCodesForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!schemeCodes.IsSuccess || !schemeCodes.Data.Any())
         {
@@ -99,7 +109,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidFundCode(string fundCode)
     {
-        var fundCodes = await _referenceDataApi.GetFundCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var fundCodes = await _cachedReferenceDataApi.GetFundCodesForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!fundCodes.IsSuccess || !fundCodes.Data.Any())
         {
@@ -111,7 +132,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidMainAccountCode(string mainAccountCode)
     {
-        var mainAccountCodes = await _referenceDataApi.GetMainAccountCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var mainAccountCodes = await _cachedReferenceDataApi.GetMainAccountCodesForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!mainAccountCodes.IsSuccess || !mainAccountCodes.Data.Any())
         {
@@ -123,7 +155,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> BeAValidDeliveryBody(string deliveryBodyCode)
     {
-        var deliveryBodyCodes = await _referenceDataApi.GetDeliveryBodyCodesAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var deliveryBodyCodes = await _cachedReferenceDataApi.GetDeliveryBodyCodesForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!deliveryBodyCodes.IsSuccess || !deliveryBodyCodes.Data.Any())
         {

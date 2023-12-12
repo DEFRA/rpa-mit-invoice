@@ -122,12 +122,12 @@ public class BulkInvoiceDuplicateIdValidationTests
             .GetPaymentTypesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<String>())
             .Returns(Task.FromResult(paymentTypeResponse));
 
-        _referenceDataApiMock
-             .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+             .GetSchemeCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(schemeCodeResponse));
 
-        _referenceDataApiMock
-            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
         _cachedReferenceDataApiMock
@@ -163,12 +163,12 @@ public class BulkInvoiceDuplicateIdValidationTests
         };
         deliveryBodyCodeResponse.Data = deliveryBodyCodes;
 
-        _referenceDataApiMock
-            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetMainAccountCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(mainAccountCodeResponse));
 
-        _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetDeliveryBodyCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodeResponse));
 
         _bulkInvoiceValidator = new BulkInvoiceValidator(_referenceDataApiMock, _cachedReferenceDataApiMock);

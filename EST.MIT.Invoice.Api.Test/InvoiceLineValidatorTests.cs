@@ -4,6 +4,7 @@ using FluentValidation.TestHelper;
 using EST.MIT.Invoice.Api.Models;
 using NSubstitute;
 using System.Net;
+using FluentAssertions;
 
 namespace EST.MIT.Invoice.Api.Test;
 
@@ -112,20 +113,18 @@ public class InvoiceLineValidatorTests
         };
         combinationsForRouteResponse.Data = combinationsForRoute;
 
-        _referenceDataApiMock
-            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetSchemeCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
 
-        _referenceDataApiMock
-            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock.GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
-        _referenceDataApiMock
-            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetMainAccountCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(mainAccountCodeResponse));
 
-        _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock.GetDeliveryBodyCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodeResponse));
 
         _referenceDataApiMock
@@ -254,8 +253,8 @@ public class InvoiceLineValidatorTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
-        _referenceDataApiMock
-            .GetSchemeCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetSchemeCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(schemeCodeResponse));
 
 
@@ -549,8 +548,7 @@ public class InvoiceLineValidatorTests
         };
         fundCodeResponse.Data = fundCodes;
 
-        _referenceDataApiMock
-            .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock.GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
 
         InvoiceLine invoiceLine = new InvoiceLine()
@@ -632,8 +630,8 @@ public class InvoiceLineValidatorTests
         };
         mainAccountCodeResponse.Data = mainAccountCodes;
 
-        _referenceDataApiMock
-            .GetMainAccountCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetMainAccountCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(mainAccountCodeResponse));
 
         InvoiceLine invoiceLine = new InvoiceLine()
@@ -784,8 +782,7 @@ public class InvoiceLineValidatorTests
         };
         deliveryBodyCodeResponse.Data = deliveryBodyCodes;
 
-        _referenceDataApiMock
-            .GetDeliveryBodyCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock.GetDeliveryBodyCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodeResponse));
 
         InvoiceLine invoiceLine = new InvoiceLine()
@@ -936,7 +933,9 @@ public class InvoiceLineValidatorTests
         var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
         //Assert
-        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[1].ErrorMessage);
+        response.Errors.Should().HaveCount(2);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account / Scheme / Delivery Body combination is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SchemeCode is invalid")) == 1);
     }
 
     [Fact]
@@ -969,8 +968,13 @@ public class InvoiceLineValidatorTests
         var response = await validator.TestValidateAsync(invoiceLine);
 
         //Assert
-        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[0].ErrorMessage);
-        Assert.Equal("Account / Organisation / PaymentType / Scheme is required", response.Errors[1].ErrorMessage);
+        response.Errors.Should().HaveCount(6);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SchemeCode is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Fund Code is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Delivery Body is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account / Scheme / Delivery Body combination is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account / Organisation / PaymentType / Scheme is required")) == 1);
     }
 
     [Theory]
@@ -1019,7 +1023,12 @@ public class InvoiceLineValidatorTests
         var response = await validator.TestValidateAsync(invoiceLine);
 
         //Assert
-        Assert.Equal("Account / Scheme / Delivery Body combination is invalid", response.Errors[0].ErrorMessage);
-        Assert.Equal("Account / Organisation / PaymentType / Scheme is required", response.Errors[1].ErrorMessage);
+        response.Errors.Should().HaveCount(6);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SchemeCode is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Fund Code is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Delivery Body is invalid for this route")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account / Scheme / Delivery Body combination is invalid")) == 1);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account / Organisation / PaymentType / Scheme is required")) == 1);
     }
 }
