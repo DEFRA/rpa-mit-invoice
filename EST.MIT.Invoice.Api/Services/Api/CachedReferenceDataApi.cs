@@ -92,12 +92,22 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
 
         _logger.LogInformation($"Calling Reference Data API for Route Combinations");
 
-        if (response.StatusCode == HttpStatusCode.OK)
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK)
+            {
+                Data = new List<CombinationForRoute>()
+            };
+        } 
+        else if (response.StatusCode == HttpStatusCode.OK)
         {
             if (response.Content.Headers.ContentLength == 0)
             {
                 _logger.LogWarning("No content returned from API");
-                return new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.NoContent);
+                return new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK)
+                {
+                    Data = new List<CombinationForRoute>()
+                };
             }
 
             try
@@ -122,10 +132,14 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
                         Data = combinationsForRoute
                     };
                 }
-
-                _logger.LogInformation("No content returned from API");
-                return new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.NotFound);
-
+                else
+                {
+                    _logger.LogWarning("No content returned from API");
+                    return new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK)
+                    {
+                        Data = new List<CombinationForRoute>()
+                    };
+                }
             }
             catch (Exception ex)
             {
