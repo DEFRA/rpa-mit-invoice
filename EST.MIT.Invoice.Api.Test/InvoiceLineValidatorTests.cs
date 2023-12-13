@@ -945,8 +945,7 @@ public class InvoiceLineValidatorTests
         {
             AccountType = "AP",
             Organisation = "Test Org",
-            SchemeType = "bps",
-
+            SchemeType = "bps"
         };
 
         InvoiceLine invoiceLine = new InvoiceLine()
@@ -967,7 +966,8 @@ public class InvoiceLineValidatorTests
         var response = await validator.TestValidateAsync(invoiceLine);
 
         //Assert
-        response.Errors.Should().HaveCount(6);
+        response.Errors.Should().HaveCount(7);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Marketing Year is invalid for this route")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SchemeCode is invalid")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account is invalid for this route")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Fund Code is invalid for this route")) == 1);
@@ -1022,7 +1022,8 @@ public class InvoiceLineValidatorTests
         var response = await validator.TestValidateAsync(invoiceLine);
 
         //Assert
-        response.Errors.Should().HaveCount(6);
+        response.Errors.Should().HaveCount(7);
+        Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Marketing Year is invalid for this route")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("SchemeCode is invalid")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Account is invalid for this route")) == 1);
         Assert.True(response.Errors.Count(x => x.ErrorMessage.Contains("Fund Code is invalid for this route")) == 1);
