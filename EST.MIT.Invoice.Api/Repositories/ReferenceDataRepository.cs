@@ -106,7 +106,6 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
         return response;
     }
-    
     public async Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");
@@ -128,6 +127,22 @@ public class ReferenceDataRepository : IReferenceDataRepository
         var client = _clientFactory.CreateClient("ReferenceDataApi");
 
         var response = await client.GetAsync($"/combinations/{accountType}/{organisation}/{schemeType}/{paymentType}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            response.Content = new StringContent(await response.Content.ReadAsStringAsync());
+        }
+
+        return response;
+    }
+
+    public async Task<HttpResponseMessage> GetMarketingYearsListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var client = _clientFactory.CreateClient("ReferenceDataApi");
+
+        var response = (string.IsNullOrEmpty(accountType) && string.IsNullOrEmpty(organisation) && string.IsNullOrEmpty(paymentType) && string.IsNullOrEmpty(schemeType))
+             ? await client.GetAsync($"/MarketingYears")
+             : await client.GetAsync($"/marketingYears/{accountType}/{organisation}/{schemeType}/{paymentType}");
 
         if (!response.IsSuccessStatusCode)
         {

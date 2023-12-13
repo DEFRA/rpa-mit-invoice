@@ -10,16 +10,17 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 {
-    private readonly IReferenceDataApi _referenceDataApi;
     private readonly FieldsRoute _route;
     private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
     public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _route = route;
         this._cachedReferenceDataApi = cachedReferenceDataApi;
-        _referenceDataApi = referenceDataApi;
-
         RuleFor(x => x.MarketingYear).NotEmpty();
+        RuleFor(x => x.MarketingYear)
+            .MustAsync((x, Cancellation) => MustBeValidMarketingYear(x))
+            .WithMessage("Marketing Year is invalid for this route")
+            .When(model => model.MarketingYear != 0);
         RuleFor(x => x.SchemeCode).NotEmpty();
         RuleFor(x => x.SchemeCode)
             .MustAsync((x, cancellation) => BeAValidSchemeCodes(x))
@@ -56,7 +57,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
-    
+
     private bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
     {
         if (string.IsNullOrWhiteSpace(route.AccountType) || string.IsNullOrWhiteSpace(route.Organisation) ||
@@ -89,6 +90,29 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         }
 
         return schemeCodes.Data.Any(x => x.Code.ToLower() == schemeCode.ToLower());
+    }
+
+    private async Task<bool> MustBeValidMarketingYear(int marketingYear)
+    {
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var marketingYears = await _cachedReferenceDataApi.GetMarketingYearsForRouteAsync(accountType, organisation, paymentType, schemeType);
+
+        if (!marketingYears.IsSuccess || !marketingYears.Data.Any())
+        {
+            return false;
+        }
+
+        return marketingYears.Data.Any(x => x.Code == marketingYear.ToString());
     }
 
     private async Task<bool> BeAValidFundCode(string fundCode)
@@ -191,7 +215,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         {
             return false;
         }
-        
+
         var combinationForRoutes = combinations.ToList();
 
         if (!combinationForRoutes.Any())

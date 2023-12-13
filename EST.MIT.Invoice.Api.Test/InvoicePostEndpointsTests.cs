@@ -42,11 +42,14 @@ public class InvoicePostEndpointTests
         var schemeCodeErrors = new Dictionary<string, List<string>>();
         var fundCodeErrors = new Dictionary<string, List<string>>();
         var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+        var marketingYearErrors = new Dictionary<string, List<string>>();
+
 
         var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
         var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
         var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
         var paymentTypesResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, errors);
+        var marketingYearResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK, marketingYearErrors);
         var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
 
 
@@ -96,6 +99,14 @@ public class InvoicePostEndpointTests
         };
         schemeCodeResponse.Data = schemeCodes;
 
+        var marketingYears = new List<MarketingYear>()
+        {
+            new MarketingYear() {
+                Code ="2023"
+            }
+        };
+        marketingYearResponse.Data = marketingYears;
+
         var combinationsForRoute = new List<CombinationForRoute>()
         {
             new CombinationForRoute()
@@ -132,6 +143,10 @@ public class InvoicePostEndpointTests
         _cachedReferenceDataApiMock
             .GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(fundCodeResponse));
+
+        _cachedReferenceDataApiMock
+            .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(marketingYearResponse));
 
         _cachedReferenceDataApiMock
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())

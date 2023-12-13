@@ -22,12 +22,14 @@ namespace EST.MIT.Invoice.Api.Test
             var schemeCodeErrors = new Dictionary<string, List<string>>();
             var fundCodeErrors = new Dictionary<string, List<string>>();
             var combinationsForRouteErrors = new Dictionary<string, List<string>>();
+            var marketingYearErrors = new Dictionary<string, List<string>>();
 
             var schemeTypesResponse = new ApiResponse<IEnumerable<PaymentScheme>>(HttpStatusCode.OK, schemeTypeErrors);
             var organisationRespnse = new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.OK, orgnisationErrors);
             var paymentTypeResponse = new ApiResponse<IEnumerable<PaymentType>>(HttpStatusCode.OK, payTypesErrors);
             var schemeCodeResponse = new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.OK, schemeCodeErrors);
             var fundCodeResponse = new ApiResponse<IEnumerable<FundCode>>(HttpStatusCode.OK, fundCodeErrors);
+            var marketingYearResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK, marketingYearErrors);
             var combinationsForRouteResponse = new ApiResponse<IEnumerable<CombinationForRoute>>(HttpStatusCode.OK, combinationsForRouteErrors);
             
             var schemeTypes = new List<PaymentScheme>()
@@ -75,6 +77,14 @@ namespace EST.MIT.Invoice.Api.Test
             };
             fundCodeResponse.Data = fundCodes;
 
+            var marketingYears = new List<MarketingYear>()
+            {
+                new MarketingYear() {
+                    Code ="2022"
+                }
+            };
+            marketingYearResponse.Data = marketingYears;
+
             var combinationsForRoute = new List<CombinationForRoute>()
             {
                 new CombinationForRoute()
@@ -109,8 +119,12 @@ namespace EST.MIT.Invoice.Api.Test
                 .Returns(Task.FromResult(schemeCodeResponse));
 
             _cachedReferenceDataApiMock
+                .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(marketingYearResponse));
+
+            _cachedReferenceDataApiMock
                 .GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(fundCodeResponse));
+                .Returns(Task.FromResult(fundCodeResponse)); 
 
             _cachedReferenceDataApiMock
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
