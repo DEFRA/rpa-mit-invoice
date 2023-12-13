@@ -230,5 +230,5 @@ public class ReferenceDataApi : IReferenceDataApi
         _logger.LogError("Unknown response from API");
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
         return new ApiResponse<IEnumerable<Organisation>>(HttpStatusCode.InternalServerError, error);
-    }   
+    }
 }

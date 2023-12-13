@@ -106,7 +106,6 @@ public class ReferenceDataRepository : IReferenceDataRepository
 
         return response;
     }
-
     public async Task<HttpResponseMessage> GetDeliveryBodyCodesListAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
     {
         var client = _clientFactory.CreateClient("ReferenceDataApi");

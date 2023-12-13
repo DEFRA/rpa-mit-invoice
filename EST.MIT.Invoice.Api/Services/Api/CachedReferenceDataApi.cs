@@ -746,8 +746,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.InternalServerError, error);
     }
 
-
-    public async Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    public async Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteAsync(string accountType, string organisation, string paymentType, string schemeType)
     {
         var cacheKey = new { RefDataCacheKeyPrefixes.MarketingYears, accountType, organisation, paymentType, schemeType };
         var apiResponse = new ApiResponse<IEnumerable<MarketingYear>>(false);

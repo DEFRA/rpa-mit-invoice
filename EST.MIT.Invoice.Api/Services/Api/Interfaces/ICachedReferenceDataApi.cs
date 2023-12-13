@@ -8,6 +8,6 @@ public interface ICachedReferenceDataApi
     Task<ApiResponse<IEnumerable<FundCode>>> GetFundCodesForRouteAsync(string accountType, string organisation, string paymentType, string schemeType);
     Task<ApiResponse<IEnumerable<MainAccountCode>>> GetMainAccountCodesForRouteAsync(string accountType, string organisation, string paymentType, string schemeType);
     Task<ApiResponse<IEnumerable<SchemeCode>>> GetSchemeCodesForRouteAsync(string accountType, string organisation, string paymentType, string schemeType);
-    Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
+    Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteAsync(string accountType, string organisation, string paymentType, string schemeType);
 }
 
