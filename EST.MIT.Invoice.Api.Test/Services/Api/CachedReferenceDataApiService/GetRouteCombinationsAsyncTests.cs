@@ -109,7 +109,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetCombinationsListForRouteAsync_API_Returns_NoContent()
+        public async Task GetCombinationsListForRouteAsync_API_Returns_OK_And_Empty_List_When_NoContent()
         {
             // Arrange
             this._mockReferenceDataRepository.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -119,9 +119,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            result.IsSuccess.Should().BeFalse();
-            result.Data.Should().BeNull();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.IsSuccess.Should().BeTrue();
+            result.Data.Should().BeEmpty();
         }
 
         [Fact]
@@ -239,7 +239,7 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
         }
 
         [Fact]
-        public async Task GetCombinationsListForRouteAsync_ResponseDataIsNull_ReturnsNotFound()
+        public async Task GetCombinationsListForRouteAsync_ResponseDataIsNull_Returns_OK_And_Empty_List()
         {
             // Arrange
             var responseData = new HttpResponseMessage
@@ -256,7 +256,9 @@ namespace EST.MIT.Invoice.Api.Test.Services.Api.CachedReferenceDataApiService
             var result = await _service.GetCombinationsListForRouteAsync(this._accountType, this._organisation, this._paymentType, this._schemeType);
 
             // Assert
-            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.IsSuccess.Should().BeTrue();
+            result.Data.Should().BeEmpty();
         }
     }
 }
