@@ -60,7 +60,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
     {
         return Regex.IsMatch(value.ToString(CultureInfo.InvariantCulture), RegexConstants.TwoDecimalPlaces);
     }
-    
+
     private bool AllRouteValuesMustNotBeEmpty(FieldsRoute route)
     {
         if (string.IsNullOrWhiteSpace(route.AccountType) || string.IsNullOrWhiteSpace(route.Organisation) ||
@@ -97,7 +97,18 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> MustBeValidMarketingYear(int marketingYear)
     {
-        var marketingYears = await _cachedReferenceDataApi.GetMarketingYearsForRouteAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var accountType = _route.AccountType ?? "";
+        var organisation = _route.Organisation ?? "";
+        var paymentType = _route.PaymentType ?? "";
+        var schemeType = _route.SchemeType ?? "";
+
+        if (string.IsNullOrWhiteSpace(accountType) || string.IsNullOrWhiteSpace(organisation) ||
+            string.IsNullOrWhiteSpace(paymentType) || string.IsNullOrWhiteSpace(schemeType))
+        {
+            return false;
+        }
+
+        var marketingYears = await _cachedReferenceDataApi.GetMarketingYearsForRouteAsync(accountType, organisation, paymentType, schemeType);
 
         if (!marketingYears.IsSuccess || !marketingYears.Data.Any())
         {
@@ -207,7 +218,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
         {
             return false;
         }
-        
+
         var combinationForRoutes = combinations.ToList();
 
         if (!combinationForRoutes.Any())
