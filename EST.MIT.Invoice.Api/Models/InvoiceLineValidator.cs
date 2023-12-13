@@ -10,19 +10,16 @@ namespace EST.MIT.Invoice.Api.Models;
 
 public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 {
-    private readonly IReferenceDataApi _referenceDataApi;
     private readonly FieldsRoute _route;
     private readonly ICachedReferenceDataApi _cachedReferenceDataApi;
     public InvoiceLineValidator(IReferenceDataApi referenceDataApi, FieldsRoute route, ICachedReferenceDataApi cachedReferenceDataApi)
     {
         _route = route;
         this._cachedReferenceDataApi = cachedReferenceDataApi;
-        _referenceDataApi = referenceDataApi;
-
         RuleFor(x => x.MarketingYear).NotEmpty();
         RuleFor(x => x.MarketingYear)
             .MustAsync((x, Cancellation) => MustBeValidMarketingYear(x))
-            .WithMessage("Marketing Year must be between 2021 and 2099")
+            .WithMessage("Marketing Year is invalid for this route")
             .When(model => model.MarketingYear != 0);
         RuleFor(x => x.SchemeCode).NotEmpty();
         RuleFor(x => x.SchemeCode)

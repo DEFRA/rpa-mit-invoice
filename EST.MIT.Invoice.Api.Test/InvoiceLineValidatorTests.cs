@@ -719,7 +719,7 @@ public class InvoiceLineValidatorTests
         var response = await _invoiceLineValidator.TestValidateAsync(invoiceLine);
 
         //Assert           
-        Assert.Equal("Marketing Year must be between 2021 and 2099", response.Errors[0].ErrorMessage);
+        Assert.Equal("Marketing Year is invalid for this route", response.Errors[0].ErrorMessage);
     }
 
     [Fact]
