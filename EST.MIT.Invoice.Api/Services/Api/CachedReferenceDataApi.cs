@@ -20,6 +20,7 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
     private static readonly SemaphoreSlim fundCodesSemaphore = new SemaphoreSlim(1, 1);
     private static readonly SemaphoreSlim mainAccountCodesSemaphore = new SemaphoreSlim(1, 1);
     private static readonly SemaphoreSlim schemeCodesSemaphore = new SemaphoreSlim(1, 1);
+    private static readonly SemaphoreSlim marketingYearsSemaphore = new SemaphoreSlim(1, 1);
 
     public CachedReferenceDataApi(IReferenceDataRepository referenceDataRepository, ILogger<CachedReferenceDataApi> logger, IHttpContentDeserializer httpContentDeserializer,
         ICacheService cacheService)
@@ -658,5 +659,132 @@ public class CachedReferenceDataApi : ICachedReferenceDataApi
         _logger.LogError("Unknown response from API");
         error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
         return new ApiResponse<IEnumerable<SchemeCode>>(HttpStatusCode.InternalServerError, error);
+    }
+
+    public async Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteFromApiAsyncAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var error = new Dictionary<string, List<string>>();
+        var response = await _referenceDataRepository.GetMarketingYearsListAsync(accountType, organisation, paymentType, schemeType);
+
+        _logger.LogInformation($"Calling Reference Data API for Marketing Years");
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            if (response.Content.Headers.ContentLength == 0)
+            {
+                _logger.LogWarning("No content returned from API");
+                return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.NoContent);
+            }
+
+            try
+            {
+                var responseDataTask = _httpContentDeserializer.DeserializeListAsync<MarketingYear>(response.Content);
+
+                var message = responseDataTask.Exception?.Message;
+
+                if (responseDataTask.IsFaulted)
+                {
+                    _logger.LogError("Error message is ", message);
+                    throw responseDataTask.Exception?.InnerException ?? new Exception("An error occurred while processing the response.");
+                }
+
+                await responseDataTask;
+                var marketingYear = responseDataTask.Result.ToList();
+
+                if (marketingYear.Any())
+                {
+                    return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK)
+                    {
+                        Data = marketingYear
+                    };
+                }
+
+                _logger.LogInformation("No content returned from API");
+                return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.NotFound);
+
+            }
+            catch (Exception ex)
+            {
+                error.Add("deserializing", new List<string>() { ex.Message });
+                return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.InternalServerError, error)
+                {
+                    Data = new List<MarketingYear>()
+                };
+            }
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            _logger.LogInformation("No content returned from API");
+            return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.NotFound);
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError("Invalid request was sent to API");
+            error.Add($"{HttpStatusCode.BadRequest}", new List<string>() { "Invalid request was sent to API" });
+
+            return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.BadRequest, error);
+        }
+
+        _logger.LogError("Unknown response from API");
+        error.Add($"{HttpStatusCode.InternalServerError}", new List<string>() { "Unknown response from API" });
+        return new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.InternalServerError, error);
+    }
+
+
+    public async Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsForRouteAsync(string? accountType, string? organisation, string? paymentType, string? schemeType)
+    {
+        var cacheKey = new { RefDataCacheKeyPrefixes.MarketingYears, accountType, organisation, paymentType, schemeType };
+        var apiResponse = new ApiResponse<IEnumerable<MarketingYear>>(false);
+
+        var cachedDataForRoute = _cacheService.GetData<IEnumerable<MarketingYear>>(cacheKey);
+
+        if (cachedDataForRoute != null)
+        {
+            var dataForRoute = cachedDataForRoute.ToList();
+            apiResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK)
+            {
+                Data = dataForRoute
+            };
+        }
+        else
+        {
+            try
+            {
+                await marketingYearsSemaphore.WaitAsync();
+
+                cachedDataForRoute = _cacheService.GetData<IEnumerable<MarketingYear>>(cacheKey);
+                if (cachedDataForRoute != null)
+                {
+                    var dataForRoute = cachedDataForRoute.ToList();
+                    apiResponse = new ApiResponse<IEnumerable<MarketingYear>>(HttpStatusCode.OK)
+                    {
+                        Data = dataForRoute
+                    };
+                }
+                else
+                {
+                    var dataForRouteResponse = await this.GetMarketingYearsForRouteFromApiAsyncAsync(accountType, organisation, paymentType, schemeType);
+
+                    if (dataForRouteResponse.IsSuccess)
+                    {
+                        _cacheService.SetData(cacheKey, dataForRouteResponse.Data);
+
+                        apiResponse = dataForRouteResponse;
+                    }
+                    else
+                    {
+                        apiResponse = dataForRouteResponse;
+                    }
+                }
+            }
+            finally
+            {
+               marketingYearsSemaphore.Release();
+            }
+        }
+
+        return apiResponse;
     }
 }

@@ -7,4 +7,5 @@ public static class RefDataCacheKeyPrefixes
     public static readonly string FundCodes = "FUND_CODES";
     public static readonly string MainAccountCodes = "MAIN_ACCOUNT_CODES";
     public static readonly string SchemeCodes = "SCHEME_CODES";
+    public static readonly string MarketingYears = "MARKETING_YEARS";
 }

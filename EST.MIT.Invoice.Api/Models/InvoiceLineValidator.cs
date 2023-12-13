@@ -97,7 +97,7 @@ public class InvoiceLineValidator : AbstractValidator<InvoiceLine>
 
     private async Task<bool> MustBeValidMarketingYear(int marketingYear)
     {
-        var marketingYears = await _referenceDataApi.GetMarketingYearsAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
+        var marketingYears = await _cachedReferenceDataApi.GetMarketingYearsForRouteAsync(_route.AccountType, _route.Organisation, _route.PaymentType, _route.SchemeType);
 
         if (!marketingYears.IsSuccess || !marketingYears.Data.Any())
         {

@@ -6,6 +6,5 @@ public interface IReferenceDataApi
 {
     Task<ApiResponse<IEnumerable<PaymentScheme>>> GetSchemeTypesAsync(string? accountType, string? organisation);
     Task<ApiResponse<IEnumerable<PaymentType>>> GetPaymentTypesAsync(string? accountType, string? organisation, string? schemeType);
-    Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync(string? accountType); 
-    Task<ApiResponse<IEnumerable<MarketingYear>>> GetMarketingYearsAsync(string? accountType, string? organisation, string? paymentType, string? schemeType);
+    Task<ApiResponse<IEnumerable<Organisation>>> GetOrganisationsAsync(string? accountType);    
 }
