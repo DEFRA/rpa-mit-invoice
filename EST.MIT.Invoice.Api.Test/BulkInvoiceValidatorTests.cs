@@ -118,13 +118,13 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetSchemeCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(schemeCodeResponse));
 
-            _referenceDataApiMock
-                .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            _cachedReferenceDataApiMock
+                .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(marketingYearResponse));
 
-            _referenceDataApiMock
-                .GetFundCodesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-                .Returns(Task.FromResult(fundCodeResponse));
+            _cachedReferenceDataApiMock
+                .GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(Task.FromResult(fundCodeResponse)); 
 
             _cachedReferenceDataApiMock
                 .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())

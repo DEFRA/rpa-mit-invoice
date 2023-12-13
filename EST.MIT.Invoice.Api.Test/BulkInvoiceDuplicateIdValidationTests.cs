@@ -114,8 +114,8 @@ public class BulkInvoiceDuplicateIdValidationTests
              .GetOrganisationsAsync(Arg.Any<string>())
              .Returns(Task.FromResult(organisationRespnse));
 
-        _referenceDataApiMock
-            .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _cachedReferenceDataApiMock
+            .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(marketingYearResponse));  
 
         _referenceDataApiMock

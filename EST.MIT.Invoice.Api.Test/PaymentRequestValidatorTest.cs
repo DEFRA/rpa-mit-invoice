@@ -125,8 +125,8 @@ namespace EST.MIT.Invoice.Api.Test
                 .GetDeliveryBodyCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(Task.FromResult(deliveryBodyCodeResponse));
 
-            _referenceDataApiMock
-                 .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            _cachedReferenceDataApiMock
+                 .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
                  .Returns(Task.FromResult(marketingYearResponse));
 
             _paymentRequestValidator = new PaymentRequestValidator(_referenceDataApiMock, _cachedReferenceDataApiMock, route, "status");

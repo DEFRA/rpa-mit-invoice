@@ -127,9 +127,8 @@ public class InvoiceLineValidatorTests
         _cachedReferenceDataApiMock.GetDeliveryBodyCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(deliveryBodyCodeResponse));
 
-        _referenceDataApiMock
-          .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-          .Returns(Task.FromResult(marketingYearResponse));
+        _cachedReferenceDataApiMock.GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+             .Returns(Task.FromResult(marketingYearResponse));
 
         _cachedReferenceDataApiMock.GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(combinationsForRouteResponse));

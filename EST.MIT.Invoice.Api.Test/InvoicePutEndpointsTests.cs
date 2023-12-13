@@ -146,9 +146,9 @@ public class InvoicePutEndpointTests
         _cachedReferenceDataApiMock.GetFundCodesForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
              .Returns(Task.FromResult(fundCodeResponse));
 
-        _referenceDataApiMock
-            .GetMarketingYearsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(marketingYearResponse));
+        _cachedReferenceDataApiMock
+             .GetMarketingYearsForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+             .Returns(Task.FromResult(marketingYearResponse));
 
         _cachedReferenceDataApiMock
             .GetCombinationsListForRouteAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
