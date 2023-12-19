@@ -27,57 +27,57 @@ public static class InvoicePostEndpoints
 
     public static async Task<IResult> CreateInvoice(PaymentRequestsBatch paymentRequestsBatch, IValidator<PaymentRequestsBatch> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService, IMockedDataService mockedDataService)
     {
-	    try
-	    {
-			var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
+        try
+        {
+            var validationResult = await validator.ValidateAsync(paymentRequestsBatch);
 
-			if (!validationResult.IsValid)
-			{
-				await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
-				return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
-			}
+            if (!validationResult.IsValid)
+            {
+                await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
+                return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
+            }
 
-			// TODO: 
-			// get the logged in user
-			// from the auth token, but for now mock it
-			var loggedInUser = mockedDataService.GetLoggedInUser();
+            // TODO:
+            // get the logged in user
+            // from the auth token, but for now mock it
+            var loggedInUser = mockedDataService.GetLoggedInUser();
 
-		    var invoiceCreated = await paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, loggedInUser);
+            var invoiceCreated = await paymentRequestsBatchService.CreateAsync(paymentRequestsBatch, loggedInUser);
 
-		    if (invoiceCreated is null)
-		    {
-			    await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-create-failed", "Invoice creation failed", paymentRequestsBatch);
-			    return Results.BadRequest();
-		    }
+            if (invoiceCreated is null)
+            {
+                await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-create-failed", "Invoice creation failed", paymentRequestsBatch);
+                return Results.BadRequest();
+            }
 
-		    await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created", paymentRequestsBatch);
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-created", "Invoice created", paymentRequestsBatch);
 
-		    return Results.Created($"/invoice/{paymentRequestsBatch.SchemeType}/{paymentRequestsBatch.Id}", paymentRequestsBatch);
-		}
-	    catch (Exception e)
-	    {
-		    Console.WriteLine(e);
-		    throw;
-	    }
+            return Results.Created($"/invoice/{paymentRequestsBatch.SchemeType}/{paymentRequestsBatch.Id}", paymentRequestsBatch);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public static async Task<IResult> CreateBulkInvoices(BulkInvoices invoices, IValidator<BulkInvoices> validator, IPaymentRequestsBatchService paymentRequestsBatchService, IEventQueueService eventQueueService, IMockedDataService mockedDataService)
     {
-	    var reference = invoices.Reference;
+        var reference = invoices.Reference;
 
-		var validationResult = await validator.ValidateAsync(invoices);
-		if (!validationResult.IsValid)
-		{
-			await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
-			return Results.ValidationProblem(validationResult.ToDictionary());
-		}
+        var validationResult = await validator.ValidateAsync(invoices);
+        if (!validationResult.IsValid)
+        {
+            await eventQueueService.CreateMessage(reference, "invalid", "bulk-invoice-validation-failed", "Bulk Invoice validation failed");
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
 
-		// TODO: 
-		// get the logged in user
-		// from the auth token, but for now mock it
-		var loggedInUser = mockedDataService.GetLoggedInUser();
+        // TODO: 
+        // get the logged in user
+        // from the auth token, but for now mock it
+        var loggedInUser = mockedDataService.GetLoggedInUser();
 
-		var bulkInvoiceCreated = await paymentRequestsBatchService.CreateBulkAsync(invoices, loggedInUser);
+        var bulkInvoiceCreated = await paymentRequestsBatchService.CreateBulkAsync(invoices, loggedInUser);
 
         if (bulkInvoiceCreated is null)
         {

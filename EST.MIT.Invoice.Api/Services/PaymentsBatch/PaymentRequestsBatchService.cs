@@ -91,18 +91,17 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
             throw new InvoiceNotFoundException();
         }
 
-        if ((existingEntity.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower())
-            && (invoice.Status.ToLower() != InvoiceStatuses.Approved.ToLower() && invoice.Status.ToLower() != InvoiceStatuses.Rejected.ToLower()))
+        if (ExistingInvoicePendingApprovalIsNotBeingApprovedOrRejected(existingEntity, invoice))
         {
             throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
         }
 
-        if (existingEntity.Status.ToLower() == InvoiceStatuses.Approved.ToLower() || existingEntity.Status.ToLower() == InvoiceStatuses.Rejected.ToLower())
+        if (ExistingInvoiceIsApprovedOrRejected(existingEntity))
         {
             throw new ApprovedOrRejectedInvoiceCannotBeUpdatedException();
         }
 
-        if (existingEntity.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower() && (invoice.Status == InvoiceStatuses.Approved.ToLower() || invoice.Status == InvoiceStatuses.Rejected.ToLower()))
+        if (InvoiceIsBeingApprovedOrRejected(existingEntity, invoice))
         {
             invoice.Approved = DateTime.Now;
             invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
@@ -110,9 +109,26 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
 
         invoice.UpdatedBy = loggedInUser.UserId;
 
-        var updatedEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var updatedEntity = InvoiceMapper.MapToInvoiceEntity(invoice);      // Would theoretically allow data changes at same time as approved/rejected - Fix in User Story 280536
         await _paymentRequestsBatchRepository.UpdateAsync(updatedEntity);
         return invoice;
+    }
+
+    private bool ExistingInvoicePendingApprovalIsNotBeingApprovedOrRejected(InvoiceEntity existingInvoice, PaymentRequestsBatch newInvoice)
+    {
+        return (existingInvoice.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower())
+            && newInvoice.Status.ToLower() != InvoiceStatuses.Approved.ToLower() && newInvoice.Status.ToLower() != InvoiceStatuses.Rejected.ToLower();
+    }
+
+    private bool ExistingInvoiceIsApprovedOrRejected(InvoiceEntity existingInvoice)
+    {
+        return existingInvoice.Status.ToLower() == InvoiceStatuses.Approved.ToLower() || existingInvoice.Status.ToLower() == InvoiceStatuses.Rejected.ToLower();
+    }
+
+    private bool InvoiceIsBeingApprovedOrRejected(InvoiceEntity existingInvoice, PaymentRequestsBatch newInvoice)
+    {
+        return existingInvoice.Status.ToLower() == InvoiceStatuses.AwaitingApproval.ToLower()
+            && (newInvoice.Status.ToLower() == InvoiceStatuses.Approved.ToLower() || newInvoice.Status.ToLower() == InvoiceStatuses.Rejected.ToLower());
     }
 
     public async Task<string> DeleteBySchemeAndIdAsync(string schemeType, string id)
