@@ -43,7 +43,7 @@ public class PaymentRequestsBatch
     [JsonProperty("approved")]
     public DateTime? Approved { get; set; } = default!;
 
-    [JsonProperty]
+    [JsonProperty("approvalRequestedByEmail")]
     public string ApprovalRequestedByEmail { get; set; } = default!;    
 
     [JsonProperty("updated")]
