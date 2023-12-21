@@ -11,5 +11,5 @@ public interface IPaymentRequestsBatchService
 	Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser);
     Task<BulkInvoices?> CreateBulkAsync(BulkInvoices invoices, LoggedInUser loggedInUser);
     Task<PaymentRequestsBatch> UpdateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser);
-    Task<string> DeleteBySchemeAndIdAsync(string scheme, string id);
+    Task<string> DeleteBySchemeAndIdAsync(string schemeType, string id);
 }

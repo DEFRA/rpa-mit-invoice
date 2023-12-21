@@ -10,7 +10,7 @@ public class MockedDataService : IMockedDataService
     {
 	    return new LoggedInUser()
 	    {
-		    UserId = "1",
+		    UserId = "user",
 		    EmailAddress = "mockeduser@defra.gov.uk",
 	    };
     }

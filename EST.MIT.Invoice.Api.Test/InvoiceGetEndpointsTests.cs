@@ -109,7 +109,7 @@ public class InvoiceGetEndpointTests
     public async Task GetInvoicesById_ReturnsOkResult_WhenInvoicesExist()
     {
         var mockService = new Mock<IPaymentRequestsBatchService>();
-        var userId = "1";
+        var userId = "user";
         var expectedInvoices = new List<PaymentRequestsBatch>
         {
             new PaymentRequestsBatch()

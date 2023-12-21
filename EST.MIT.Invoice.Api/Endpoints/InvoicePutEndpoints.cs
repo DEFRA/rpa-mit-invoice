@@ -5,6 +5,7 @@ using FluentValidation;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using EST.MIT.Invoice.Api.Exceptions;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
 
@@ -27,7 +28,8 @@ public static class InvoicePutEndpoints
 
         if (!validationResult.IsValid)
         {
-            return Results.ValidationProblem(validationResult.ToDictionary());
+            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-validation-failed", "Invoice validation failed", paymentRequestsBatch);
+            return Results.BadRequest(new HttpValidationProblemDetails(validationResult.ToDictionary()));
         }
 
         // TODO: 
@@ -35,12 +37,45 @@ public static class InvoicePutEndpoints
         // from the auth token, but for now mock it
         var loggedInUser = mockedDataService.GetLoggedInUser();
 
-        var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch, loggedInUser);
-
-        if (invoiceUpdated is null)
+        try
         {
-            await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update-failed", "Invoice update failed", paymentRequestsBatch);
-            return Results.BadRequest();
+            var invoiceUpdated = await paymentRequestsBatchService.UpdateAsync(paymentRequestsBatch, loggedInUser);
+            if (invoiceUpdated is null)
+            {
+                await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update-failed", "Invoice update failed", paymentRequestsBatch);
+                var unknownError = new Dictionary<string, string[]>
+                {
+                    { "", new string[] { "Invoice could not be saved" } }
+                };
+                return Results.BadRequest(new HttpValidationProblemDetails(unknownError));
+            }
+        }
+        catch (InvoiceNotFoundException)
+        {
+            return Results.NotFound();
+        }
+        catch (AwaitingApprovalInvoiceCannotBeUpdatedException)
+        {
+            var cannotBeUpdatedError = new Dictionary<string, string[]>
+            {
+                { "", new string[] { "Invoices waiting approval cannot be updated" } }
+            };
+            return Results.BadRequest(new HttpValidationProblemDetails(cannotBeUpdatedError));
+        }
+        catch (ApprovedOrRejectedInvoiceCannotBeUpdatedException)
+        {
+            var cannotBeUpdatedError = new Dictionary<string, string[]>
+            {
+                { "", new string[] { "Approved or Rejected invoices cannot be updated" } }
+            };
+            return Results.BadRequest(new HttpValidationProblemDetails(cannotBeUpdatedError));
+        }
+        catch (Exception ex) {
+            var unknownError = new Dictionary<string, string[]>
+            {
+                { "", new string[] { $"Error whilst saving invoice: {ex.Message}" } }
+            };
+            return Results.BadRequest(new HttpValidationProblemDetails(unknownError));
         }
 
         await eventQueueService.CreateMessage(paymentRequestsBatch.Id, paymentRequestsBatch.Status, "invoice-update", "Invoice updated", paymentRequestsBatch);
