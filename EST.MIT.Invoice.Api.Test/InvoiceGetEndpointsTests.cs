@@ -8,6 +8,7 @@ using NSubstitute.ReturnsExtensions;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using Moq;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace EST.MIT.Invoice.Api.Test;
 
@@ -109,7 +110,7 @@ public class InvoiceGetEndpointTests
     public async Task GetInvoicesById_ReturnsOkResult_WhenInvoicesExist()
     {
         var mockService = new Mock<IPaymentRequestsBatchService>();
-        var userId = "user";
+        var userId = "testuser@defra.gov.uk";
         var expectedInvoices = new List<PaymentRequestsBatch>
         {
             new PaymentRequestsBatch()
@@ -152,7 +153,7 @@ public class InvoiceGetEndpointTests
         mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(expectedInvoices);
 
-		var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
+		  var result = await InvoiceGetEndpoints.GetInvoicesById(GetMockHttpContext(), mockService.Object, _mockedDataService);
 
         result.GetOkObjectResultValue<List<PaymentRequestsBatch>>().Should().BeEquivalentTo(expectedInvoices);
         result.GetOkObjectResultStatusCode().Should().Be(200);
@@ -165,11 +166,24 @@ public class InvoiceGetEndpointTests
         var userId = "1";
         var nullInvoices = new Mock<List<PaymentRequestsBatch>>();
 
-mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
+        mockService.Setup(service => service.GetInvoicesByUserIdAsync(userId))
                    .ReturnsAsync(nullInvoices.Object);
 
-        var result = await InvoiceGetEndpoints.GetInvoicesById(mockService.Object, _mockedDataService);
+        var result = await InvoiceGetEndpoints.GetInvoicesById(GetMockHttpContext(), mockService.Object, _mockedDataService);
 
         result.GetNotFoundResultStatusCode().Should().Be(404);
+    }
+
+    private HttpContext GetMockHttpContext()
+    {
+        var mockContext = new Mock<HttpContext>();
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.Name, "testuser"),
+            new Claim(ClaimTypes.Email, "testuser@defra.gov.uk")
+        }));
+
+        mockContext.SetupGet(c => c.User).Returns(user);
+        return mockContext.Object;
     }
 }

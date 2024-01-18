@@ -1,6 +1,9 @@
 using EST.MIT.Invoice.Api.Authentication;
 using EST.MIT.Invoice.Api.Endpoints;
 using EST.MIT.Invoice.Api.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,9 @@ var settings = new PgDbSettings()
     PostgresSqlAAD = postgresSqlAAD
 };
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
 builder.Services.AddSingleton<IPgDbContext>(new PgDbContext(settings, new TokenGenerator(), builder.Environment.IsProduction()));
 builder.Services.AddQueueServices(builder.Configuration);
 builder.Services.AddInvoiceServices();
@@ -34,6 +40,9 @@ builder.Services.AddHttpClient("ReferenceDataApi", clientBuilder =>
 {
     clientBuilder.BaseAddress = new Uri(builder.Configuration["ReferenceDataAPIBaseURI"]);
 });
+
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -49,5 +58,10 @@ app.MapInvoiceGetEndpoints();
 app.MapInvoicePostEndpoints();
 app.MapInvoicePutEndpoints();
 app.MapInvoiceDeleteEndpoints();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.Run();
