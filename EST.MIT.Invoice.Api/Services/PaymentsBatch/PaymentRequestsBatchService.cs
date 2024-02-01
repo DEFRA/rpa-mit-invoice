@@ -35,39 +35,40 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
 
     public async Task<List<PaymentRequestsBatch>> GetInvoicesByUserIdAsync(string userId)
     {
-	    var result = await _paymentRequestsBatchRepository.GetInvoicesByUserIdAsync(userId);
+        var result = await _paymentRequestsBatchRepository.GetInvoicesByUserIdAsync(userId);
         try
         {
             List<PaymentRequestsBatch> resultList = InvoiceMapper.MapToInvoice(result);
             return resultList;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return new List<PaymentRequestsBatch>();
         }
     }
 
-	public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser)
-	{
-		try
-		{
-			invoice.CreatedBy = loggedInUser.UserId;
-			var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
-			await _paymentRequestsBatchRepository.CreateAsync(invoiceEntity);
-			return invoice;
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-			throw;
-		}
-	}
+    public async Task<PaymentRequestsBatch> CreateAsync(PaymentRequestsBatch invoice, LoggedInUser loggedInUser)
+    {
+        try
+        {
+            invoice.CreatedBy = loggedInUser.UserId;
+            var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+            await _paymentRequestsBatchRepository.CreateAsync(invoiceEntity);
+            return invoice;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
     public async Task<BulkInvoices?> CreateBulkAsync(BulkInvoices invoices, LoggedInUser loggedInUser)
     {
-	    foreach (var invoice in invoices.Invoices)
-	    {
-		    invoice.CreatedBy = loggedInUser.UserId;
-	    }
+        foreach (var invoice in invoices.Invoices)
+        {
+            invoice.CreatedBy = loggedInUser.UserId;
+        }
 
         var entity = new BulkInvoicesEntity
         {
@@ -103,12 +104,18 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
 
         if (InvoiceIsBeingApprovedOrRejected(existingEntity, invoice))
         {
-            invoice.Approved = DateTime.Now;
-            invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
+            if (IsExistingEntityEqualUpdatedInvoice(existingEntity, invoice))
+            {
+                invoice.Approved = DateTime.Now;
+                invoice.ApprovedBy = loggedInUser.UserId; // not sure what we should be storing here, the id the email or something else
+            }
+            else
+            {
+                throw new AwaitingApprovalInvoiceCannotBeUpdatedException();
+            }
         }
 
         invoice.UpdatedBy = loggedInUser.UserId;
-
         var updatedEntity = InvoiceMapper.MapToInvoiceEntity(invoice);      // Would theoretically allow data changes at same time as approved/rejected - Fix in User Story 280536
         await _paymentRequestsBatchRepository.UpdateAsync(updatedEntity);
         return invoice;
@@ -135,5 +142,13 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
     {
         await _paymentRequestsBatchRepository.DeleteBySchemeAndIdAsync(schemeType, id);
         return id;
+    }
+
+    private bool IsExistingEntityEqualUpdatedInvoice(InvoiceEntity existingInvoice, PaymentRequestsBatch newInvoice)
+    {
+        return (existingInvoice.Id == newInvoice.Id && existingInvoice.Approved == newInvoice.Approved && existingInvoice.ApproverId == newInvoice.ApproverId
+            && existingInvoice.ApproverEmail == newInvoice.ApproverEmail && existingInvoice.ApprovedBy == newInvoice.ApprovedBy && existingInvoice.Created == newInvoice.Created
+            && existingInvoice.CreatedBy == newInvoice.CreatedBy && existingInvoice.SchemeType == newInvoice.SchemeType && existingInvoice.Updated == newInvoice.Updated
+            && existingInvoice.UpdatedBy == newInvoice.UpdatedBy && existingInvoice.Value == newInvoice.PaymentRequests.Sum(x => x.Value) && existingInvoice.Reference == newInvoice.Reference);
     }
 }
