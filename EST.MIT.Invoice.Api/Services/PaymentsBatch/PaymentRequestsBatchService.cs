@@ -144,7 +144,7 @@ public class PaymentRequestsBatchService : IPaymentRequestsBatchService
         return id;
     }
 
-    private bool IsExistingEntityEqualUpdatedInvoice(InvoiceEntity existingInvoice, PaymentRequestsBatch newInvoice)
+    private static bool IsExistingEntityEqualUpdatedInvoice(InvoiceEntity existingInvoice, PaymentRequestsBatch newInvoice)
     {
         return (existingInvoice.Id == newInvoice.Id && existingInvoice.Approved == newInvoice.Approved && existingInvoice.ApproverId == newInvoice.ApproverId
             && existingInvoice.ApproverEmail == newInvoice.ApproverEmail && existingInvoice.ApprovedBy == newInvoice.ApprovedBy
