@@ -30,8 +30,8 @@ spec:
   owner: "group:default/lap-mit"
   system: "system:default/lap-mit-system"
   dependsOn:
-    - "resource:default/rpa-mit-event-queue"
-    - "resource:default/rpa-mit-payment-queue"
+    - "resource:default/rpa-mit-event-storage-queue"
+    - "resource:default/rpa-mit-payment-storage-queue"
     - "resource:default/ADPINFAI01"
     - "resource:default/rpa-mit-invoices-database"
 ---
@@ -52,7 +52,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  name: rpa-mit-event-queue
+  name: rpa-mit-event-storage-queue
   description: Event storage queue
   tags:
     - blob-storage
@@ -67,7 +67,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  name: rpa-mit-payment-queue
+  name: rpa-mit-payment-storage-queue
   description: Payment storage queue
   tags:
     - blob-storage
