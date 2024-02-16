@@ -21,7 +21,7 @@ metadata:
   tags:
     - dotnet
     - back-end
-    - service-bus
+    - storage-account
     - application-insights
     - database
 spec:
@@ -55,7 +55,7 @@ metadata:
   name: rpa-mit-event-storage-queue
   description: Event storage queue
   tags:
-    - blob-storage
+    - storage-account
     - queue
 spec:
   type: message-queue
@@ -70,7 +70,7 @@ metadata:
   name: rpa-mit-payment-storage-queue
   description: Payment storage queue
   tags:
-    - blob-storage
+    - storage-account
     - queue
 spec:
   type: message-queue
