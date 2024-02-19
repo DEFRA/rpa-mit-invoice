@@ -1,0 +1,80 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rpa-mit-invoice
+  description: The MIT invoice API
+  annotations:
+    github.com/project-slug: defra/rpa-mit-invoice
+    dev.azure.com/project: DEFRA-MIT
+    dev.azure.com/build-definition: rpa-mit-invoice
+    sonarqube.org/project-key: rpa-mit-invoice
+    grafana/dashboard-selector: "folderTitle == 'Managed Prometheus'"
+    backstage.io/kubernetes-id: rpa-mit-invoice
+  links:
+    - url: https://github.com/DEFRA/rpa-mit-invoice
+      title: View repository
+      icon: github
+    - url: https://sonarcloud.io/summary/overall?id=rpa-mit-invoice
+      title: SonarCloud Analysis
+    - url: https://snyk.io/test/github/DEFRA/rpa-mit-invoice
+      title: Snyk Analysis
+  tags:
+    - dotnet
+    - back-end
+    - storage-account
+    - application-insights
+    - database
+spec:
+  type: backend
+  lifecycle: alpha
+  owner: "group:default/lap-mit"
+  system: "system:default/lap-mit-system"
+  dependsOn:
+    - "resource:default/rpa-mit-event-storage-queue"
+    - "resource:default/rpa-mit-payment-storage-queue"
+    - "resource:default/ADPINFAI01"
+    - "resource:default/rpa-mit-invoices-database"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: rpa-mit-invoices-database
+  description: Database for persisting invoices.
+  tags:
+    - postgresql
+spec:
+  type: database
+  owner: "group:default/lap-mit"
+  system: "system:default/lap-mit-system"
+  dependsOn:
+    - "resource:default/adpdbsps01"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: rpa-mit-event-storage-queue
+  description: Event storage queue
+  tags:
+    - storage-account
+    - queue
+spec:
+  type: message-queue
+  owner: "group:default/lap-mit"
+  system: "system:default/lap-mit-system"
+  dependsOn: 
+    - "resource:default/adpinfst01"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: rpa-mit-payment-storage-queue
+  description: Payment storage queue
+  tags:
+    - storage-account
+    - queue
+spec:
+  type: message-queue
+  owner: "group:default/lap-mit"
+  system: "system:default/lap-mit-system"
+  dependsOn: 
+    - "resource:default/adpinfst01"
