@@ -7,6 +7,8 @@ using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using EST.MIT.Invoice.Api.Util;
 using Moq;
 using Newtonsoft.Json;
+using EST.MIT.Invoice.Api.Exceptions;
+using NSubstitute.ExceptionExtensions;
 
 namespace EST.MIT.Invoice.Api.Test;
 
@@ -17,7 +19,8 @@ public class InvoiceServiceTests
     private readonly MockedDataService _mockedDataService;
     private readonly PaymentRequestsBatch newInvoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.New);
     private readonly PaymentRequestsBatch approvedInvoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.Approved);
-
+    private readonly PaymentRequestsBatch awaitingApprovalInvoiceTestData = PaymentRequestsBatchTestData.CreateInvoice(InvoiceStatuses.AwaitingApproval);
+    private readonly PaymentRequestsBatch approvedInvoiceTestDataWithModelChanges = PaymentRequestBatchModelChangeTestData.CreateInvoice(InvoiceStatuses.Approved);
     public InvoiceServiceTests()
     {
         _mockPaymentRequestsBatchRepository = new Mock<IPaymentRequestsBatchRepository>();
@@ -80,7 +83,7 @@ public class InvoiceServiceTests
         var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
         var loggedInUser = _mockedDataService.GetLoggedInUser();
 
-		_mockPaymentRequestsBatchRepository.Setup(x => x.CreateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
+        _mockPaymentRequestsBatchRepository.Setup(x => x.CreateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(invoiceEntity);
 
         var result = await _paymentRequestsBatchService.CreateAsync(invoice, loggedInUser);
 
@@ -101,6 +104,44 @@ public class InvoiceServiceTests
         var result = await _paymentRequestsBatchService.UpdateAsync(invoice, loggedInUser);
 
         result.Should().BeEquivalentTo(invoice);
+    }
+
+    [Fact]
+    public async Task Update_Invoice_With_AwaitingApproval_Status_To_Approved_Status_UpdatesInvoice()
+    {
+        var invoice = awaitingApprovalInvoiceTestData;
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var invoiceEntities = new List<InvoiceEntity> { invoiceEntity };
+
+        var updatedInvoice = approvedInvoiceTestData;
+        var updatedInvoiceEntity = InvoiceMapper.MapToInvoiceEntity(updatedInvoice);
+
+        var loggedInUser = _mockedDataService.GetLoggedInUser();
+
+        _mockPaymentRequestsBatchRepository.Setup(x => x.GetBySchemeAndIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(invoiceEntities);
+        _mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(updatedInvoiceEntity);
+
+        var result = await _paymentRequestsBatchService.UpdateAsync(updatedInvoice, loggedInUser);
+
+        result.Should().BeEquivalentTo(updatedInvoice);
+    }
+
+    [Fact]
+    public async Task Update_Persisted_Data_And_Invoice_Status_Changed_From_AwaitingApproval_To_Approved_Throws_Exception()
+    {
+        var invoice = awaitingApprovalInvoiceTestData;
+        var invoiceEntity = InvoiceMapper.MapToInvoiceEntity(invoice);
+        var invoiceEntities = new List<InvoiceEntity> { invoiceEntity };
+
+        var updatedInvoice = approvedInvoiceTestDataWithModelChanges;
+        var updatedInvoiceEntity = InvoiceMapper.MapToInvoiceEntity(updatedInvoice);
+
+        var loggedInUser = _mockedDataService.GetLoggedInUser();
+
+        _mockPaymentRequestsBatchRepository.Setup(x => x.GetBySchemeAndIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(invoiceEntities);
+        _mockPaymentRequestsBatchRepository.Setup(x => x.UpdateAsync(It.IsAny<InvoiceEntity>())).ReturnsAsync(updatedInvoiceEntity);
+
+        await Assert.ThrowsAsync<AwaitingApprovalInvoiceCannotBeUpdatedException>(async () => await _paymentRequestsBatchService.UpdateAsync(updatedInvoice, loggedInUser));
     }
 
     [Fact]
