@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using EST.MIT.Invoice.Api.Services.PaymentsBatch;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services.Api.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
 
@@ -35,7 +37,7 @@ public static class InvoiceGetEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetAllApprovals");
 
-        app.MapGet("/invoices/user/{userId}", GetInvoicesById)
+        app.MapGet("/invoices/user", GetInvoicesById)
             .Produces<PaymentRequestsBatch>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInvoicesById");
@@ -112,13 +114,10 @@ public static class InvoiceGetEndpoints
         return Results.Ok(invoiceResponse);
     }
 
-    public static async Task<IResult> GetInvoicesById(IPaymentRequestsBatchService paymentRequestsBatchService, IMockedDataService mockedDataService)
+    [Authorize()]
+    public static async Task<IResult> GetInvoicesById(HttpContext context, IPaymentRequestsBatchService paymentRequestsBatchService, IMockedDataService mockedDataService)
     {
-		// TODO: 
-		// get the logged in user
-		// from the auth token, but for now mock it
-		var loggedInUser = mockedDataService.GetLoggedInUser();
-		var invoiceResponse = await paymentRequestsBatchService.GetInvoicesByUserIdAsync(loggedInUser.UserId);
+        var invoiceResponse = await paymentRequestsBatchService.GetInvoicesByUserIdAsync(context.User.FindFirst(ClaimTypes.Email).Value);
 
         if (invoiceResponse is null || invoiceResponse.Count == 0)
         {
