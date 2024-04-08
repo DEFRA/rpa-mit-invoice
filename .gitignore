@@ -5,6 +5,7 @@
 
 .vscode/*
 appsettings.*.json
+**/secrets.json
 
 # User-specific files
 *.rsuser

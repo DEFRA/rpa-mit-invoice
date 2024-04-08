@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Azure.Identity;
-using Azure.Storage.Queues;
 using EST.MIT.Invoice.Api.Services;
 
 namespace EST.MIT.Invoice.Api.Endpoints;
@@ -19,11 +17,11 @@ public static class QueueDefinition
                 var queueServiceUri = configuration.GetSection("QueueConnectionString:QueueServiceUri").Value;
                 var queueUrl = new Uri($"{queueServiceUri}{queueName}");
                 Console.WriteLine($"EventQueueService using Managed Identity with url {queueUrl}");
-                return new EventQueueService(new QueueClient(queueUrl, new DefaultAzureCredential()));
+                return new EventQueueService(new ServiceBusProvider(configuration), configuration);
             }
             else
             {
-                return new EventQueueService(new QueueClient(configuration.GetSection("QueueConnectionString").Value, queueName));
+                return new EventQueueService(new ServiceBusProvider(configuration), configuration);
             }
         });
 
@@ -35,11 +33,11 @@ public static class QueueDefinition
                 var queueServiceUri = configuration.GetSection("QueueConnectionString:QueueServiceUri").Value;
                 var queueUrl = new Uri($"{queueServiceUri}{queueName}");
                 Console.WriteLine($"PaymentQueueService using Managed Identity with url {queueUrl}");
-                return new PaymentQueueService(new QueueClient(queueUrl, new DefaultAzureCredential()));
+                return new PaymentQueueService(new ServiceBusProvider(configuration), configuration);
             }
             else
             {
-                return new PaymentQueueService(new QueueClient(configuration.GetSection("QueueConnectionString").Value, queueName));
+                return new PaymentQueueService(new ServiceBusProvider(configuration), configuration);
             }
         });
     }
