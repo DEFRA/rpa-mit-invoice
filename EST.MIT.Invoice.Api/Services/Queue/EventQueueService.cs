@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Azure.Storage.Queues;
 using EST.MIT.Invoice.Api.Models;
 using EST.MIT.Invoice.Api.Services.Models;
 
@@ -8,11 +7,13 @@ namespace EST.MIT.Invoice.Api.Services;
 
 public class EventQueueService : IEventQueueService
 {
-    private readonly QueueClient _queueClient;
+    private readonly IConfiguration _configuration;
+    private readonly ServiceBusProvider _serviceBusProvider;
 
-    public EventQueueService(QueueClient queueClient)
+    public EventQueueService(ServiceBusProvider serviceBusProvider, IConfiguration configuration)
     {
-        _queueClient = queueClient;
+        _serviceBusProvider = serviceBusProvider;
+        _configuration = configuration;
     }
 
     public async Task CreateMessage(string id, string status, string action, string message, PaymentRequestsBatch? invoice = null)
@@ -35,7 +36,6 @@ public class EventQueueService : IEventQueueService
             }
         };
 
-        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(eventRequest));
-        await _queueClient.SendMessageAsync(Convert.ToBase64String(bytes));
+        await _serviceBusProvider.SendMessageAsync(_configuration["EventQueueName"] ,JsonSerializer.Serialize(eventRequest));
     }
 }
