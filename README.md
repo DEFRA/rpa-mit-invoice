@@ -8,6 +8,9 @@ Amend as needed for your distribution, this assumes you are using windows with W
 - <details>
     <summary> .NET 8 SDK </summary>
     
+    Basic instructions for installing the .NET 8 SDK on a debian based system.
+    Amend as needed for your distribution.
+
     ```bash
     wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
