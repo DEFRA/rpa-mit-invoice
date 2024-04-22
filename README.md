@@ -14,6 +14,7 @@ Amend as needed for your distribution, this assumes you are using windows with W
     sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
     ```
 </details>
+
 - [Docker](https://docs.docker.com/desktop/install/linux-install/)
 - Service Bus Queue
 
