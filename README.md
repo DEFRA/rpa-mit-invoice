@@ -5,14 +5,15 @@ This repository hosts a minimal API that exposes multiple endpoints, these endpo
 ## Requirements
 
 Amend as needed for your distribution, this assumes you are using windows with WSL.
-
--  .NET 8 SDK
-```bash
-wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
-sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
-```
-
+- <details>
+    <summary> .NET 8 SDK </summary>
+    
+    ```bash
+    wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+    sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+    ```
+</details>
 - [Docker](https://docs.docker.com/desktop/install/linux-install/)
 - Service Bus Queue
 
@@ -36,7 +37,7 @@ To run this service locally complete the following steps.
 
 Use the secrets-template to create a secrets.json in the same folder location as the [EST.MIT.Invoice.Api.csproj](https://github.com/DEFRA/rpa-mit-invoice/blob/main/EST.MIT.Invoice.Api/EST.MIT.Invoice.Api.csproj) file. 
 
-**Example** values that work in local environments for these 2 keys are below.
+**Example** values that work in local environments for these 2 keys.
 
 ```json
 {
