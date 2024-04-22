@@ -8,7 +8,9 @@ Amend as needed for your distribution, this assumes you are using windows with W
 - <details>
     <summary> .NET 8 SDK </summary>
     
-    Basic instructions for installing the .NET 8 SDK on a debian based system.
+
+    #### Basic instructions for installing the .NET 8 SDK on a debian based system.
+  
     Amend as needed for your distribution.
 
     ```bash
