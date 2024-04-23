@@ -2,6 +2,7 @@
 
 This repository hosts a minimal API that exposes multiple endpoints, these endpoints are primarily called by other services, its use is as a data store for persisting data on in flight manual invoice templates.
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=coverage)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice)
 ## Requirements
 
 Amend as needed for your distribution, this assumes you are using windows with WSL.
@@ -81,6 +82,7 @@ To create the application as a docker container run the following command in the
 docker compose up
 ```
 
+---
 ## Endpoints
 
 ### HTTP
