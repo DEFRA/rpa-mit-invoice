@@ -44,12 +44,11 @@ To run this service locally complete the following steps.
 
 Use the secrets-template to create a secrets.json in the same folder location as the [EST.MIT.Invoice.Api.csproj](https://github.com/DEFRA/rpa-mit-invoice/blob/main/EST.MIT.Invoice.Api/EST.MIT.Invoice.Api.csproj) file. 
 
-**Example** values that work in local environments for these 2 keys.
+**Example** value that works in local environments for this key.
 
 ```json
 {
-    "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
-    "DbConnectionTemplate": "Server={0};Port={1};Database={2};User Id={3};Password={4};"
+    "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default"
 }
 ```
 
