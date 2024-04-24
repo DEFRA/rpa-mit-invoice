@@ -1,11 +1,5 @@
-ARG PARENT_VERSION=1.5.0-dotnet6.0
-
 # Development
-FROM defradigital/dotnetcore-development:$PARENT_VERSION AS development
-
-ARG PARENT_VERSION
-
-LABEL uk.gov.defra.parent-image=defra-dotnetcore-development:${PARENT_VERSION}
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
 
 RUN mkdir -p /home/dotnet/EST.MIT.Invoice.Api/ /home/dotnet/EST.MIT.Invoice.Api.Test/
 
@@ -20,21 +14,19 @@ COPY --chown=dotnet:dotnet ./EST.MIT.Invoice.Api.Test/ ./EST.MIT.Invoice.Api.Tes
 
 RUN dotnet publish ./EST.MIT.Invoice.Api/ -c Release -o /home/dotnet/out
  
-ARG PORT=3000
+ARG PORT=5000
 ENV PORT ${PORT}
 EXPOSE ${PORT}
 
 CMD dotnet watch --project ./EST.MIT.Invoice.Api run --urls "http://*:${PORT}"
 
 # # Production
-FROM defradigital/dotnetcore:$PARENT_VERSION AS production
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS production
 
 ARG PARENT_VERSION
 ARG PARENT_REGISTRY
 
-LABEL uk.gov.defra.parent-image=defra-dotnetcore-development:${PARENT_VERSION}
-
-ARG PORT=3000
+ARG PORT=5000
 ENV ASPNETCORE_URLS=http://*:${PORT}
 EXPOSE ${PORT}
 
