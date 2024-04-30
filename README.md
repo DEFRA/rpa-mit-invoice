@@ -1,4 +1,4 @@
-# rpa-mit-invoice
+# Invoice API
 
 This repository hosts a minimal API that exposes multiple endpoints, these endpoints are primarily called by other services, its use is as a data store for persisting data on in flight manual invoice templates.
 
@@ -42,13 +42,14 @@ docker run --name MY_POSTGRES_DB -e POSTGRES_PASSWORD=password -p 5432:5432 -d p
 To run this service locally complete the following steps.
 ### Set up user secrets
 
-Use the secrets-template to create a secrets.json in the same folder location as the [EST.MIT.Invoice.Api.csproj](https://github.com/DEFRA/rpa-mit-invoice/blob/main/EST.MIT.Invoice.Api/EST.MIT.Invoice.Api.csproj) file. 
+Use the secrets-template to create a secrets.json in the same folder location. 
 
-**Example** value that works in local environments for this key.
+**Example** values that work in local environments for these 2 keys.
 
 ```json
 {
-    "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default"
+    "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
+    "DbConnectionTemplate": "Server={0};Port={1};Database={2};User Id={3};Password={4};"
 }
 ```
 
