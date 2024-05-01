@@ -7,25 +7,22 @@ services:
       target: production
     image: rpa-mit-invoice
     container_name: rpa-mit-invoice
-    depends_on:
-      - rpa-mit-invoice-postgres
+    ports:
+      - 3000:3000
+    networks:
+      - mit
     environment:
       COMPlus_EnableDiagnostics: 0
-      POSTGRES_HOST: ${POSTGRES_HOST:-rpa-mit-invoice-postgres}
-      POSTGRES_DB: rpa_mit_invoice
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_DB: rpa_mit_invoices
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASS:-password}
       POSTGRES_PORT: "5432"
       SCHEMA_DEFAULT: ${POSTGRES_SCHEMA_NAME:-public}
-      AzureWebJobsStorage: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
-      QueueConnectionString: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1;
-      PaymentQueueName: rpa-mit-payment
-      EventQueueName: rpa-mit-events
-      ServiceBusConnectionName: 
-
-  rpa-mit-invoice-postgres:
-    image: postgres:15.3-alpine
-    environment:
-      POSTGRES_DB: rpa_mit_invoice
-      POSTGRES_USERNAME: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASS:-password}
+      AzureWebJobsStorage: ${AzureWebJobsStorage} 
+      QueueConnectionString: ${QueueConnectionString}
+      PaymentQueueName: ${PaymentQueueName}
+      EventQueueName: ${EventQueueName}
+      AzureADPostgreSQLResourceID: https://ossrdbms-aad.database.windows.net/.default
+      ReferenceDataAPIBaseURI: ${ReferenceDataAPIBaseURI:-https://localhost:7012} 
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}

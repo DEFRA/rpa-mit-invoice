@@ -1,273 +1,139 @@
-# Introduction 
-This repository contains the code for the Manual Invoice Template Invoice Api
+# Invoice API
 
-# Getting Started
+This repository hosts a minimal API that exposes multiple endpoints, these endpoints are primarily called by other services, its use is as a data store for persisting data on in flight manual invoice templates.
 
-## CosmosDb
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=coverage)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=rpa-mit-invoice&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=rpa-mit-invoice)
+## Requirements
 
-- [Install and use the Azure Cosmos DB Emulator for local development and testing](https://learn.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
+Amend as needed for your distribution, this assumes you are using windows with WSL.
+- <details>
+    <summary> .NET 8 SDK </summary>
+    
 
-## Azurite
+    #### Basic instructions for installing the .NET 8 SDK on a debian based system.
+  
+    Amend as needed for your distribution.
 
-Follow the following guide to setup Azurite:
+    ```bash
+    wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+    sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+    ```
+</details>
 
-- [Azurite emulator for local Azure Storage development](https://dev.azure.com/defragovuk/DEFRA-EST/_wiki/wikis/DEFRA-EST/7722/Azurite-emulator-for-local-Azure-Storage-development)
+- [Docker](https://docs.docker.com/desktop/install/linux-install/)
+- Service Bus Queue
 
-- [Docker](https://dev.azure.com/defragovuk/DEFRA-EST/_wiki/wikis/DEFRA-EST/9601/Azurite-with-Docker)
+---
+## Create the database
 
-## Storage
+Create the postgres database in docker
 
-The function app uses Azure Storage for Table and Queue.
-
-The function app requires:
-
-- Table name: `rpamitinvoices`
-- Queue name: `rpa-mit-payment`
-- Queue name: `rpa-mit-events`
-
-## local.settings
-
+```bash
+docker pull postgres
 ```
+```bash
+docker run --name MY_POSTGRES_DB -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+```
+
+---
+## Local Setup
+
+To run this service locally complete the following steps.
+### Set up user secrets
+
+Use the secrets-template to create a secrets.json in the same folder location. 
+
+**Example** values that work in local environments for these 2 keys.
+
+```json
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "QueueConnectionString": "UseDevelopmentStorage=true",
-  "EventQueueName": "rpa-mit-events"
-  "PaymentQueueName": "rpa-mit-payment"
-  "POSTGRES_HOST": "",
-  "POSTGRES_PORT": "",
-  "POSTGRES_DB": "",
-  "POSTGRES_USER": "",
-  "POSTGRES_PASSWORD": "",
-  "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
-  "ReferenceDataApiBaseUri": "https://localhost:7012"
+    "AzureADPostgreSQLResourceID": "https://ossrdbms-aad.database.windows.net/.default",
+    "DbConnectionTemplate": "Server={0};Port={1};Database={2};User Id={3};Password={4};"
 }
 ```
 
+Once this is done run the following command to add the projects user secrets
+
+```bash
+cat secrets.json | dotnet user-secrets set
+```
+
+These values can also be created as environment variables or as a development app settings file, but the preferred method is via user secrets.
+
+### Start the Api
+
+**NOTE** - You will need to create the database in postgres before starting for the first time.
+
+```bash
+cd EST.MIT.Invoice.Api
+```
+
+```bash
+dotnet run
+```
+
+---
 ## Endpoints
 
-`GET /invoice/{scheme}/{invoiceId}` - Get an individual invoice
+### HTTP
 
-### Response 200
+#### Invoices
 
-```
-{
-  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
-  "invoiceType": "AP",
-  "accountType": "",
-  "organisation": "",
-  "schemeType": "bps",
-  "paymentRequests": [
-    {
-      "paymentRequestId": "9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
-      "frn": 1234567890,
-      "sourceSystem": "Manual",
-      "marketingYear": 0,
-      "deliveryBody": "RP00",
-      "paymentRequestNumber": 0,
-      "agreementNumber": "",
-      "contractNumber": "",
-      "value": 0,
-      "dueDate": "",
-      "invoiceLines": [
-        {
-          "value": 0,
-          "currency": "GBP",
-          "schemeCode": "",
-          "description": "",
-          "fundCode": ""
-        }
-      ],
-      "appendixReferences": {
-        "claimReferenceNumber": null
-      }
-    }
-  ],
-  "status": "awaiting",
-  "reference": null,
-  "created": "2023-03-28T01:00:00+01:00",
-  "updated": "2023-03-28T01:00:00+01:00",
-  "createdBy": "",
-  "updatedBy": ""
-}
-```
+Retrieves invoice details for a specific scheme and invoice ID.
+```http
+GET /invoice/{scheme}/{invoiceId} 
+``` 
 
-`POST /invoice` - Create an individual invoice
+Retrieves invoice details for a specific invoice ID.
+```http
+GET /invoice/{invoiceId} 
+``` 
 
-### Payload Example
+Retrieves invoice details associated with a specific payment request ID.
+```http
+GET /invoice/paymentrequest/{paymentRequestId} 
+``` 
 
-```
-{
-  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
-  "accountType": "AP",
-  "organisation": "RPA",
-  "paymentType": "DOM",
-  "schemeType": "DA",
-  "paymentRequests": [
-    {
-      "paymentRequestId": "a123",
-      "sourceSystem": "Manual",
-      "value": 100,
-      "currency": "GBP",
-      "description": "test invoice",
-      "originalInvoiceNumber": "12345",
-      "originalSettlementDate": "2023-09-26T05:57:30.358Z",
-      "recoveryDate": "2023-09-26T05:57:30.358Z",
-      "invoiceCorrectionReference": "string",
-      "invoiceLines": [
-        {
-          "value": 100,
-          "fundCode": "EXQ00",
-          "mainAccount": "SOS210",
-          "schemeCode": "10501",
-          "marketingYear": 2099,
-          "deliveryBody": "RP00",
-          "description": "test invoice line",
-          "currency": "GBP"
-        }
-      ],
-      "marketingYear": 2023,
-      "paymentRequestNumber": 1,
-      "agreementNumber": "12345",
-      "dueDate": "2023-11-01",
-      "appendixReferences": {
-        "claimReferenceNumber": "string"
-      },
-      "sbi": 0,
-      "vendor": "string"
-    }
-  ],
-  "status": "string",
-  "reference": "string",
-  "created": "2023-09-26T05:57:30.358Z",
-  "updated": "2023-09-26T05:57:30.358Z",
-  "createdBy": "string",
-  "updatedBy": "string"
-}
+Retrieves approval details for a specific invoice.
+```http
+GET /invoice/approvals/{invoiceId} 
+``` 
+
+Retrieves all invoice approvals.
+```http
+GET /invoice/approvals 
+``` 
+
+Retrieves all invoices for a specific user ID.
+```http
+GET /invoices/user/{userId} 
+``` 
+
+Creates a new invoice.
+```http
+POST /invoice 
+``` 
+
+Creates multiple invoices in bulk.
+```http
+POST /invoices 
+``` 
+
+Updates an existing invoice by its ID.
+```http
+PUT /invoice/{invoiceId} 
+``` 
+
+Deletes a specific invoice by its scheme and ID.
+```http
+DELETE /invoice/{scheme}/{invoiceId} 
+``` 
+
+#### Swagger
+
+Swagger is also available in development environments with more detailed information on the endpoints and their expected payloads.
+```http
+/swagger
 ```
 
-`POST /invoices` - Create multiple invoices
-
-### Payload Example
-
-```
-{
-  "invoices": [
-    {
-      "id": "string",
-      "invoiceType": "string",
-      "accountType": "string",
-      "organisation": "string",
-      "schemeType": "string",
-      "paymentRequests": [
-        {
-          "paymentRequestId": "string",
-          "frn": 0,
-          "sourceSystem": "string",
-          "marketingYear": 0,
-          "deliveryBody": "string",
-          "paymentRequestNumber": 0,
-          "agreementNumber": "string",
-          "contractNumber": "string",
-          "value": 0,
-          "dueDate": "string",
-          "invoiceLines": [
-            {
-              "value": 0,
-              "currency": "string",
-              "schemeCode": "string",
-              "description": "string",
-              "fundCode": "string"
-            }
-          ],
-          "appendixReferences": {
-            "claimReferenceNumber": "string"
-          }
-        }
-      ],
-      "status": "string",
-      "reference": "string",
-      "created": "2023-04-03T07:18:19.457Z",
-      "updated": "2023-04-03T07:18:19.457Z",
-      "createdBy": "string",
-      "updatedBy": "string"
-    }
-  ],
-  "reference": "string",
-  "schemeType": "string"
-}
-```
-
-`PUT /invoice/{invoiceId}` - Update invoice
-
-### Payload Example
-
-```
-{
-  "id": "e9e128c3-fd53-40f5-a2f5-5c3b1046eacb",
-  "invoiceType": "AP",
-  "accountType": "",
-  "organisation": "",
-  "schemeType": "bps",
-  "paymentRequests": [
-    {
-      "paymentRequestId": "9ce7e2a6-04d6-4b6e-8b4d-baf944f7d0f1",
-      "frn": 1234567890,
-      "sourceSystem": "Manual",
-      "marketingYear": 0,
-      "deliveryBody": "RP00",
-      "paymentRequestNumber": 0,
-      "agreementNumber": "",
-      "contractNumber": "",
-      "value": 0,
-      "dueDate": "",
-      "invoiceLines": [
-        {
-          "value": 0,
-          "currency": "GBP",
-          "schemeCode": "",
-          "description": "",
-          "fundCode": ""
-        }
-      ],
-      "appendixReferences": {
-        "claimReferenceNumber": null
-      }
-    }
-  ],
-  "status": "awaiting",
-  "reference": null,
-  "created": "2023-03-28T01:00:00+01:00",
-  "updated": "2023-03-28T01:00:00+01:00",
-  "createdBy": "",
-  "updatedBy": ""
-}
-```
-
-## Queue
-
-### Message Example
-
-```
-{
-  "id": "123456789",
-  "scheme": "bps"
-}
-```
-
-# Build and Test
-To run the function:
-
-`cd TEST.Function`
-
-`func start`
-
-## Useful links
-
-- [gov Notify](https://www.notifications.service.gov.uk/using-notify/api-documentation)
-
-- [Use dependency injection in .NET Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-dependency-injection)
