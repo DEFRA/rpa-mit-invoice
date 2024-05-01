@@ -74,15 +74,6 @@ dotnet run
 ```
 
 ---
-## Running in Docker
-
-To create the application as a docker container run the following command in the parent directory.
-
-```bash
-docker compose up
-```
-
----
 ## Endpoints
 
 ### HTTP
